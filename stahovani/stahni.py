@@ -6,6 +6,9 @@ Spouštěj ze složky skolni-ucebna:
   .venv/bin/python stahovani/stahni.py --prihlasit    poprvé: otevře prohlížeč a ty se přihlásíš
   .venv/bin/python stahovani/stahni.py                stáhne data a nahraje je na GitHub
   .venv/bin/python stahovani/stahni.py --bez-nahrani  jen stáhne, na GitHub nic neposílá
+
+Každý den v 6:30 ho spouští macOS sám (viz cz.ucebna.stahovani.plist).
+Co při tom vypsal, najdeš v stahovani/posledni-behy.log.
 """
 
 import argparse
@@ -13,7 +16,7 @@ import json
 import subprocess
 import sys
 from collections import Counter, defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -79,6 +82,13 @@ def klikni(stranka, odkaz):
         stranka.locator(odkaz).first.click()
 
 
+def na_aktualni_tyden(stranka):
+    # Odkaz „Aktuální týden“ je na stránce, jen když ukazuje jiný týden.
+    # Když tam není, už jsme na aktuálním a není co dělat.
+    if stranka.locator(AKTUALNI_TYDEN).count() > 0:
+        klikni(stranka, AKTUALNI_TYDEN)
+
+
 DALSI_TYDEN = 'a[href*="familyTimetable-value=7"]'
 AKTUALNI_TYDEN = 'a[href*="familyTimetable-resetFilter"]'
 
@@ -112,17 +122,18 @@ def stahni_z_edookitu():
         stranka.goto(EDOOKIT + "/timetable/")
         if not je_prihlaseny(stranka):
             prohlizec.close()
+            upozorni("Přihlášení do Edookitu vypršelo. Spusť stahni.py --prihlasit.")
             sys.exit("✗ Přihlášení do Edookitu vypršelo. Spusť skript s --prihlasit.")
 
         print("Čtu rozvrh…")
         # Edookit si pamatuje naposledy zobrazený týden, tak nejdřív na ten aktuální
-        klikni(stranka, AKTUALNI_TYDEN)
+        na_aktualni_tyden(stranka)
         tydny = [spust_js(stranka, "prectiTyden")]
         for _ in range(POCET_TYDNU - 1):
             klikni(stranka, DALSI_TYDEN)
             tydny.append(spust_js(stranka, "prectiTyden"))
         # Vrátíme Edookit zpátky na aktuální týden, ať tě to pak na webu nemate
-        klikni(stranka, AKTUALNI_TYDEN)
+        na_aktualni_tyden(stranka)
 
         print("Čtu písemky…")
         stranka.goto(EDOOKIT + "/exams/")
@@ -235,6 +246,18 @@ def aktualizuj_temata(predmety, ucivo):
 # ---------- Ukládání a nahrání ----------
 
 
+def upozorni(zprava):
+    # Když skript běží sám každé ráno, nikdo se nedívá do Terminálu.
+    # Tohle ukáže na Macu oznámení vpravo nahoře.
+    # ensure_ascii=False nechá háčky a čárky, jak jsou (jinak by z nich byly kódy \u…)
+    prikaz = f"display notification {json.dumps(zprava, ensure_ascii=False)} with title \"Učebna\""
+    subprocess.run(["osascript", "-e", prikaz], check=False)
+
+
+def git(*argumenty):
+    subprocess.run(["git", *argumenty], cwd=PROJEKT, check=True)
+
+
 def uloz(nazev, data):
     """Uloží JSON. Vrátí True, jen když se obsah opravdu změnil."""
     cesta = DATA / nazev
@@ -246,10 +269,7 @@ def uloz(nazev, data):
 
 
 def nahraj_na_github(soubory):
-    def git(*argumenty):
-        subprocess.run(["git", *argumenty], cwd=PROJEKT, check=True)
-
-    git("add", *[f"data/{nazev}" for nazev in soubory])
+    git("add",*[f"data/{nazev}" for nazev in soubory])
     git("commit", "-m", f"Aktualizace dat z Edookitu ({date.today():%-d. %-m. %Y})")
     git("push")
     print("✓ Nahráno na GitHub. Web se aktualizuje asi do minuty.")
@@ -264,6 +284,12 @@ def main():
     if argumenty.prihlasit:
         prihlasit()
         return
+
+    print(f"=== {datetime.now():%-d. %-m. %Y %H:%M} ===")
+    if not argumenty.bez_nahrani:
+        # Nejdřív převezmeme, co se mezitím změnilo na GitHubu (třeba
+        # materiál, který jsi přidal přes web), ať to nepřepíšeme.
+        git("pull", "--ff-only", "--quiet")
 
     tydny, pisemky, ucivo = stahni_z_edookitu()
 
@@ -304,4 +330,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        upozorni("Stahování z Edookitu selhalo. Podrobnosti jsou v stahovani/posledni-behy.log")
+        raise
