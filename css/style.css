@@ -1322,6 +1322,91 @@ a.polozka-nazev:hover {
   margin-bottom: 18px;
 }
 
+/* --- Doučování --- */
+
+.lekce-karta {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  background: var(--polozka);
+  border: 1px solid var(--polozka-okraj);
+  border-radius: var(--zaobleni-male);
+}
+
+/* Zrušená lekce: ztlumená a přeškrtnutá */
+.lekce-karta.zrusena,
+.lekce.zrusena {
+  opacity: 0.55;
+}
+
+.lekce-karta.zrusena .polozka-nazev,
+.lekce.zrusena .polozka-nazev {
+  text-decoration: line-through;
+}
+
+/* „Na příště“ z minulé lekce: rámeček vlevo, ať je vidět před lekcí */
+.lekce-pripominka {
+  margin-top: 4px;
+  padding-left: 10px;
+  border-left: 2px solid var(--akcent);
+  font-size: 0.9rem;
+  white-space: pre-line;
+}
+
+.lekce-poznamka .poznamka-text {
+  margin-top: 0;
+}
+
+.lekce-upravit {
+  justify-self: start;
+  font-size: 0.85rem;
+  color: var(--text-slaby);
+}
+
+.lekce-smazat {
+  margin-left: auto;
+  color: var(--text-slaby);
+}
+
+.lekce-formular textarea,
+.lekce-formular select {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+  resize: vertical;
+}
+
+.lekce-formular .zamek-zapamatovat {
+  margin: 0;
+}
+
+.lekce-dny .sekce {
+  margin-bottom: 18px;
+}
+
+.lekce-dny h2,
+#lekce-souhrn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-slaby);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+#lekce-souhrn {
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.95rem;
+  margin: 12px 0 18px;
+}
+
 /* --- Odpočty --- */
 
 .odpocet-nazev {

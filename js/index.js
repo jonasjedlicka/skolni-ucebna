@@ -3,6 +3,7 @@
 // je jen posbírá, seřadí a vykreslí. Obsah dlaždice kreslí modul sám.
 //
 // Dlaždice: { nazev, odkaz, poradi, vysoka, vykresli(obsah, nadpis) }
+// Když vykresli vrátí false, dlaždice se na Přehledu vůbec neukáže.
 
 function zobrazPrehled() {
   zobrazDatum();
@@ -62,7 +63,11 @@ function vytvorDlazdiciPrehledu(dlazdice, poradi, ukazStav) {
 async function vyplnObsah(vykresli, obsah) {
   try {
     const novy = vytvor("div", "");
-    await vykresli(novy);
+    // Modul může vrátit false = dnes není co ukázat (např. žádné doučování) → dlaždici vynecháme
+    if ((await vykresli(novy)) === false) {
+      obsah.closest(".dlazdice-prehledu").remove();
+      return;
+    }
     obsah.replaceChildren(...novy.childNodes);
   } catch (chyba) {
     // Chyba jedné oblasti se ukáže jen v její dlaždici, ostatní fungují dál
