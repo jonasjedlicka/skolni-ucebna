@@ -106,11 +106,6 @@ function pomodoraZapisy() {
   return otevriZapisy("soustredeni", "soustředění");
 }
 
-// Dnešní datum jako "2026-10-23" v místním čase (švédský formát je přesně tenhle)
-function datumKlic(datum = new Date()) {
-  return datum.toLocaleDateString("sv-SE");
-}
-
 // { "2026-10-23": { pocet, minut }, … }
 function nactiHistorii() {
   const historie = {};

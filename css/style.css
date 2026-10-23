@@ -1026,6 +1026,129 @@ a.polozka-nazev:hover {
   color: var(--text-slaby);
 }
 
+/* --- Návyky --- */
+
+/* Den, kdy návyk není naplánovaný: ztlumený */
+.navyk.volno {
+  opacity: 0.6;
+}
+
+.navyk .odebrat-tlacitko.ikonove {
+  margin-left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navyk .odebrat-tlacitko .ikona {
+  width: 15px;
+  height: 15px;
+}
+
+/* Karta návyku: řádek s dneškem nahoře, týden pod ním */
+.navyk-karta {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: var(--polozka);
+  border: 1px solid var(--polozka-okraj);
+  border-radius: var(--zaobleni-male);
+}
+
+.navyk-karta > .polozka {
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.navyk-tyden {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.navyk-den {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--text-slaby);
+  background: none;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.navyk-den:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.navyk-den.dnes .navyk-den-nazev {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.navyk-den-znacka {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--text-slaby);
+}
+
+.navyk-den.hotovo .navyk-den-znacka {
+  background: var(--akcent);
+  border-color: var(--akcent);
+}
+
+/* Volný den: místo kroužku krátká čárka */
+.navyk-den.volno:not(.hotovo) .navyk-den-znacka {
+  border: none;
+  border-radius: 2px;
+  height: 2px;
+  margin: 8px 0;
+  background: var(--text-slaby);
+}
+
+.navyk-formular {
+  display: grid;
+  gap: 10px;
+}
+
+.navyk-formular input {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.navyk-formular .polozka-detail {
+  margin: 0;
+}
+
+.navyk-formular > .hlavni-tlacitko {
+  justify-self: start;
+}
+
+.vyber-dnu {
+  margin-bottom: 0;
+}
+
+.vyber-dnu .filtr {
+  min-width: 44px;
+  padding: 7px 10px;
+}
+
+.navyky-seznam {
+  margin-bottom: 22px;
+}
+
 /* --- Odpočty --- */
 
 .odpocet-nazev {

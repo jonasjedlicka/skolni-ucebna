@@ -10,6 +10,7 @@ const ZALOZKY = [
   { id: "skola", nazev: "Škola", odkaz: "skola.html", ikona: "skola" },
   { id: "plan", nazev: "Plán", odkaz: "plan.html", ikona: "plan" },
   { id: "kalendar", nazev: "Kalendář", odkaz: "kalendar.html", ikona: "kalendar" },
+  { id: "zdravi", nazev: "Zdraví", odkaz: "zdravi.html", ikona: "zdravi" },
   { id: "svet", nazev: "Svět", odkaz: "svet.html", ikona: "svet" },
 ];
 
@@ -22,6 +23,7 @@ const IKONY = {
   zpravy: "M4 5h13v15H6.5A2.5 2.5 0 0 1 4 17.5zM17 9h3v8.5a2.5 2.5 0 0 1-2.5 2.5M7.5 9h6M7.5 12.5h6M7.5 16h4",
   finance: "M4 20h16M6 16l4.5-4.5 3 3L19 9M15 9h4v4",
   plan: "M10 6h10M10 12h10M10 18h10M4 6l1.5 1.5L8 5M4 12l1.5 1.5L8 11M4 18l1.5 1.5L8 17",
+  zdravi: "M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20z",
   svet: "M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18",
   // Počasí
   jasno: "M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",

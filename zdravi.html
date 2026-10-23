@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>Zdraví · Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=12">
+</head>
+<body data-zalozka="zdravi">
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">Dashboard</a>
+      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hlavicka-stranky">
+      <h1>Zdraví</h1>
+    </div>
+
+    <!-- Přepínač částí (řídí nastavPrepinac ze spolecne.js). Trénink přibude dalším modulem. -->
+    <div class="prepinac" role="tablist" aria-label="Části">
+      <button type="button" role="tab" data-cast="navyky">Návyky</button>
+    </div>
+
+    <section class="cast" id="cast-navyky" role="tabpanel">
+      <!-- Návyky vloží js/navyky.js, ukládají se zašifrovaně na GitHub (js/zapisy.js) -->
+      <div id="navyky">
+        <p class="nacitani">Načítá se…</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
+
+  <script src="js/zalozky.js?v=12"></script>
+  <script src="js/spolecne.js?v=12"></script>
+  <script src="js/zapisy.js?v=12"></script>
+  <script src="js/moduly/navyky.js?v=12"></script>
+  <script src="js/navyky.js?v=12"></script>
+  <script>nastavPrepinac();</script>
+</body>
+</html>

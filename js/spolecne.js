@@ -158,6 +158,11 @@ function parsujDatum(text) {
   return new Date(rok, mesic - 1, den); // měsíce se v JS počítají od 0!
 }
 
+// Dnešní datum jako "2026-10-23" v místním čase (švédský formát je přesně tenhle)
+function datumKlic(datum = new Date()) {
+  return datum.toLocaleDateString("sv-SE");
+}
+
 // Kolik dní zbývá od dneška do zadaného data (dnes = 0, zítra = 1, včera = -1).
 function dnyDo(datum) {
   const dnes = new Date();
