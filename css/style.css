@@ -296,6 +296,57 @@ a.polozka-nazev:hover {
   color: var(--text-slaby);
 }
 
+/* --- Dashboard: karty modulů --- */
+
+.dashboard {
+  display: grid;
+  gap: var(--mezera);
+}
+
+.modul-hlavicka {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-bottom: 12px;
+}
+
+.modul-hlavicka h2 {
+  margin: 0;
+}
+
+.modul-hlavicka h2 a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.modul-stav {
+  font-size: 0.8rem;
+}
+
+/* Data se dlouho neaktualizovala */
+.modul-stav.zastarale {
+  color: var(--varovani);
+  font-weight: 600;
+}
+
+/* Nadpisy uvnitř karty modulu (Dnes, Nejbližší testy) */
+.modul h3 {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.modul .sekce {
+  margin-bottom: 16px;
+}
+
+.predmety-rozbal summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
 /* --- Stránka předmětu --- */
 
 .predmet-hlavicka {
@@ -357,6 +408,15 @@ a.polozka-nazev:hover {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+  }
+
+  /* Dashboard: karty modulů ve dvou sloupcích, velké moduly přes celou šířku */
+  .dashboard {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .plna-sirka {
+    grid-column: 1 / -1;
   }
 }
 

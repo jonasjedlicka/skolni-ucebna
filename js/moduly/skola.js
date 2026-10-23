@@ -1,60 +1,17 @@
-// Společné funkce, které používají všechny stránky Učebny.
-// Tenhle soubor se musí na stránce načíst jako první (před rozvrh.js atd.).
+// Modul ŠKOLA: rozvrh, testy a předměty z Edookitu.
+// Data jsou v data/skola/ a plní je skript stahovani/stahni.py.
 
-// Načte jeden JSON soubor a vrátí jeho obsah jako JavaScriptový objekt.
-// "async" znamená, že funkce chvíli čeká (na odpověď serveru);
-// "await" je místo, kde se čeká.
-async function nactiJson(cesta) {
-  const odpoved = await fetch(cesta);
-  if (!odpoved.ok) {
-    throw new Error(`Nepodařilo se načíst ${cesta} (chyba ${odpoved.status})`);
-  }
-  return odpoved.json();
-}
+const SKOLA_DATA = "data/skola/";
 
 // Načte předměty a vrátí je jako "slovník" podle id,
 // takže pak stačí napsat predmety["matematika"] a máš celý předmět.
 async function nactiPredmety() {
-  const seznam = await nactiJson("data/predmety.json");
+  const seznam = await nactiJson(SKOLA_DATA + "predmety.json");
   const podleId = {};
   for (const predmet of seznam) {
     podleId[predmet.id] = predmet;
   }
   return podleId;
-}
-
-// Vytvoří HTML prvek, např. vytvor("div", "karta", "Ahoj")
-// → <div class="karta">Ahoj</div>.
-// Text vkládáme přes textContent, takže se nikdy nespustí jako kód.
-function vytvor(znacka, trida, text) {
-  const prvek = document.createElement(znacka);
-  if (trida) prvek.className = trida;
-  if (text !== undefined) prvek.textContent = text;
-  return prvek;
-}
-
-// Převede text "2026-11-02" na datum.
-// Nepoužíváme new Date("2026-11-02"), protože to prohlížeč bere
-// jako půlnoc v Londýně (UTC), a u nás by to pak mohl být jiný den.
-function parsujDatum(text) {
-  const [rok, mesic, den] = text.split("-").map(Number);
-  return new Date(rok, mesic - 1, den); // měsíce se v JS počítají od 0!
-}
-
-// Kolik dní zbývá od dneška do zadaného data (dnes = 0, zítra = 1, včera = -1).
-function dnyDo(datum) {
-  const dnes = new Date();
-  dnes.setHours(0, 0, 0, 0); // vynulujeme čas, porovnáváme jen dny
-  const MS_ZA_DEN = 24 * 60 * 60 * 1000;
-  return Math.round((datum - dnes) / MS_ZA_DEN);
-}
-
-// Hezký text pro počet dní: „dnes“, „zítra“, „za 2 dny“, „za 5 dní“.
-function textZaKolik(dny) {
-  if (dny === 0) return "dnes";
-  if (dny === 1) return "zítra";
-  if (dny <= 4) return `za ${dny} dny`; // čeština: za 2, 3, 4 dny
-  return `za ${dny} dní`;               // ale za 5 dní
 }
 
 // --- Rozvrh ---
@@ -165,9 +122,108 @@ function vytvorDlazdici(predmet) {
   return dlazdice;
 }
 
-// Když se něco pokazí, vypíše chybu přímo na stránku,
-// abys hned viděl, co je špatně (a ne jen prázdnou stránku).
-function ukazChybu(kontejner, chyba) {
-  kontejner.replaceChildren(vytvor("p", "chyba", "⚠️ " + chyba.message));
-  console.error(chyba);
+// --- Karta na dashboardu ---
+
+// Kolik nejbližších testů ukázat na dashboardu
+const POCET_TESTU_NA_KARTE = 3;
+
+// "08:45" → 525 (minut od půlnoci). Čísla se porovnávají snáz než text.
+function naMinuty(cas) {
+  const [hodiny, minuty] = cas.split(":").map(Number);
+  return hodiny * 60 + minuty;
 }
+
+async function vykresliSkolu(obsah) {
+  const [rozvrh, predmety, testy] = await Promise.all([
+    nactiJson(SKOLA_DATA + "rozvrh.json"),
+    nactiPredmety(),
+    nactiJson(SKOLA_DATA + "testy.json"),
+  ]);
+
+  const sloupce = vytvor("div", "dva-sloupce");
+  sloupce.append(vytvorDnesniHodiny(rozvrh, predmety));
+  sloupce.append(vytvorNejblizsiTesty(testy, predmety, rozvrh.casy));
+  obsah.append(sloupce);
+
+  // Předměty jsou schované pod rozbalovacím nadpisem, ať karta není moc dlouhá.
+  // <details> a <summary> umí rozbalování samy, bez JavaScriptu.
+  const vsechny = Object.values(predmety);
+  const rozbal = vytvor("details", "predmety-rozbal");
+  rozbal.append(vytvor("summary", "", `Předměty (${vsechny.length})`));
+  const mrizka = vytvor("div", "mrizka");
+  mrizka.append(...vsechny.map(vytvorDlazdici));
+  rozbal.append(mrizka);
+  obsah.append(rozbal);
+}
+
+function vytvorDnesniHodiny(rozvrh, predmety) {
+  const sekce = vytvor("section", "sekce");
+  let den = dnesniDen();
+  const jeVikend = !den;
+  if (jeVikend) den = DNY[0]; // o víkendu ukážeme, co tě čeká v pondělí
+
+  const nadpis = vytvor("div", "sekce-nadpis");
+  nadpis.append(vytvor("h3", "", jeVikend ? "V pondělí" : "Dnes"));
+  const odkaz = vytvor("a", "", "Celý rozvrh →");
+  odkaz.href = "rozvrh.html";
+  nadpis.append(odkaz);
+  sekce.append(nadpis);
+
+  const seznam = vytvor("ul", "seznam");
+  // [...pole] udělá kopii, aby .sort nezměnil původní data
+  const hodiny = [...(rozvrh.dny[den.klic] || [])].sort((a, b) => a.hodina - b.hodina);
+  if (hodiny.length === 0) {
+    seznam.append(vytvor("li", "slaby", "Žádné hodiny 🎉"));
+  }
+
+  const ted = new Date();
+  const tedMinuty = ted.getHours() * 60 + ted.getMinutes();
+  for (const hodina of hodiny) {
+    const cas = rozvrh.casy[hodina.hodina];
+    const polozka = vytvorHodinu(hodina.hodina, cas, hodina, predmety[hodina.predmet]);
+    // Podle aktuálního času: odučené hodiny ztlumíme, probíhající zvýrazníme
+    if (!jeVikend) {
+      if (tedMinuty >= naMinuty(cas.do)) {
+        polozka.classList.add("probehla");
+      } else if (tedMinuty >= naMinuty(cas.od)) {
+        polozka.classList.add("ted");
+        polozka.append(vytvor("span", "stitek brzy", "teď"));
+      }
+    }
+    seznam.append(polozka);
+  }
+  sekce.append(seznam);
+  return sekce;
+}
+
+function vytvorNejblizsiTesty(testy, predmety, casy) {
+  const sekce = vytvor("section", "sekce");
+  const nadpis = vytvor("div", "sekce-nadpis");
+  nadpis.append(vytvor("h3", "", "Nejbližší testy"));
+  const odkaz = vytvor("a", "", "Všechny →");
+  odkaz.href = "testy.html";
+  nadpis.append(odkaz);
+  sekce.append(nadpis);
+
+  const seznam = vytvor("ul", "seznam");
+  // slice(0, 3) vezme jen první tři
+  const nejblizsi = nadchazejiciTesty(testy).slice(0, POCET_TESTU_NA_KARTE);
+  if (nejblizsi.length === 0) {
+    seznam.append(vytvor("li", "slaby", "Žádné nadcházející testy 🎉"));
+  }
+  for (const test of nejblizsi) {
+    seznam.append(vytvorTest(test, predmety[test.predmet], casy));
+  }
+  sekce.append(seznam);
+  return sekce;
+}
+
+// Přihlásíme modul na dashboard
+MODULY.push({
+  id: "skola",
+  nazev: "📚 Škola",
+  odkaz: "rozvrh.html",
+  sirka: "plna", // karta přes celou šířku dashboardu
+  maxStariHodin: 48, // starší data = skript se 2 dny nespustil, něco je špatně
+  vykresli: vykresliSkolu,
+});

@@ -1,5 +1,5 @@
 """
-Stáhne aktuální data z Edookitu, uloží je do data/*.json a nahraje na GitHub.
+Stáhne aktuální data z Edookitu, uloží je do data/skola/*.json a nahraje na GitHub.
 
 Spouštěj ze složky skolni-ucebna:
 
@@ -23,7 +23,7 @@ from playwright.sync_api import sync_playwright
 
 EDOOKIT = "https://gsgpraha.edookit.net"
 PROJEKT = Path(__file__).resolve().parent.parent  # složka skolni-ucebna
-DATA = PROJEKT / "data"
+DATA = PROJEKT / "data" / "skola"  # každý modul dashboardu má svou složku
 # Sem si prohlížeč ukládá přihlášení. Je v .gitignore – nikdy ho nenahrávej!
 PROFIL = PROJEKT / ".edookit-prihlaseni"
 # Edookit drží přihlášení v cookie, která by po zavření prohlížeče zmizela,
@@ -269,7 +269,7 @@ def uloz(nazev, data):
 
 
 def nahraj_na_github(soubory):
-    git("add",*[f"data/{nazev}" for nazev in soubory])
+    git("add", *[str((DATA / nazev).relative_to(PROJEKT)) for nazev in soubory])
     git("commit", "-m", f"Aktualizace dat z Edookitu ({date.today():%-d. %-m. %Y})")
     git("push")
     print("✓ Nahráno na GitHub. Web se aktualizuje asi do minuty.")
@@ -318,15 +318,21 @@ def main():
     print(f"Rozvrh: {pocet_hodin} hodin týdně · nadcházející testy: {len(testy)}")
     nezname = (nezname_rozvrh | nezname_testy) - {"O3.D"}  # O3.D = oběd
     if nezname:
-        print("! Neznámé předměty (přidej je do data/predmety.json):", ", ".join(sorted(nezname)))
+        print("! Neznámé předměty (přidej je do data/skola/predmety.json):", ", ".join(sorted(nezname)))
 
-    if not zmenene:
-        print("✓ Žádné změny, data jsou aktuální.")
-    elif argumenty.bez_nahrani:
-        print("✓ Změněno:", ", ".join(zmenene), "(na GitHub jsem nic neposílal)")
-    else:
+    if zmenene:
         print("Změněno:", ", ".join(zmenene))
-        nahraj_na_github(zmenene)
+    else:
+        print("✓ Žádné změny, data jsou aktuální.")
+
+    # Čas úspěšné kontroly zapisujeme vždy, i když se nic nezměnilo.
+    # Dashboard podle něj pozná, že stahování funguje.
+    uloz("stav.json", {"aktualizovano": datetime.now().isoformat(timespec="seconds")})
+
+    if argumenty.bez_nahrani:
+        print("(na GitHub jsem nic neposílal)")
+    else:
+        nahraj_na_github(zmenene + ["stav.json"])
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
-// Vykreslí týdenní rozvrh z data/rozvrh.json do <div id="rozvrh">.
-// Funkce DNY, dnesniDen a vytvorHodinu jsou v data.js.
+// Vykreslí týdenní rozvrh z data/skola/rozvrh.json do <div id="rozvrh">.
+// Funkce DNY, dnesniDen a vytvorHodinu jsou v js/moduly/skola.js.
 
 async function zobrazRozvrh() {
   const kontejner = document.getElementById("rozvrh");
   try {
     // Promise.all načte oba soubory najednou a počká na oba.
     const [rozvrh, predmety] = await Promise.all([
-      nactiJson("data/rozvrh.json"),
+      nactiJson(SKOLA_DATA + "rozvrh.json"),
       nactiPredmety(),
     ]);
 

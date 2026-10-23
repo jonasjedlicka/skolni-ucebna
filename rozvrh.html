@@ -20,7 +20,7 @@
 
   <main>
     <h1>Týdenní rozvrh</h1>
-    <!-- Sem vykreslí js/rozvrh.js rozvrh z data/rozvrh.json -->
+    <!-- Sem vykreslí js/rozvrh.js rozvrh z data/skola/rozvrh.json -->
     <div id="rozvrh" class="rozvrh-mrizka">
       <p class="nacitani">Rozvrh se načítá…</p>
     </div>
@@ -29,8 +29,9 @@
   <footer class="paticka">Data: Edookit</footer>
 
   <!-- Skripty dáváme až na konec, aby už existovalo všechno HTML nad nimi.
-       data.js musí být první, protože rozvrh.js používá jeho funkce. -->
-  <script src="js/data.js"></script>
+       spolecne.js musí být první, pak modul školy, protože rozvrh.js používá jejich funkce. -->
+  <script src="js/spolecne.js"></script>
+  <script src="js/moduly/skola.js"></script>
   <script src="js/rozvrh.js"></script>
 </body>
 </html>

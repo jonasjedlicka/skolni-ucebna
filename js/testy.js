@@ -1,13 +1,13 @@
-// Vykreslí nadcházející testy z data/testy.json do <ul id="testy">.
-// Funkce nadchazejiciTesty a vytvorTest jsou v data.js.
+// Vykreslí nadcházející testy z data/skola/testy.json do <ul id="testy">.
+// Funkce nadchazejiciTesty a vytvorTest jsou v js/moduly/skola.js.
 
 async function zobrazTesty() {
   const seznam = document.getElementById("testy");
   try {
     const [testy, predmety, rozvrh] = await Promise.all([
-      nactiJson("data/testy.json"),
+      nactiJson(SKOLA_DATA + "testy.json"),
       nactiPredmety(),
-      nactiJson("data/rozvrh.json"), // jen kvůli časům hodin
+      nactiJson(SKOLA_DATA + "rozvrh.json"), // jen kvůli časům hodin
     ]);
 
     const nadchazejici = nadchazejiciTesty(testy);
