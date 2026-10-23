@@ -738,6 +738,316 @@ a.polozka-nazev:hover {
   margin: -8px 0 12px;
 }
 
+/* --- Soustředění (Pomodoro) --- */
+
+.pomodoro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 26px 18px;
+}
+
+/* Ciferník: kruh (SVG) a uprostřed čas */
+.pomodoro-cifernik {
+  position: relative;
+  width: min(280px, 78vw);
+  aspect-ratio: 1;
+}
+
+.pomodoro-kruh {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* průběh začíná nahoře, ne vpravo */
+}
+
+.pomodoro-kruh circle {
+  fill: none;
+  stroke-width: 6;
+}
+
+.pomodoro-kruh-podklad {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.pomodoro-kruh-prubeh {
+  stroke: var(--akcent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* Pozastavený odpočet: čára zešedne */
+.pomodoro-cifernik.stoji .pomodoro-kruh-prubeh {
+  stroke: var(--text-slaby);
+}
+
+.pomodoro-uvnitr {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pomodoro-faze {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-slaby);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pomodoro-cas {
+  font-size: clamp(3.2rem, 15vw, 4.4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums; /* číslice stejně široké, čas neposkakuje */
+}
+
+/* Kroužky kol: plný = hotové, s obrysem = právě probíhá */
+.pomodoro-kola {
+  display: flex;
+  gap: 7px;
+}
+
+.pomodoro-kolo {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-slaby);
+}
+
+.pomodoro-kolo.hotove {
+  background: var(--akcent);
+  border-color: var(--akcent);
+}
+
+.pomodoro-kolo.aktualni {
+  border-color: var(--akcent);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+.pomodoro-ovladani {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Hlavní bílé tlačítko Spustit / Pozastavit */
+.hlavni-tlacitko {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 26px;
+  border: none;
+  border-radius: 999px;
+  background: var(--akcent);
+  color: var(--akcent-text);
+  cursor: pointer;
+  transition: transform var(--prechod);
+}
+
+.hlavni-tlacitko .ikona,
+.kulate-tlacitko .ikona {
+  width: 20px;
+  height: 20px;
+}
+
+/* Kulaté skleněné tlačítko s ikonou (Přehled, Začít znovu, Přeskočit) */
+.kulate-tlacitko {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 var(--sklo-odlesk);
+  transition: transform var(--prechod), background var(--prechod);
+}
+
+.kulate-tlacitko.maly {
+  width: 42px;
+  height: 42px;
+}
+
+.kulate-tlacitko:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.hlavni-tlacitko:active,
+.kulate-tlacitko:active {
+  transform: scale(0.94);
+}
+
+.rezim-zapnout,
+.rezim-vypnout {
+  font-size: 0.9rem;
+  color: var(--text-slaby);
+}
+
+/* .pomodoro před názvem: přebije display z .odkaz-tlacitko níž v souboru */
+.pomodoro .rezim-vypnout {
+  display: none;
+}
+
+/* Dlaždice na Přehledu: čas vlevo, tlačítko vpravo */
+.pomodoro-dlazdice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.pomodoro-cas-maly {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sloupečky za týden */
+.tyden {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.tyden-sloupec {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.tyden-misto {
+  width: 100%;
+  max-width: 34px;
+  height: 90px;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 8px;
+  background: var(--polozka);
+}
+
+.tyden-pruh {
+  width: 100%;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.tyden-sloupec.dnes .tyden-pruh {
+  background: var(--akcent);
+}
+
+.tyden-sloupec.dnes .polozka-detail {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.tyden-pocet {
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-height: 1.2em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nastavení: rozbalovací karta */
+.nastaveni summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.nastaveni-pole {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 14px 0 8px;
+}
+
+.nastaveni-pole label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.88rem;
+  color: var(--text-slaby);
+}
+
+.nastaveni-pole input {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+/* Režim soustředění: všechno kromě odpočtu zmizí, odpočet je uprostřed obrazovky */
+.rezim-soustredeni .hlavicka,
+.rezim-soustredeni .hlavicka-stranky,
+.rezim-soustredeni .prepinac,
+.rezim-soustredeni .paticka,
+.rezim-soustredeni .cast > :not(.pomodoro),
+.rezim-soustredeni .pomodoro .rezim-zapnout {
+  display: none;
+}
+
+.rezim-soustredeni {
+  padding-bottom: 0;
+}
+
+.rezim-soustredeni main {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rezim-soustredeni .cast {
+  width: 100%;
+}
+
+.rezim-soustredeni .pomodoro {
+  background: none;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.rezim-soustredeni .pomodoro::before {
+  display: none;
+}
+
+.rezim-soustredeni .pomodoro-cifernik {
+  width: min(420px, 86vw, 62vh);
+}
+
+.rezim-soustredeni .pomodoro-cas {
+  font-size: clamp(4rem, 20vw, 6.5rem);
+}
+
+.rezim-soustredeni .pomodoro .rezim-vypnout {
+  display: inline-flex;
+}
+
 /* --- Zámek (zadání hesla k šifrovaným datům) --- */
 
 .zamek {

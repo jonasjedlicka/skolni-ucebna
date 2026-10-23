@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>Plán · Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=6">
+</head>
+<body data-zalozka="plan">
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">Dashboard</a>
+      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hlavicka-stranky">
+      <h1>Plán</h1>
+    </div>
+
+    <!-- Přepínač částí (řídí nastavPrepinac ze spolecne.js). Další části
+         (Úkoly, Odpočty, Cíle, Poznámky) přibudou s dalšími moduly. -->
+    <div class="prepinac" role="tablist" aria-label="Části">
+      <button type="button" role="tab" data-cast="soustredeni">Soustředění</button>
+    </div>
+
+    <section class="cast" id="cast-soustredeni" role="tabpanel">
+      <!-- Odpočet ovládá js/soustredeni.js, stav je uložený jen v tomhle prohlížeči -->
+      <div class="karta sekce pomodoro">
+        <div class="pomodoro-cifernik" id="pomodoro-cifernik">
+          <div class="pomodoro-uvnitr">
+            <div class="pomodoro-faze" id="pomodoro-faze"></div>
+            <div class="pomodoro-cas" id="pomodoro-cas" role="timer" aria-live="off">25:00</div>
+            <div id="pomodoro-kola"></div>
+          </div>
+        </div>
+
+        <div class="pomodoro-ovladani">
+          <button type="button" class="kulate-tlacitko maly" id="pomodoro-reset" aria-label="Začít znovu" title="Začít znovu"></button>
+          <button type="button" class="hlavni-tlacitko" id="pomodoro-start"></button>
+          <button type="button" class="kulate-tlacitko maly" id="pomodoro-preskocit" aria-label="Přeskočit fázi" title="Přeskočit fázi"></button>
+        </div>
+
+        <button type="button" class="odkaz-tlacitko rezim-zapnout" id="rezim-zapnout">Režim soustředění přes celou obrazovku</button>
+        <button type="button" class="odkaz-tlacitko rezim-vypnout" id="rezim-vypnout">Ukončit režim soustředění</button>
+      </div>
+
+      <div class="karta sekce">
+        <h2>Posledních 7 dní</h2>
+        <p class="polozka-detail" id="pomodoro-dnes"></p>
+        <div class="tyden" id="pomodoro-tyden"></div>
+      </div>
+
+      <details class="karta sekce nastaveni" id="pomodoro-nastaveni">
+        <summary>Nastavení délek</summary>
+        <div class="nastaveni-pole">
+          <label>Práce (min) <input type="number" name="prace" min="1" max="120" inputmode="numeric"></label>
+          <label>Krátká pauza (min) <input type="number" name="pauza" min="1" max="60" inputmode="numeric"></label>
+          <label>Dlouhá pauza (min) <input type="number" name="dlouhaPauza" min="1" max="60" inputmode="numeric"></label>
+          <label>Kol do dlouhé pauzy <input type="number" name="kolDoDlouhe" min="1" max="10" inputmode="numeric"></label>
+        </div>
+        <p class="polozka-detail">Když odpočet právě běží, změna platí od příští fáze. Odpočet běží dál i po zavření stránky, ukládá se jen v tomhle prohlížeči.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer class="paticka">Soustředění se ukládá jen v tomhle zařízení.</footer>
+
+  <script src="js/zalozky.js?v=6"></script>
+  <script src="js/spolecne.js?v=6"></script>
+  <script src="js/moduly/soustredeni.js?v=6"></script>
+  <script src="js/soustredeni.js?v=6"></script>
+  <script>nastavPrepinac();</script>
+</body>
+</html>
