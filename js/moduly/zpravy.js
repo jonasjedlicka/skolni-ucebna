@@ -3,8 +3,8 @@
 
 const ZPRAVY_DATA = "data/zpravy/";
 
-// Kolik zpráv ukázat na kartě dashboardu
-const POCET_ZPRAV_NA_KARTE = 6;
+// Kolik nejnovějších titulků ukázat na Přehledu
+const POCET_ZPRAV_NA_PREHLEDU = 3;
 
 async function nactiZpravy() {
   return nactiJson(ZPRAVY_DATA + "zpravy.json");
@@ -34,24 +34,19 @@ function vytvorZpravu(zprava, sPerexem) {
   return polozka;
 }
 
-async function vykresliZpravy(obsah) {
+// Dlaždice „Zprávy“ na Přehledu: jen pár nejnovějších titulků
+async function vykresliZpravyDnes(obsah) {
   const zpravy = await nactiZpravy();
   const seznam = vytvor("ul", "seznam");
-  for (const zprava of zpravy.slice(0, POCET_ZPRAV_NA_KARTE)) {
+  for (const zprava of zpravy.slice(0, POCET_ZPRAV_NA_PREHLEDU)) {
     seznam.append(vytvorZpravu(zprava, false));
   }
   obsah.append(seznam);
-
-  const vice = vytvor("a", "odkaz-vice", `Všech ${zpravy.length} zpráv →`);
-  vice.href = "zpravy.html";
-  obsah.append(vice);
 }
 
-// Přihlásíme modul na dashboard
 MODULY.push({
   id: "zpravy",
-  nazev: "🌍 Zprávy",
-  odkaz: "zpravy.html",
+  zalozka: "zpravy",
   maxStariHodin: 8, // stahují se každé 3 hodiny, víc než 8 h = něco se zaseklo
-  vykresli: vykresliZpravy,
+  dnes: [{ nazev: "Zprávy", odkaz: "zpravy.html", poradi: 5, vykresli: vykresliZpravyDnes }],
 });

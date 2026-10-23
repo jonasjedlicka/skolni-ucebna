@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>Škola · Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=2">
+</head>
+<body data-zalozka="skola">
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">Dashboard</a>
+      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hlavicka-stranky">
+      <h1>Škola</h1>
+      <p class="podnadpis" data-stav="skola" data-max-hodin="48"></p>
+    </div>
+
+    <!-- Přepínač částí. Vybraná část je v adrese za #, např. skola.html#testy,
+         takže odkaz vede rovnou na ni. Přepínání řídí js/skola.js. -->
+    <div class="prepinac" role="tablist" aria-label="Části školy">
+      <button type="button" role="tab" data-cast="rozvrh">Rozvrh</button>
+      <button type="button" role="tab" data-cast="testy">Testy</button>
+      <button type="button" role="tab" data-cast="predmety">Předměty</button>
+    </div>
+
+    <section class="cast" id="cast-rozvrh" role="tabpanel">
+      <!-- Sem vykreslí js/rozvrh.js týdenní rozvrh -->
+      <div id="rozvrh" class="rozvrh-mrizka">
+        <p class="nacitani">Rozvrh se načítá…</p>
+      </div>
+    </section>
+
+    <section class="cast" id="cast-testy" role="tabpanel" hidden>
+      <!-- Sem vloží js/testy.js nadcházející testy -->
+      <ul class="seznam" id="testy">
+        <li class="nacitani">Testy se načítají…</li>
+      </ul>
+    </section>
+
+    <section class="cast" id="cast-predmety" role="tabpanel" hidden>
+      <!-- Dlaždice předmětů vloží js/skola.js; materiály jsou v detailu předmětu -->
+      <div class="mrizka" id="predmety">
+        <p class="nacitani">Předměty se načítají…</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="paticka">Data: Edookit · <button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
+
+  <script src="js/zalozky.js?v=2"></script>
+  <script src="js/spolecne.js?v=2"></script>
+  <script src="js/moduly/skola.js?v=2"></script>
+  <script src="js/rozvrh.js?v=2"></script>
+  <script src="js/testy.js?v=2"></script>
+  <script src="js/skola.js?v=2"></script>
+</body>
+</html>

@@ -2,9 +2,56 @@
 // Tenhle soubor se musí na stránce načíst jako první (před moduly).
 
 // Seznam modulů dashboardu. Každý soubor v js/moduly/ sem přidá jeden záznam:
-// { id, nazev, odkaz, sirka, maxStariHodin, vykresli(obsah) }
-// Úvodní stránka pak projde seznam a každému modulu vytvoří kartu.
+// { id, zalozka, maxStariHodin, dnes: [{ nazev, poradi, vysoka, vykresli(obsah, nadpis) }] }
+// Přehled (index.html) pak posbírá dlaždice „dnes“ ze všech modulů.
 const MODULY = [];
+
+// --- Navigace a ikony ---
+
+// SVG ikona podle názvu z IKONY (js/zalozky.js)
+function vytvorIkonu(nazev) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("class", "ikona");
+  svg.setAttribute("aria-hidden", "true"); // čtečky obrazovky přečtou text vedle ikony
+  const cesta = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  cesta.setAttribute("d", IKONY[nazev]);
+  svg.append(cesta);
+  return svg;
+}
+
+// Vykreslí navigaci ze seznamu ZALOZKY do <nav id="navigace">.
+// Která záložka je aktivní, říká <body data-zalozka="…">.
+function vykresliNavigaci() {
+  const nav = document.getElementById("navigace");
+  if (!nav) return;
+  const aktivni = document.body.dataset.zalozka;
+  for (const zalozka of ZALOZKY) {
+    const odkaz = vytvor("a", "zalozka");
+    odkaz.href = zalozka.odkaz;
+    odkaz.append(vytvorIkonu(zalozka.ikona), vytvor("span", "", zalozka.nazev));
+    if (zalozka.id === aktivni) {
+      odkaz.setAttribute("aria-current", "page");
+    }
+    nav.append(odkaz);
+  }
+}
+
+// Text „aktualizováno před 3 h“ podle data/<id>/stav.json.
+// Když jsou data starší než maxHodin, stahování se nejspíš zaseklo – dáme to najevo.
+async function zobrazStav(prvek, id, maxHodin) {
+  try {
+    const { aktualizovano } = await nactiJson(`data/${id}/stav.json`);
+    prvek.textContent = "aktualizováno " + textPredKolika(aktualizovano);
+    if ((Date.now() - new Date(aktualizovano)) / 3600000 > maxHodin) {
+      prvek.classList.add("zastarale");
+      prvek.textContent += " – zastaralé";
+      prvek.title = "Data se dlouho neaktualizovala. Zkontroluj stahovací skript.";
+    }
+  } catch {
+    prvek.textContent = "";
+  }
+}
 
 // Načte jeden JSON soubor a vrátí jeho obsah jako JavaScriptový objekt.
 // "async" znamená, že funkce chvíli čeká (na odpověď serveru);
@@ -151,7 +198,9 @@ function zeptejSeNaHeslo() {
     const okno = vytvor("dialog", "zamek");
     const formular = vytvor("form", "");
     formular.method = "dialog";
-    formular.append(vytvor("h2", "", "🔒 Odemknout dashboard"));
+    const nadpis = vytvor("h2", "zamek-nadpis");
+    nadpis.append(vytvorIkonu("zamek"), "Odemknout dashboard");
+    formular.append(nadpis);
     formular.append(vytvor("p", "slaby", "Osobní data jsou zašifrovaná. Zadej heslo."));
 
     const pole = vytvor("input", "");
@@ -210,20 +259,27 @@ async function nactiTajnyJson(cesta) {
   }
 }
 
-// Na mobilu se navigace posouvá do strany – posuneme ji tak,
-// aby odkaz na aktuální stránku byl vidět (block: "nearest" = stránka neposkočí dolů)
+// Po načtení stránky: navigace, stav „aktualizováno“ v hlavičce a tlačítko Zamknout
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelector(".navigace [aria-current]")?.scrollIntoView({ inline: "center", block: "nearest" });
-});
+  vykresliNavigaci();
 
-// Tlačítko „Zamknout“ v patičce: smaže klíč z prohlížeče
-document.addEventListener("DOMContentLoaded", () => {
+  // <p data-stav="skola" data-max-hodin="48"> → „aktualizováno před 3 h“
+  for (const prvek of document.querySelectorAll("[data-stav]")) {
+    zobrazStav(prvek, prvek.dataset.stav, Number(prvek.dataset.maxHodin));
+  }
+
+  // Odkaz „zpět“ (např. z detailu předmětu do Školy) dostane šipku
+  document.getElementById("zpet")?.prepend(vytvorIkonu("zpet"));
+
+  // Tlačítko „Zamknout“ v patičce: smaže klíč z prohlížeče
   const zamknout = document.getElementById("zamknout");
-  if (!zamknout) return;
-  zamknout.addEventListener("click", () => {
-    zapomenKlic();
-    location.reload();
-  });
+  if (zamknout) {
+    zamknout.prepend(vytvorIkonu("zamek"));
+    zamknout.addEventListener("click", () => {
+      zapomenKlic();
+      location.reload();
+    });
+  }
 });
 
 // Povolíme jen běžné webové adresy (http, https) a soubory z našeho webu.
@@ -243,6 +299,6 @@ function bezpecnaAdresa(adresa) {
 // Když se něco pokazí, vypíše chybu přímo na stránku,
 // abys hned viděl, co je špatně (a ne jen prázdnou stránku).
 function ukazChybu(kontejner, chyba) {
-  kontejner.replaceChildren(vytvor("p", "chyba", "⚠️ " + chyba.message));
+  kontejner.replaceChildren(vytvor("p", "chyba", "Chyba: " + chyba.message));
   console.error(chyba);
 }

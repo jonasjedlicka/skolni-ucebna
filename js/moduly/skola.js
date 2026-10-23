@@ -130,8 +130,6 @@ function vytvorDlazdici(predmet) {
 
 // --- Dashboard: dlaždice „Dnes“ a karta modulu ---
 
-// Kolik nejbližších testů ukázat na kartě
-const POCET_TESTU_NA_KARTE = 3;
 
 // "08:45" → 525 (minut od půlnoci). Čísla se porovnávají snáz než text.
 function naMinuty(cas) {
@@ -153,7 +151,7 @@ async function vykresliDnesniRozvrh(obsah, nadpis) {
   // [...pole] udělá kopii, aby .sort nezměnil původní data
   const hodiny = [...(rozvrh.dny[den.klic] || [])].sort((a, b) => a.hodina - b.hodina);
   if (hodiny.length === 0) {
-    seznam.append(vytvor("li", "slaby", "Žádné hodiny 🎉"));
+    seznam.append(vytvor("li", "slaby", "Dnes žádné hodiny"));
   }
 
   const ted = new Date();
@@ -173,10 +171,6 @@ async function vykresliDnesniRozvrh(obsah, nadpis) {
     seznam.append(polozka);
   }
   obsah.append(seznam);
-
-  const odkaz = vytvor("a", "odkaz-vice", "Celý rozvrh →");
-  odkaz.href = "rozvrh.html";
-  obsah.append(odkaz);
 }
 
 // Dlaždice „Nejbližší test“ v sekci Dnes: velký odpočet a pod ním podrobnosti
@@ -188,7 +182,7 @@ async function vykresliNejblizsiTest(obsah) {
   ]);
   const [test] = nadchazejiciTesty(testy); // jen první = nejbližší
   if (!test) {
-    obsah.append(vytvor("p", "slaby", "Žádné nadcházející testy 🎉"));
+    obsah.append(vytvor("p", "slaby", "Žádné nadcházející testy"));
     return;
   }
 
@@ -201,53 +195,15 @@ async function vykresliNejblizsiTest(obsah) {
   seznam.append(vytvorTest(test, predmety[test.predmet], rozvrh.casy));
   seznam.style.marginTop = "10px";
   obsah.append(seznam);
-
-  const odkaz = vytvor("a", "odkaz-vice", "Všechny testy →");
-  odkaz.href = "testy.html";
-  obsah.append(odkaz);
 }
 
-// Karta Škola: nejbližší testy a předměty (dnešní rozvrh je nahoře v sekci Dnes)
-async function vykresliSkolu(obsah) {
-  const [rozvrh, predmety, testy] = await Promise.all([
-    nactiSkolniData("rozvrh"),
-    nactiPredmety(),
-    nactiSkolniData("testy"),
-  ]);
-
-  obsah.append(vytvor("h3", "", "Nejbližší testy"));
-  const seznam = vytvor("ul", "seznam");
-  // slice(0, 3) vezme jen první tři
-  const nejblizsi = nadchazejiciTesty(testy).slice(0, POCET_TESTU_NA_KARTE);
-  if (nejblizsi.length === 0) {
-    seznam.append(vytvor("li", "slaby", "Žádné nadcházející testy 🎉"));
-  }
-  for (const test of nejblizsi) {
-    seznam.append(vytvorTest(test, predmety[test.predmet], rozvrh.casy));
-  }
-  obsah.append(seznam);
-
-  // Předměty jsou schované pod rozbalovacím nadpisem, ať karta není moc dlouhá.
-  // <details> a <summary> umí rozbalování samy, bez JavaScriptu.
-  const vsechny = Object.values(predmety);
-  const rozbal = vytvor("details", "predmety-rozbal");
-  rozbal.style.marginTop = "14px";
-  rozbal.append(vytvor("summary", "", `Předměty (${vsechny.length})`));
-  const mrizka = vytvor("div", "mrizka");
-  mrizka.append(...vsechny.map(vytvorDlazdici));
-  rozbal.append(mrizka);
-  obsah.append(rozbal);
-}
-
-// Přihlásíme modul na dashboard: jednu kartu a dvě dlaždice do sekce „Dnes“
+// Přihlásíme modul: dvě dlaždice na Přehled, každá vede do své části záložky Škola
 MODULY.push({
   id: "skola",
-  nazev: "📚 Škola",
-  odkaz: "testy.html",
+  zalozka: "skola",
   maxStariHodin: 48, // starší data = skript se 2 dny nespustil, něco je špatně
-  vykresli: vykresliSkolu,
   dnes: [
-    { nazev: "Rozvrh na dnes", poradi: 1, vysoka: true, vykresli: vykresliDnesniRozvrh },
-    { nazev: "Nejbližší test", poradi: 2, vykresli: vykresliNejblizsiTest },
+    { nazev: "Rozvrh na dnes", odkaz: "skola.html#rozvrh", poradi: 1, vysoka: true, vykresli: vykresliDnesniRozvrh },
+    { nazev: "Nejbližší test", odkaz: "skola.html#testy", poradi: 2, vykresli: vykresliNejblizsiTest },
   ],
 });

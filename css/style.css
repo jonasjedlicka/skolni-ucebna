@@ -1,118 +1,73 @@
 /* =========================================================
-   Vzhled celé Učebny – styl „skla“ (inspirovaný Liquid Glass).
-   Píšeme "mobile first": základní styly jsou pro úzký mobil
-   a až dole přidáváme úpravy pro širší obrazovky.
+   Vzhled dashboardu – černobílé tmavé sklo (inspirované Liquid Glass).
+   Žádné barvy: jen černá, bílá a odstíny šedi. Co dřív rozlišovala
+   barva (růst/pokles, „brzy“, chyby), teď rozlišuje tvar a kontrast:
+   šipky ▲ ▼, obrácený (bílý) štítek, rámeček.
 
-   Jak funguje sklo: karta má poloprůhledné pozadí a vlastnost
-   backdrop-filter rozmaže to, co je ZA ní (barevné pozadí stránky).
-   Rozmazání je pro telefon náročné, proto ho dostávají jen velké
-   plochy (třída .sklo, hlavička). Řádky uvnitř karet jsou jen
-   průsvitné, bez rozmazání.
+   Píšeme "mobile first": základ je pro mobil, úpravy pro širší
+   obrazovky jsou až dole.
+
+   Sklo: poloprůhledná plocha + backdrop-filter rozmaže to, co je ZA ní.
+   Rozmazání je pro telefon náročné, proto ho mají jen velké plochy
+   (třída .sklo, lišta se záložkami). Řádky uvnitř jsou jen průsvitné.
    ========================================================= */
 
-/* --- Proměnné (barvy, rozestupy) ---
-   Hodnotu napíšeme jednou sem a jinde ji používáme přes var(--nazev). */
+/* --- Proměnné --- */
 :root {
-  /* Barevné pozadí stránky (tmavší a sytější, aby na něm byl čitelný bílý nadpis) */
-  --pozadi-zaklad: #1d2f8f;
-  --pozadi-1: #3b5bff;
-  --pozadi-2: #8b3dff;
-  --pozadi-3: #ff4d8d;
-  --pozadi-4: #00b8b0;
+  color-scheme: dark; /* dashboard je vždy tmavý (i formuláře a posuvníky) */
 
-  /* Sklo: dost neprůhledné, aby text na něm měl dobrý kontrast */
-  --sklo: rgba(255, 255, 255, 0.66);
-  --sklo-hlavicka: rgba(255, 255, 255, 0.58);
-  --sklo-okraj: rgba(255, 255, 255, 0.7);
-  --sklo-odlesk: rgba(255, 255, 255, 0.9);
-  --sklo-stin: 0 10px 30px rgba(20, 20, 60, 0.18);
-  --sklo-rozmazani: blur(20px) saturate(170%);
+  --pozadi: #0b0b0c;
 
-  /* Řádky uvnitř karet – jen průsvitné, bez rozmazání (kvůli výkonu) */
-  --polozka: rgba(255, 255, 255, 0.55);
-  --polozka-okraj: rgba(255, 255, 255, 0.75);
+  /* Sklo */
+  --sklo: rgba(255, 255, 255, 0.075);
+  --sklo-lista: rgba(30, 30, 32, 0.62); /* lišta se záložkami – musí být čitelná nad obsahem */
+  --sklo-okraj: rgba(255, 255, 255, 0.13);
+  --sklo-odlesk: rgba(255, 255, 255, 0.24);
+  --sklo-stin: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --sklo-rozmazani: blur(24px) saturate(140%);
 
-  --text: #12141c;
-  --text-slaby: #464d5c;
-  --text-na-pozadi: #ffffff; /* nadpisy přímo na barevném pozadí */
-  --hlavni: #2150e0;
-  --hlavni-text: #ffffff;
-  --varovani: #c2161b;
-  --zisk: #0f7a37;
+  /* Řádky uvnitř karet – bez rozmazání (kvůli výkonu) */
+  --polozka: rgba(255, 255, 255, 0.05);
+  --polozka-okraj: rgba(255, 255, 255, 0.08);
 
-  --zaobleni: 24px; /* karty */
-  --zaobleni-male: 14px; /* řádky uvnitř karet */
+  /* Text: kontrast šedé #a1a1a6 na tmavém skle je přes 7 : 1 */
+  --text: #f5f5f7;
+  --text-slaby: #a1a1a6;
+  --akcent: #ffffff; /* aktivní záložka, „teď“, „brzy“ – bílá na tmavém */
+  --akcent-text: #0b0b0c;
+
+  --zaobleni: 26px;
+  --zaobleni-male: 16px;
   --mezera: 16px;
   --max-sirka: 1080px;
-  --prechod: 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --vyska-listy: 64px; /* lišta se záložkami dole na mobilu */
+  --prechod: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Tmavý režim: když má telefon nebo počítač zapnutý tmavý vzhled */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --pozadi-zaklad: #070b24;
-    --pozadi-1: #1a2fa8;
-    --pozadi-2: #4a1a9e;
-    --pozadi-3: #8a1650;
-    --pozadi-4: #035c63;
-
-    --sklo: rgba(22, 24, 36, 0.58);
-    --sklo-hlavicka: rgba(18, 20, 32, 0.55);
-    --sklo-okraj: rgba(255, 255, 255, 0.16);
-    --sklo-odlesk: rgba(255, 255, 255, 0.28);
-    --sklo-stin: 0 10px 30px rgba(0, 0, 0, 0.35);
-
-    --polozka: rgba(255, 255, 255, 0.07);
-    --polozka-okraj: rgba(255, 255, 255, 0.1);
-
-    --text: #eef0f7;
-    --text-slaby: #b0b7c8;
-    --hlavni: #8bb0ff;
-    --hlavni-text: #0b1220;
-    --varovani: #ff8a8a;
-    --zisk: #63e696;
-  }
-}
-
-/* Prohlížeč bez backdrop-filter (starší): sklo uděláme skoro plné,
-   jinak by text na průhledné kartě nebyl čitelný */
+/* Prohlížeč bez backdrop-filter: plné tmavé plochy, aby byl text čitelný */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   :root {
-    --sklo: rgba(255, 255, 255, 0.92);
-    --sklo-hlavicka: rgba(255, 255, 255, 0.92);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --sklo: rgba(22, 24, 36, 0.94);
-      --sklo-hlavicka: rgba(18, 20, 32, 0.94);
-    }
+    --sklo: #1c1c1e;
+    --sklo-lista: #1c1c1e;
   }
 }
 
-/* Nastavení systému „Omezit průhlednost“: plné karty bez rozmazání */
+/* Nastavení systému „Omezit průhlednost“: plné plochy bez rozmazání */
 @media (prefers-reduced-transparency: reduce) {
   :root {
-    --sklo: rgb(244, 245, 250);
-    --sklo-hlavicka: rgb(244, 245, 250);
-    --polozka: rgb(255, 255, 255);
+    --sklo: #1c1c1e;
+    --sklo-lista: #1c1c1e;
+    --polozka: #2c2c2e;
     --sklo-rozmazani: none;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --sklo: rgb(26, 28, 40);
-      --sklo-hlavicka: rgb(26, 28, 40);
-      --polozka: rgb(36, 38, 52);
-    }
   }
 }
 
 /* --- Základ --- */
 
-/* box-sizing: border-box = šířka prvku zahrnuje i padding a rámeček */
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+  box-sizing: border-box; /* šířka zahrnuje i padding a rámeček */
 }
 
 body {
@@ -123,27 +78,32 @@ body {
   font-size: 16px;
   line-height: 1.5;
   color: var(--text);
-  background: var(--pozadi-zaklad);
+  background: var(--pozadi);
   -webkit-font-smoothing: antialiased;
+  /* Na mobilu je dole lišta se záložkami – obsah pod ní nesmí zmizet.
+     env(safe-area-inset-bottom) = místo pro „bradu“ iPhonu */
+  padding-bottom: calc(var(--vyska-listy) + 24px + env(safe-area-inset-bottom));
 }
 
-/* Barevné pozadí jako samostatná pevná vrstva za stránkou.
-   (background-attachment: fixed by na iPhonu trhalo posouvání.) */
+/* Pozadí: tmavý šedý přechod a pár měkkých světlých skvrn, aby sklo mělo
+   co rozmazávat. Je to pevná vrstva za stránkou – background-attachment: fixed
+   by na iPhonu trhalo posouvání. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(60% 50% at 10% 10%, var(--pozadi-1) 0%, transparent 70%),
-    radial-gradient(55% 45% at 90% 15%, var(--pozadi-3) 0%, transparent 70%),
-    radial-gradient(60% 55% at 80% 90%, var(--pozadi-4) 0%, transparent 70%),
-    radial-gradient(70% 60% at 15% 85%, var(--pozadi-2) 0%, transparent 70%),
-    var(--pozadi-zaklad);
+    radial-gradient(45% 35% at 15% 8%, rgba(255, 255, 255, 0.16) 0%, transparent 70%),
+    radial-gradient(40% 30% at 92% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 70%),
+    radial-gradient(50% 40% at 30% 85%, rgba(255, 255, 255, 0.09) 0%, transparent 70%),
+    linear-gradient(160deg, #26262a 0%, #111113 45%, #050506 100%);
 }
 
 a {
-  color: var(--hlavni);
+  color: var(--text);
+  text-decoration-color: rgba(255, 255, 255, 0.35);
+  text-underline-offset: 3px;
 }
 
 h1,
@@ -151,29 +111,43 @@ h2,
 h3 {
   line-height: 1.2;
   margin: 0 0 12px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
-/* Nadpisy, které leží přímo na barevném pozadí (ne na kartě), jsou bílé */
-main > h1,
-main > h2,
-.sekce-nadpis-pozadi,
-#akcie > h2,
-.den-nazev {
-  color: var(--text-na-pozadi);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+.slaby {
+  color: var(--text-slaby);
 }
 
-main > h1 {
-  font-size: 2rem;
+.nacitani {
+  color: var(--text-slaby);
 }
 
-/* --- Sklo: společný vzhled všech skleněných ploch --- */
+/* Chyba: bez červené – výrazný rámeček a tučné písmo */
+.chyba {
+  font-weight: 600;
+  border-left: 3px solid var(--akcent);
+  padding-left: 10px;
+}
+
+/* Ikony (SVG z js/zalozky.js) kreslí čára v barvě textu */
+.ikona {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- Sklo: společný vzhled skleněných ploch --- */
 
 .sklo,
 .karta,
 .den,
-.zamek {
+.zamek,
+#akcie > .akcie-souhrn {
   position: relative;
   background: var(--sklo);
   -webkit-backdrop-filter: var(--sklo-rozmazani);
@@ -185,76 +159,84 @@ main > h1 {
 
 /* Odlesk: jemný světlý přechod přes horní část skla */
 .sklo::before,
-.karta::before {
+.karta::before,
+.den::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 38%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 40%);
   pointer-events: none; /* odlesk nesmí zachytávat kliknutí */
 }
 
-/* --- Hlavička a navigace --- */
-
-.hlavicka {
-  position: sticky; /* zůstane nahoře, i když stránku posouváš */
-  top: 0;
-  z-index: 10;
-  background: var(--sklo-hlavicka);
-  -webkit-backdrop-filter: var(--sklo-rozmazani);
-  backdrop-filter: var(--sklo-rozmazani);
-  border-bottom: 1px solid var(--sklo-okraj);
-}
+/* --- Hlavička a záložky --- */
 
 .hlavicka-obsah {
   max-width: var(--max-sirka);
   margin: 0 auto;
-  padding: 10px var(--mezera);
+  padding: 14px var(--mezera) 0;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .logo {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
   color: var(--text);
   text-decoration: none;
-  white-space: nowrap;
 }
 
-/* Na mobilu se navigace nezalamuje, ale posouvá do strany */
+/* Mobil: lišta se záložkami plave dole (na dosah palce) */
 .navigace {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 20;
+  height: var(--vyska-listy);
   display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none; /* schová posuvník (Firefox) */
-  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
-  mask-image: linear-gradient(90deg, #000 85%, transparent);
-}
-
-.navigace::-webkit-scrollbar {
-  display: none; /* schová posuvník (Safari, Chrome) */
-}
-
-.navigace a {
-  padding: 6px 13px;
+  justify-content: space-around;
+  align-items: center;
+  padding: 6px;
+  background: var(--sklo-lista);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  backdrop-filter: blur(30px) saturate(140%);
+  border: 1px solid var(--sklo-okraj);
   border-radius: 999px;
-  color: var(--text);
+  box-shadow: var(--sklo-stin), inset 0 1px 0 var(--sklo-odlesk);
+  /* Při přechodu mezi stránkami zůstane lišta na místě (neanimuje se s obsahem) */
+  view-transition-name: lista-zalozek;
+}
+
+.zalozka {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 999px;
+  color: var(--text-slaby);
   text-decoration: none;
-  font-size: 0.93rem;
-  white-space: nowrap;
-  transition: background var(--prechod);
+  font-size: 0.68rem;
+  font-weight: 500;
+  transition: color var(--prechod), background var(--prechod);
 }
 
-.navigace a:hover {
-  background: var(--polozka);
+.zalozka:hover {
+  color: var(--text);
 }
 
-/* Odkaz na stránku, na které právě jsi (má v HTML aria-current="page") */
-.navigace a[aria-current="page"] {
-  background: var(--hlavni);
-  color: var(--hlavni-text);
+/* Aktivní záložka: světlá „bublina“. Díky view-transition-name
+   bublina při přepnutí záložky plynule přejede na novou. */
+.zalozka[aria-current="page"] {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  view-transition-name: aktivni-zalozka;
 }
 
 /* --- Obsah stránky --- */
@@ -262,48 +244,166 @@ main > h1 {
 main {
   max-width: var(--max-sirka);
   margin: 0 auto;
-  padding: 20px var(--mezera);
+  padding: 16px var(--mezera);
+}
+
+.hlavicka-stranky {
+  margin: 8px 0 20px;
+}
+
+.hlavicka-stranky h1 {
+  font-size: 2.3rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.podnadpis {
+  margin: 2px 0 0;
+  color: var(--text-slaby);
+  font-size: 0.95rem;
+}
+
+/* Stav „aktualizováno … – zastaralé“: bez barvy, ale výrazně */
+.zastarale {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 4px;
 }
 
 .sekce {
-  margin-bottom: 20px;
-}
-
-.sekce-nadpis {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.sekce-nadpis a {
-  font-size: 0.9rem;
+  margin-bottom: 22px;
 }
 
 .karta {
   padding: 18px;
 }
 
-.slaby {
+.zpet {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 8px;
   color: var(--text-slaby);
+  text-decoration: none;
 }
 
-/* Text, který se ukáže, než JavaScript načte data */
-.nacitani {
-  color: var(--text-slaby);
-  font-style: italic;
+.zpet .ikona {
+  width: 18px;
+  height: 18px;
 }
 
-/* „Načítá se…“ přímo na barevném pozadí musí být světlé */
-main > .nacitani,
-main > div > .nacitani,
-.dashboard > .nacitani {
-  color: var(--text-na-pozadi);
+/* --- Přehled: dlaždice ze všech oblastí --- */
+
+.prehled-mrizka {
+  display: grid;
+  gap: 14px;
 }
 
-.chyba {
-  color: var(--varovani);
+.dlazdice-prehledu {
+  padding: 18px;
+  transition: transform var(--prechod), box-shadow var(--prechod);
+}
+
+.dlazdice-prehledu:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 var(--sklo-odlesk);
+}
+
+.dlazdice-hlavicka {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.dlazdice-hlavicka h2 {
+  margin: 0;
+  font-size: 0.95rem;
   font-weight: 600;
+  color: var(--text-slaby);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stav {
+  font-size: 0.78rem;
+  color: var(--text-slaby);
+}
+
+/* „Roztažený odkaz“: neviditelná vrstva přes celou dlaždici, takže kliknout
+   jde kamkoli. Odkazy uvnitř (zprávy, předměty) leží nad ní. */
+.cela-dlazdice {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cela-dlazdice::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.dlazdice-obsah a,
+.dlazdice-obsah button {
+  position: relative;
+  z-index: 2;
+}
+
+/* Nejbližší test: velký odpočet */
+.odpocet {
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+/* „Brzy“ (3 dny a méně): obrácené barvy místo červené */
+.odpocet.brzy {
+  display: inline-block;
+  background: var(--akcent);
+  color: var(--akcent-text);
+  padding: 2px 14px 4px;
+  border-radius: 14px;
+}
+
+/* --- Přepínač částí (Škola: Rozvrh | Testy | Předměty) --- */
+
+.prepinac {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  margin-bottom: 18px;
+  max-width: 100%;
+  background: var(--sklo);
+  -webkit-backdrop-filter: var(--sklo-rozmazani);
+  backdrop-filter: var(--sklo-rozmazani);
+  border: 1px solid var(--sklo-okraj);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 var(--sklo-odlesk);
+}
+
+.prepinac button {
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: 7px 18px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-slaby);
+  cursor: pointer;
+  transition: color var(--prechod), background var(--prechod);
+}
+
+.prepinac button[aria-selected="true"] {
+  background: var(--akcent);
+  color: var(--akcent-text);
 }
 
 /* --- Seznam a jeho řádky (hodiny, testy, zprávy, akcie…) --- */
@@ -322,12 +422,19 @@ main > div > .nacitani,
   gap: 12px;
   background: var(--polozka);
   border: 1px solid var(--polozka-okraj);
-  /* Barevný proužek vlevo. Barvu předmětu nastaví JavaScript
-     přes proměnnou --barva-predmetu. */
-  border-left: 5px solid var(--barva-predmetu, var(--polozka-okraj));
   border-radius: var(--zaobleni-male);
-  padding: 10px 12px;
-  transition: transform var(--prechod), background var(--prechod);
+  padding: 11px 14px;
+}
+
+/* Řádky přímo na pozadí stránky (ne uvnitř karty) dostanou sklo */
+main > .seznam .polozka,
+.cast > .seznam .polozka,
+#akcie .seznam .polozka,
+#kalendar .seznam .polozka,
+#predmet > .sekce:not(.karta) .seznam .polozka {
+  background: var(--sklo);
+  border-color: var(--sklo-okraj);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .polozka-cas {
@@ -348,12 +455,10 @@ main > div > .nacitani,
 
 .polozka-detail {
   color: var(--text-slaby);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
-/* Název předmětu jako odkaz: vypadá jako text, podtrhne se až při najetí */
 a.polozka-nazev {
-  color: var(--text);
   text-decoration: none;
 }
 
@@ -361,263 +466,91 @@ a.polozka-nazev:hover {
   text-decoration: underline;
 }
 
-/* Volná hodina: jen čárkovaný rámeček, ať nepřitahuje pozornost */
+/* Volná hodina: jen čárkovaný rámeček */
 .polozka.volno {
-  background: transparent;
+  background: transparent !important;
+  box-shadow: none !important;
   border-style: dashed;
-  border-left-width: 1px;
 }
 
-/* Hodina, která už skončila, a hodina, která právě běží */
+/* Hodina, která už skončila, je ztlumená; ta, která běží, má bílý rámeček */
 .polozka.probehla {
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
 .polozka.ted {
-  box-shadow: 0 0 0 2px var(--hlavni);
+  box-shadow: 0 0 0 2px var(--akcent);
 }
 
-/* Štítek, např. „za 3 dny“ u testu */
+/* Štítek, např. „za 3 dny“ */
 .stitek {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 2px 9px;
+  padding: 2px 10px;
   border-radius: 999px;
-  background: var(--polozka);
-  border: 1px solid var(--polozka-okraj);
+  background: rgba(255, 255, 255, 0.1);
   white-space: nowrap;
 }
 
+/* „Brzy“ a „teď“: obrácené barvy místo červené */
 .stitek.brzy {
-  color: var(--varovani);
+  background: var(--akcent);
+  color: var(--akcent-text);
 }
 
-/* --- Mřížka předmětů (dlaždice) --- */
+/* --- Mřížka předmětů --- */
 
 .mrizka {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 
 .dlazdice {
   display: block;
-  background: var(--polozka);
-  border: 1px solid var(--polozka-okraj);
-  border-top: 4px solid var(--barva-predmetu, var(--hlavni));
+  background: var(--sklo);
+  -webkit-backdrop-filter: var(--sklo-rozmazani);
+  backdrop-filter: var(--sklo-rozmazani);
+  border: 1px solid var(--sklo-okraj);
   border-radius: var(--zaobleni-male);
-  padding: 10px 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: 12px 14px;
   color: var(--text);
   text-decoration: none;
-  transition: transform var(--prechod);
+  transition: transform var(--prechod), background var(--prechod);
 }
 
 .dlazdice:hover {
   transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .dlazdice-zkratka {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-slaby);
-}
-
-/* =========================================================
-   DASHBOARD: sekce „Dnes“ nahoře a karty modulů pod ní
-   ========================================================= */
-
-.dnes-hlavicka {
-  color: var(--text-na-pozadi);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
-  margin: 4px 0 16px;
-}
-
-.dnes-hlavicka h1 {
-  font-size: 2.2rem;
-  margin: 0;
-}
-
-.dnes-datum {
-  font-size: 1.05rem;
-  opacity: 0.9;
-}
-
-/* Dlaždice sekce Dnes */
-.dnes-mrizka {
-  display: grid;
-  gap: var(--mezera);
-  margin-bottom: 32px;
-}
-
-.dnes-dlazdice {
-  padding: 18px;
-}
-
-.dnes-dlazdice h2 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-slaby);
-  margin-bottom: 10px;
-}
-
-/* Nejbližší test: velký odpočet */
-.odpocet {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.odpocet.brzy {
-  color: var(--varovani);
-}
-
-.nadpis-sekce-modulu {
-  color: var(--text-na-pozadi);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
-  font-size: 1.3rem;
-}
-
-.dashboard {
-  display: grid;
-  gap: var(--mezera);
-}
-
-/* Karta modulu: celá je odkaz na detail (viz .modul-odkaz níž) */
-.modul {
-  padding: 18px;
-  transition: transform var(--prechod), box-shadow var(--prechod);
-}
-
-.modul:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(20, 20, 60, 0.25), inset 0 1px 0 var(--sklo-odlesk);
-}
-
-.modul-hlavicka {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px 12px;
-  margin-bottom: 12px;
-}
-
-.modul-hlavicka h2 {
-  margin: 0;
-  font-size: 1.25rem;
-}
-
-/* „Roztažený odkaz“: neviditelná vrstva přes celou kartu, takže kliknout
-   jde kamkoli. Odkazy uvnitř karty (zprávy, předměty) jsou nad ní. */
-.modul-odkaz {
-  color: var(--text);
-  text-decoration: none;
-}
-
-.modul-odkaz::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  z-index: 1;
-}
-
-.modul-obsah a,
-.modul-obsah button,
-.modul-obsah summary,
-.modul-obsah details {
-  position: relative;
-  z-index: 2;
-}
-
-.modul-stav {
-  font-size: 0.8rem;
-}
-
-/* Data se dlouho neaktualizovala */
-.modul-stav.zastarale {
-  color: var(--varovani);
-  font-weight: 600;
-}
-
-.modul h3 {
-  font-size: 1rem;
-  margin: 0 0 8px;
-}
-
-.modul .sekce {
-  margin-bottom: 16px;
-}
-
-.predmety-rozbal summary {
-  cursor: pointer;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.odkaz-vice {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 0.9rem;
-}
-
-/* --- Animace: karty se při načtení postupně vynoří ---
-   Pořadí (--poradi) nastaví JavaScript, každá karta přijde o kousek později. */
-@keyframes vynoreni {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.vynorit {
-  animation: vynoreni 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: calc(var(--poradi, 0) * 60ms);
-}
-
-/* Nastavení systému „Omezit pohyb“: žádné animace ani posuny */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-  .modul:hover,
-  .dlazdice:hover {
-    transform: none;
-  }
 }
 
 /* --- Rozvrh --- */
 
 .den {
   padding: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .den-nazev {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1.1rem;
-  /* Název dne je na skle, ne na pozadí – zrušíme bílou barvu */
-  color: var(--text);
-  text-shadow: none;
+  font-size: 1.05rem;
 }
 
 .den.dnes {
-  box-shadow: var(--sklo-stin), 0 0 0 2px var(--hlavni), inset 0 1px 0 var(--sklo-odlesk);
+  box-shadow: var(--sklo-stin), 0 0 0 1.5px rgba(255, 255, 255, 0.7), inset 0 1px 0 var(--sklo-odlesk);
 }
 
 .den.dnes .stitek {
-  background: var(--hlavni);
-  border-color: var(--hlavni);
-  color: var(--hlavni-text);
+  background: var(--akcent);
+  color: var(--akcent-text);
 }
 
 /* --- Zprávy --- */
@@ -625,19 +558,20 @@ a.polozka-nazev:hover {
 .zprava-perex {
   font-size: 0.92rem;
   margin: 2px 0 4px;
+  color: rgba(245, 245, 247, 0.85);
 }
 
 .filtry {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .filtr {
   font: inherit;
   font-size: 0.9rem;
-  padding: 7px 15px;
+  padding: 7px 16px;
   border-radius: 999px;
   border: 1px solid var(--sklo-okraj);
   background: var(--sklo);
@@ -648,77 +582,64 @@ a.polozka-nazev:hover {
   transition: background var(--prechod), transform var(--prechod);
 }
 
-.filtr:active {
+.filtr:active,
+.prepinac button:active {
   transform: scale(0.96);
 }
 
 .filtr.vybrany {
-  background: var(--hlavni);
-  border-color: var(--hlavni);
-  color: var(--hlavni-text);
+  background: var(--akcent);
+  border-color: var(--akcent);
+  color: var(--akcent-text);
 }
 
-/* Na stránkách se seznamem přímo na pozadí (Testy, Zprávy, Akcie…)
-   dostanou řádky víc skla, aby byly čitelné */
-main > .seznam .polozka,
-#akcie .seznam .polozka,
-#kalendar .seznam .polozka,
-#predmet .seznam .polozka {
-  background: var(--sklo);
-  border-color: var(--sklo-okraj);
-  border-left-color: var(--barva-predmetu, var(--sklo-okraj));
+.odkaz-vice {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.9rem;
 }
 
-/* Nadpisy dní na stránce Kalendář a sekce na stránce předmětu leží na pozadí */
-#kalendar h3,
-#predmet > .sekce:not(.karta) > h2 {
-  color: var(--text-na-pozadi);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+/* Nadpisy dní na stránce Kalendář */
+#kalendar h3 {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
 }
 
-/* --- Akcie --- */
+/* --- Finance (akcie) --- */
 
-.zisk {
-  color: var(--zisk);
-}
-
-.ztrata {
-  color: var(--varovani);
-}
-
-/* „−1,08 %“ se nesmí rozdělit na dva řádky */
+/* Růst a pokles: barvu nahrazují šipky ▲ ▼ (přidává je JavaScript) */
 .zisk,
 .ztrata {
-  white-space: nowrap;
+  white-space: nowrap; /* „▼ −1,08 %“ se nesmí rozdělit na dva řádky */
+  font-weight: 600;
+}
+
+.ztrata {
+  color: var(--text-slaby);
 }
 
 .akcie-souhrn {
-  margin-bottom: 12px;
+  margin-bottom: 4px;
 }
 
-/* Souhrn na stránce Akcie leží na pozadí – dáme ho na sklo */
 #akcie > .akcie-souhrn {
-  background: var(--sklo);
-  -webkit-backdrop-filter: var(--sklo-rozmazani);
-  backdrop-filter: var(--sklo-rozmazani);
-  border: 1px solid var(--sklo-okraj);
-  border-radius: var(--zaobleni);
-  padding: 16px 18px;
+  padding: 18px;
+  margin-bottom: 18px;
 }
 
-#akcie > p.slaby {
-  color: var(--text-na-pozadi);
-  opacity: 0.85;
+#akcie > h2 {
+  font-size: 1.2rem;
+  margin-top: 6px;
 }
 
 .akcie-hodnota {
-  font-size: 1.9rem;
+  font-size: 2.2rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
-/* Malý graf vpravo u každé akcie */
+/* Malý graf vpravo u každé akcie: růst plná čára, pokles čárkovaná */
 .graf {
   width: 80px;
   height: 24px;
@@ -727,17 +648,15 @@ main > .seznam .polozka,
 
 .graf polyline {
   fill: none;
-  stroke-width: 2;
+  stroke: var(--text);
+  stroke-width: 1.8;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke; /* čára zůstane tenká i při roztažení */
 }
 
-.graf-zisk {
-  stroke: var(--zisk);
-}
-
 .graf-ztrata {
-  stroke: var(--varovani);
+  stroke: var(--text-slaby) !important;
+  stroke-dasharray: 4 3;
 }
 
 /* --- Zámek (zadání hesla k šifrovaným datům) --- */
@@ -745,36 +664,61 @@ main > .seznam .polozka,
 .zamek {
   width: min(360px, calc(100% - 32px));
   color: var(--text);
-  padding: 22px;
+  padding: 24px;
 }
 
-/* Ztmavení a rozmazání stránky za oknem */
 .zamek::backdrop {
-  background: rgba(5, 8, 30, 0.45);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.zamek-nadpis {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .zamek input[type="password"] {
   width: 100%;
   font: inherit;
-  padding: 11px 14px;
-  border: 1px solid var(--polozka-okraj);
+  padding: 12px 14px;
+  border: 1px solid var(--sklo-okraj);
   border-radius: var(--zaobleni-male);
-  background: var(--polozka);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text);
+}
+
+.zamek input[type="password"]:focus {
+  outline: 2px solid var(--akcent);
+  outline-offset: 1px;
 }
 
 .zamek-zapamatovat {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 10px 0;
+  margin: 12px 0;
   font-size: 0.9rem;
+  color: var(--text-slaby);
+}
+
+.zamek button {
+  font: inherit;
+  font-weight: 600;
+  padding: 9px 22px;
+  border: none;
+  border-radius: 999px;
+  background: var(--akcent);
+  color: var(--akcent-text);
+  cursor: pointer;
 }
 
 /* Tlačítko, které vypadá jako odkaz (Zamknout v patičce) */
 .odkaz-tlacitko {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font: inherit;
   color: inherit;
   text-decoration: underline;
@@ -784,26 +728,24 @@ main > .seznam .polozka,
   cursor: pointer;
 }
 
-/* --- Stránka předmětu --- */
+.odkaz-tlacitko .ikona {
+  width: 15px;
+  height: 15px;
+}
+
+/* --- Detail předmětu --- */
 
 .predmet-hlavicka {
-  border-left: 6px solid var(--barva-predmetu, var(--hlavni));
-  padding-left: 12px;
   margin-bottom: 20px;
-  color: var(--text-na-pozadi);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
 }
 
 .predmet-hlavicka h1 {
+  font-size: 2.1rem;
   margin: 0;
 }
 
-.predmet-hlavicka p,
-.predmet-hlavicka .dlazdice-zkratka,
-.predmet-hlavicka .slaby {
+.predmet-hlavicka p {
   margin: 4px 0 0;
-  color: var(--text-na-pozadi);
-  opacity: 0.85;
 }
 
 .tema {
@@ -811,14 +753,19 @@ main > .seznam .polozka,
   font-size: 1.1rem;
 }
 
-/* U materiálů je ikonka nahoře, i když je poznámka dlouhá */
 .polozka.material {
   align-items: flex-start;
 }
 
-.material-ikona {
-  font-size: 1.3rem;
-  line-height: 1.4;
+/* Typ materiálu (Poznámka / Odkaz / Soubor) jako malý štítek */
+.material-typ {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-slaby);
+  min-width: 4.6rem;
+  padding-top: 3px;
 }
 
 /* pre-line = zalomení řádků z JSON (\n) se na stránce zachová */
@@ -827,54 +774,136 @@ main > .seznam .polozka,
   margin-top: 4px;
 }
 
-/* --- Patička (leží na pozadí) --- */
+/* --- Patička --- */
 
 .paticka {
   max-width: var(--max-sirka);
   margin: 0 auto;
-  padding: 24px var(--mezera) 40px;
-  color: var(--text-na-pozadi);
-  opacity: 0.8;
-  font-size: 0.85rem;
+  padding: 20px var(--mezera);
+  color: var(--text-slaby);
+  font-size: 0.82rem;
 }
 
 /* =========================================================
-   Širší obrazovky (tablet, počítač).
-   Tohle platí jen tehdy, když je okno široké aspoň 700 px.
+   Animace
    ========================================================= */
-@media (min-width: 700px) {
+
+/* Dlaždice Přehledu se při načtení postupně vynoří.
+   Pořadí (--poradi) nastaví JavaScript. */
+@keyframes vynoreni {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.vynorit {
+  animation: vynoreni 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--poradi, 0) * 55ms);
+}
+
+/* Přepínání záložek: View Transitions API. Prohlížeč při přechodu na další
+   stránku webu udělá „snímek“ staré a nové stránky a plynule je prolne.
+   Lišta se záložkami má vlastní jméno, takže stojí a jen bublina přejede.
+   Kde to prohlížeč neumí (starší Firefox…), stránka se přepne hned. */
+@view-transition {
+  navigation: auto;
+}
+
+@keyframes odchod {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+}
+
+@keyframes prichod {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+}
+
+::view-transition-old(root) {
+  animation: odchod 0.18s ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: prichod 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+::view-transition-group(aktivni-zalozka) {
+  animation-duration: 0.35s;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Nastavení systému „Omezit pohyb“: žádné animace ani posuny */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after,
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+    transition: none !important;
+  }
+  .dlazdice-prehledu:hover,
+  .dlazdice:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   Širší obrazovky (tablet, počítač) – od 760 px
+   ========================================================= */
+@media (min-width: 760px) {
+  body {
+    padding-bottom: 0;
+  }
+
+  /* Záložky nahoře v hlavičce místo plovoucí lišty dole */
+  .navigace {
+    position: static;
+    height: auto;
+    margin-left: auto;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .zalozka {
+    flex: none;
+    flex-direction: row;
+    gap: 7px;
+    padding: 8px 16px;
+    font-size: 0.92rem;
+  }
+
+  .zalozka .ikona {
+    width: 18px;
+    height: 18px;
+  }
+
+  .hlavicka-obsah {
+    padding-top: 18px;
+  }
+
   .mrizka {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  .dva-sloupce {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-
-  /* Dashboard: karty modulů ve dvou sloupcích, velké přes celou šířku */
-  .dashboard {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .plna-sirka {
-    grid-column: 1 / -1;
-  }
-
-  /* Sekce Dnes: rozvrh vlevo přes dva řádky, ostatní dlaždice vpravo */
-  .dnes-mrizka {
-    grid-template-columns: 1.2fr 1fr;
+  /* Přehled: rozvrh vlevo přes víc řádků, ostatní dlaždice vpravo */
+  .prehled-mrizka {
+    grid-template-columns: 1.15fr 1fr;
     align-items: start;
   }
 
-  .dnes-dlazdice.vysoka {
-    grid-row: span 3;
-  }
-
-  .navigace {
-    -webkit-mask-image: none;
-    mask-image: none;
+  .dlazdice-prehledu.vysoka {
+    grid-row: span 4;
   }
 }
 

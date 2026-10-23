@@ -2,22 +2,17 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Předmět · Učebna</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>Předmět · Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=2">
 </head>
-<body>
+<!-- Detail předmětu patří pod záložku Škola, proto data-zalozka="skola" -->
+<body data-zalozka="skola">
   <header class="hlavicka">
     <div class="hlavicka-obsah">
-      <a class="logo" href="index.html">📚 Učebna</a>
-      <nav class="navigace">
-        <a href="index.html">Přehled</a>
-        <a href="rozvrh.html">Rozvrh</a>
-        <a href="testy.html">Testy</a>
-        <a href="kalendar.html">Kalendář</a>
-        <a href="zpravy.html">Zprávy</a>
-        <a href="akcie.html">Akcie</a>
-      </nav>
+      <a class="logo" href="index.html">Dashboard</a>
+      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
     </div>
   </header>
 
@@ -25,14 +20,18 @@
        Který předmět ukázat, pozná js/predmet.js z adresy,
        např. predmet.html?id=matematika
        Celý obsah <main> vytvoří JavaScript. -->
-  <main id="predmet">
-    <p class="nacitani">Předmět se načítá…</p>
+  <main>
+    <a class="zpet" href="skola.html#predmety" id="zpet">Škola</a>
+    <div id="predmet">
+      <p class="nacitani">Předmět se načítá…</p>
+    </div>
   </main>
 
-  <footer class="paticka">Data: Edookit · <button type="button" class="odkaz-tlacitko" id="zamknout">🔒 Zamknout</button></footer>
+  <footer class="paticka">Data: Edookit · <button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
-  <script src="js/spolecne.js"></script>
-  <script src="js/moduly/skola.js"></script>
-  <script src="js/predmet.js"></script>
+  <script src="js/zalozky.js?v=2"></script>
+  <script src="js/spolecne.js?v=2"></script>
+  <script src="js/moduly/skola.js?v=2"></script>
+  <script src="js/predmet.js?v=2"></script>
 </body>
 </html>

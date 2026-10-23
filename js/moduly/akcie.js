@@ -63,9 +63,10 @@ function procenta(cislo) {
   return `${cislo >= 0 ? "+" : "−"}${text} %`;
 }
 
-// Text zbarvený zeleně (růst) nebo červeně (pokles)
+// Změna se šipkou: ▲ růst, ▼ pokles. Dashboard je bez barev,
+// takže směr musí být poznat z tvaru, ne ze zelené a červené.
 function vytvorZmenu(text, cislo) {
-  return vytvor("span", cislo >= 0 ? "zisk" : "ztrata", text);
+  return vytvor("span", cislo >= 0 ? "zisk" : "ztrata", (cislo >= 0 ? "▲ " : "▼ ") + text);
 }
 
 // Malý graf ceny za poslední měsíc (sparkline) jako SVG
@@ -119,25 +120,15 @@ function vytvorSouhrn(celkem) {
   return souhrn;
 }
 
-async function vykresliAkcie(obsah) {
-  const data = await nactiAkcie();
-  const { pozice, celkem } = spocitejPortfolio(data);
+// Dlaždice „Finance“ na Přehledu: hodnota portfolia a dnešní změna
+async function vykresliFinanceDnes(obsah) {
+  const { celkem } = spocitejPortfolio(await nactiAkcie());
   obsah.append(vytvorSouhrn(celkem));
-
-  const seznam = vytvor("ul", "seznam");
-  for (const p of pozice) seznam.append(vytvorAkcii(p.symbol, p.akcie));
-  for (const symbol of data.portfolio.sledovane) seznam.append(vytvorAkcii(symbol, data.ceny.akcie[symbol]));
-  obsah.append(seznam);
-
-  const vice = vytvor("a", "odkaz-vice", "Podrobnosti →");
-  vice.href = "akcie.html";
-  obsah.append(vice);
 }
 
 MODULY.push({
   id: "akcie",
-  nazev: "📈 Akcie",
-  odkaz: "akcie.html",
+  zalozka: "finance",
   maxStariHodin: 72, // o víkendu se nestahuje, takže v pondělí ráno jsou data z pátku
-  vykresli: vykresliAkcie,
+  dnes: [{ nazev: "Finance", odkaz: "finance.html", poradi: 4, vykresli: vykresliFinanceDnes }],
 });

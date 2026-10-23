@@ -1,11 +1,11 @@
-// Vykreslí stránku jednoho předmětu do <main id="predmet">.
+// Vykreslí stránku jednoho předmětu do <div id="predmet">.
 // Který předmět, pozná z adresy: predmet.html?id=fyzika
 
-// Ikonky pro jednotlivé typy materiálů v predmety.json
-const IKONY = {
-  poznamka: "📝",
-  odkaz: "🔗",
-  soubor: "📄",
+// Štítky pro jednotlivé typy materiálů v predmety.json (bez barevných emoji)
+const TYPY_MATERIALU = {
+  poznamka: "Poznámka",
+  odkaz: "Odkaz",
+  soubor: "Soubor",
 };
 
 async function zobrazPredmet() {
@@ -28,7 +28,7 @@ async function zobrazPredmet() {
       return;
     }
 
-    document.title = predmet.nazev + " · Učebna"; // text v záložce prohlížeče
+    document.title = predmet.nazev + " · Dashboard"; // text v záložce prohlížeče
     // Barva předmětu pro všechno uvnitř (proužky u materiálů, nadpis)
     obsah.style.setProperty("--barva-predmetu", predmet.barva);
 
@@ -109,7 +109,7 @@ function vytvorMaterialy(materialy) {
 // Jeden materiál. Podle "typ" vypadá trochu jinak.
 function vytvorMaterial(material) {
   const polozka = vytvor("li", "polozka material");
-  polozka.append(vytvor("span", "material-ikona", IKONY[material.typ] || "•"));
+  polozka.append(vytvor("span", "material-typ", TYPY_MATERIALU[material.typ] || "Jiné"));
   const hlavni = vytvor("div", "polozka-hlavni");
 
   if (material.typ === "poznamka") {

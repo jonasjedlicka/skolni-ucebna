@@ -2,49 +2,46 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <!-- Bez tohohle řádku by se stránka na mobilu zobrazila zmenšená jako na počítači -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Učebna</title>
-  <link rel="stylesheet" href="css/style.css">
+  <!-- viewport-fit=cover: stránka sahá až k okrajům iPhonu (kvůli liště dole) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>Přehled · Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=2">
 </head>
-<body>
+<!-- data-zalozka říká, která záložka v navigaci je aktivní -->
+<body data-zalozka="prehled">
   <header class="hlavicka">
     <div class="hlavicka-obsah">
-      <a class="logo" href="index.html">📚 Učebna</a>
-      <nav class="navigace">
-        <a href="index.html" aria-current="page">Přehled</a>
-        <a href="rozvrh.html">Rozvrh</a>
-        <a href="testy.html">Testy</a>
-        <a href="kalendar.html">Kalendář</a>
-        <a href="zpravy.html">Zprávy</a>
-        <a href="akcie.html">Akcie</a>
-      </nav>
+      <a class="logo" href="index.html">Dashboard</a>
+      <!-- Záložky vykreslí js/spolecne.js ze seznamu v js/zalozky.js -->
+      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
     </div>
   </header>
 
-  <!-- Obsah vloží js/index.js: nahoře sekce „Dnes“, pod ní karty modulů -->
+  <!-- Přehled: to nejdůležitější na dnešek ze všech oblastí.
+       Dlaždice vloží js/index.js podle modulů v js/moduly/. -->
   <main>
-    <div class="dnes-hlavicka">
+    <div class="hlavicka-stranky">
       <h1>Dnes</h1>
-      <div class="dnes-datum" id="dnes-datum"></div>
+      <p class="podnadpis" id="dnes-datum"></p>
     </div>
-    <div class="dnes-mrizka" id="dnes"></div>
-
-    <h2 class="nadpis-sekce-modulu">Moduly</h2>
-    <div class="dashboard" id="dashboard">
+    <div class="prehled-mrizka" id="dnes">
       <p class="nacitani">Načítá se…</p>
     </div>
   </main>
 
-  <footer class="paticka">Data: Edookit · zprávy z RSS · <button type="button" class="odkaz-tlacitko" id="zamknout">🔒 Zamknout</button></footer>
+  <footer class="paticka">Data: Edookit, Google Kalendář, RSS, Yahoo Finance, ČNB · <button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
-  <!-- Pořadí je důležité: nejdřív společné funkce, pak moduly, nakonec dashboard.
-       Nový modul = nový soubor v js/moduly/ a jeden řádek tady. -->
-  <script src="js/spolecne.js"></script>
-  <script src="js/moduly/skola.js"></script>
-  <script src="js/moduly/kalendar.js"></script>
-  <script src="js/moduly/zpravy.js"></script>
-  <script src="js/moduly/akcie.js"></script>
-  <script src="js/index.js"></script>
+  <!-- Pořadí je důležité: záložky, společné funkce, moduly, nakonec Přehled.
+       Nový modul = nový soubor v js/moduly/ a jeden řádek tady.
+       ?v=2 je číslo verze: po větší změně ho zvyš na všech stránkách, ať
+       prohlížeče nenačítají staré soubory ze své mezipaměti. -->
+  <script src="js/zalozky.js?v=2"></script>
+  <script src="js/spolecne.js?v=2"></script>
+  <script src="js/moduly/skola.js?v=2"></script>
+  <script src="js/moduly/kalendar.js?v=2"></script>
+  <script src="js/moduly/akcie.js?v=2"></script>
+  <script src="js/moduly/zpravy.js?v=2"></script>
+  <script src="js/index.js?v=2"></script>
 </body>
 </html>

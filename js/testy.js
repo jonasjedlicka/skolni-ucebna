@@ -14,7 +14,7 @@ async function zobrazTesty() {
 
     seznam.replaceChildren();
     if (nadchazejici.length === 0) {
-      seznam.append(vytvor("li", "slaby", "Žádné nadcházející testy 🎉"));
+      seznam.append(vytvor("li", "slaby", "Žádné nadcházející testy"));
       return;
     }
     for (const test of nadchazejici) {

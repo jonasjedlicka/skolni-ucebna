@@ -2,27 +2,24 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zprávy · Učebna</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>Zprávy · Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=2">
 </head>
-<body>
+<body data-zalozka="zpravy">
   <header class="hlavicka">
     <div class="hlavicka-obsah">
-      <a class="logo" href="index.html">📚 Učebna</a>
-      <nav class="navigace">
-        <a href="index.html">Přehled</a>
-        <a href="rozvrh.html">Rozvrh</a>
-        <a href="testy.html">Testy</a>
-        <a href="kalendar.html">Kalendář</a>
-        <a href="zpravy.html" aria-current="page">Zprávy</a>
-        <a href="akcie.html">Akcie</a>
-      </nav>
+      <a class="logo" href="index.html">Dashboard</a>
+      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
     </div>
   </header>
 
   <main>
-    <h1>Zprávy ze světa</h1>
+    <div class="hlavicka-stranky">
+      <h1>Zprávy ze světa</h1>
+      <p class="podnadpis" data-stav="zpravy" data-max-hodin="8"></p>
+    </div>
     <!-- Tlačítka pro výběr zdroje a seznam zpráv vloží js/zpravy.js -->
     <div class="filtry" id="filtry"></div>
     <ul class="seznam" id="zpravy">
@@ -32,8 +29,9 @@
 
   <footer class="paticka">Zdroje: ČT24, iRozhlas, BBC (RSS)</footer>
 
-  <script src="js/spolecne.js"></script>
-  <script src="js/moduly/zpravy.js"></script>
-  <script src="js/zpravy.js"></script>
+  <script src="js/zalozky.js?v=2"></script>
+  <script src="js/spolecne.js?v=2"></script>
+  <script src="js/moduly/zpravy.js?v=2"></script>
+  <script src="js/zpravy.js?v=2"></script>
 </body>
 </html>

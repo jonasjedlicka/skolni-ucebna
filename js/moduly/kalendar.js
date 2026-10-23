@@ -3,8 +3,6 @@
 // přes GitHub Actions.
 
 const KALENDAR_DATA = "data/kalendar/";
-const DNI_NA_KARTE = 7; // karta na dashboardu ukazuje jen příští týden
-const UDALOSTI_NA_KARTE = 8;
 
 // Ke každé události dopočítá skutečné časy jako Date:
 // - celodenní má jen datum ("2026-10-29"), konec je v iCal „do“ (ten den už nepatří)
@@ -90,7 +88,7 @@ function vytvorUdalost(udalost) {
 // Vykreslí události seskupené po dnech do zadaného prvku
 function vykresliDny(kontejner, udalosti) {
   if (udalosti.length === 0) {
-    kontejner.append(vytvor("p", "slaby", "Žádné události 🎉"));
+    kontejner.append(vytvor("p", "slaby", "Žádné události"));
     return;
   }
   for (const [den, udalostiDne] of podleDni(udalosti)) {
@@ -109,7 +107,7 @@ async function vykresliKalendarDnes(obsah) {
   const zitra = pulnoc(new Date()).getTime() + 864e5;
   const dnesni = (await nactiUdalosti()).filter((u) => u.zacatek.getTime() < zitra);
   if (dnesni.length === 0) {
-    obsah.append(vytvor("p", "slaby", "Dnes nic naplánovaného 🎉"));
+    obsah.append(vytvor("p", "slaby", "Dnes nic naplánovaného"));
     return;
   }
   const seznam = vytvor("ul", "seznam");
@@ -117,26 +115,9 @@ async function vykresliKalendarDnes(obsah) {
   obsah.append(seznam);
 }
 
-// Karta Kalendář: příští dny (dnešek je nahoře v sekci Dnes)
-async function vykresliKalendar(obsah) {
-  const udalosti = await nactiUdalosti();
-  const zitra = pulnoc(new Date()).getTime() + 864e5;
-  const hranice = zitra + DNI_NA_KARTE * 864e5;
-  const pristi = udalosti
-    .filter((u) => u.zacatek.getTime() >= zitra && u.zacatek.getTime() < hranice)
-    .slice(0, UDALOSTI_NA_KARTE);
-  vykresliDny(obsah, pristi);
-
-  const vice = vytvor("a", "odkaz-vice", `Všech ${udalosti.length} událostí na měsíc →`);
-  vice.href = "kalendar.html";
-  obsah.append(vice);
-}
-
 MODULY.push({
   id: "kalendar",
-  nazev: "📅 Kalendář",
-  odkaz: "kalendar.html",
+  zalozka: "kalendar",
   maxStariHodin: 6, // stahuje se každé 2 hodiny
-  vykresli: vykresliKalendar,
-  dnes: [{ nazev: "Kalendář na dnes", poradi: 3, vykresli: vykresliKalendarDnes }],
+  dnes: [{ nazev: "Kalendář na dnes", odkaz: "kalendar.html", poradi: 3, vykresli: vykresliKalendarDnes }],
 });
