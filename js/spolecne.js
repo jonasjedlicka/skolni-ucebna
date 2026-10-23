@@ -196,16 +196,31 @@ function zBase64(text) {
 }
 
 function doBase64(bajty) {
-  return btoa(String.fromCharCode(...new Uint8Array(bajty)));
+  // Po kouscích: String.fromCharCode(...pole) by u velkých dat (dlouhé poznámky) spadlo
+  const pole = new Uint8Array(bajty);
+  let text = "";
+  for (let i = 0; i < pole.length; i += 0x8000) {
+    text += String.fromCharCode(...pole.subarray(i, i + 0x8000));
+  }
+  return btoa(text);
 }
 
 async function klicZBajtu(bajty) {
-  return crypto.subtle.importKey("raw", bajty, "AES-GCM", false, ["decrypt"]);
+  return crypto.subtle.importKey("raw", bajty, "AES-GCM", false, ["encrypt", "decrypt"]);
 }
 
 async function desifruj(obal, klic) {
   const text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: zBase64(obal.iv) }, klic, zBase64(obal.data));
   return JSON.parse(new TextDecoder().decode(text));
+}
+
+// Opak desifruj – stejný formát jako zasifruj ve stahovani/sifrovani.py,
+// takže soubor zašifrovaný v prohlížeči umí přečíst i Python a naopak.
+async function sifruj(data, klic) {
+  const iv = crypto.getRandomValues(new Uint8Array(12)); // pokaždé jiné
+  const text = new TextEncoder().encode(JSON.stringify(data));
+  const sifra = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, klic, text);
+  return { v: 1, iv: doBase64(iv), data: doBase64(sifra) };
 }
 
 // Vrátí klíč, nebo null, když heslo nesedí (rozšifrování kontrolního souboru selže)

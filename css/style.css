@@ -114,6 +114,11 @@ h3 {
   letter-spacing: -0.015em;
 }
 
+/* Atribut hidden musí schovat vždy – i prvky, kterým třída dává display: flex */
+[hidden] {
+  display: none !important;
+}
+
 .slaby {
   color: var(--text-slaby);
 }
@@ -736,6 +741,140 @@ a.polozka-nazev:hover {
 
 .cast-stav {
   margin: -8px 0 12px;
+}
+
+/* --- Zápisy: stav ukládání a připojení GitHubu --- */
+
+.stav-zapisu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: -8px 0 14px;
+  font-size: 0.85rem;
+  color: var(--text-slaby);
+}
+
+/* Chyba nebo chybějící token: výrazně, ale bez barvy */
+.stav-zapisu[data-kod="chyba"],
+.stav-zapisu[data-kod="token"] {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stav-zapisu .odkaz-tlacitko {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.pripojeni {
+  width: min(440px, calc(100% - 32px));
+}
+
+/* „Zrušit“ v okně: jako odkaz, ne jako bílé tlačítko */
+.zamek .odkaz-tlacitko {
+  padding: 0;
+  background: none;
+  color: var(--text-slaby);
+  font-weight: 500;
+}
+
+.pripojeni-kroky {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  display: grid;
+  gap: 4px;
+}
+
+.pripojeni-tlacitka {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pripojeni input,
+.nova-poznamka textarea,
+.poznamka textarea,
+.hledani {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.pripojeni input {
+  margin-bottom: 4px;
+}
+
+/* --- Poznámky --- */
+
+.nova-poznamka {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.nova-poznamka textarea,
+.poznamka textarea {
+  resize: vertical;
+  line-height: 1.4;
+}
+
+/* Na Přehledu musí být pole nad „roztaženým odkazem“ dlaždice */
+.dlazdice-obsah form {
+  position: relative;
+  z-index: 2;
+}
+
+.nova-poznamka .kulate-tlacitko {
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.dlazdice-obsah .nova-poznamka {
+  margin-bottom: 0;
+}
+
+.hledani {
+  margin-bottom: 12px;
+}
+
+.poznamka {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.poznamka .poznamka-text {
+  margin-top: 0;
+  overflow-wrap: anywhere; /* dlouhé odkazy nerozbijí rozvržení */
+}
+
+.poznamka-akce {
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: var(--text-slaby);
+}
+
+/* Připnutá poznámka: silnější rámeček místo barvy */
+.polozka.pripnuto {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.poznamka-kratka .poznamka-text {
+  margin-top: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 
 /* --- Odpočty --- */
