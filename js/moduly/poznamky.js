@@ -79,5 +79,6 @@ function vykresliPoznamkyDnes(obsah) {
 MODULY.push({
   id: "poznamky",
   zalozka: "plan",
+  obnova: { kazdychMinut: 10, zapisy: ["poznamky"] }, // změny z jiného zařízení
   dnes: [{ nazev: "Poznámky", odkaz: "plan.html#poznamky", poradi: 3.7, vykresli: vykresliPoznamkyDnes }],
 });

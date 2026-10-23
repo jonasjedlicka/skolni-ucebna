@@ -156,5 +156,6 @@ function vykresliNavykyDnes(obsah) {
 MODULY.push({
   id: "navyky",
   zalozka: "zdravi",
+  obnova: { kazdychMinut: 10, zapisy: ["navyky"] }, // změny z jiného zařízení
   dnes: [{ nazev: "Návyky", odkaz: "zdravi.html#navyky", poradi: 2.7, vykresli: vykresliNavykyDnes }],
 });

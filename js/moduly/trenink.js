@@ -112,5 +112,6 @@ function vytvorRadekCvikuDnes(c, hotoveDnes) {
 MODULY.push({
   id: "trenink",
   zalozka: "zdravi",
+  obnova: { kazdychMinut: 10, zapisy: ["trenink"] }, // změny z jiného zařízení
   dnes: [{ nazev: "Trénink na dnes", odkaz: "zdravi.html#trenink", poradi: 2.8, vykresli: vykresliTreninkDnes }],
 });

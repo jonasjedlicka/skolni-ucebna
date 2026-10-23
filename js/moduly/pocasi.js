@@ -115,5 +115,6 @@ MODULY.push({
   id: "pocasi",
   zalozka: "svet",
   // bez maxStariHodin: počasí se stahuje živě, nemá data/pocasi/stav.json
+  obnova: { kazdychMinut: 30, zdroje: ["https://api.open-meteo.com/"] }, // předpověď se mění pomalu
   dnes: [{ nazev: "Počasí · " + POCASI_MISTO.nazev, odkaz: "svet.html#pocasi", poradi: 0, vykresli: vykresliPocasiDnes }],
 });

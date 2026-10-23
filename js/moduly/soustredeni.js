@@ -264,6 +264,7 @@ function oznamKonecFaze(stav) {
 MODULY.push({
   id: "soustredeni",
   zalozka: "plan",
+  obnova: { kazdychMinut: 10, zapisy: ["soustredeni"] }, // změny z jiného zařízení
   // bez maxStariHodin: nic se nestahuje, stav je jen v prohlížeči
   dnes: [{ nazev: "Soustředění", odkaz: "plan.html#soustredeni", poradi: 3.5, vykresli: vykresliSoustredeniDnes }],
 });

@@ -91,5 +91,6 @@ async function vykresliDoucovaniDnes(obsah) {
 MODULY.push({
   id: "doucovani",
   zalozka: "skola",
+  obnova: { kazdychMinut: 10, zapisy: ["doucovani"] }, // změny z jiného zařízení
   dnes: [{ nazev: "Doučování", odkaz: "skola.html#doucovani", poradi: 2.2, vykresli: vykresliDoucovaniDnes }],
 });

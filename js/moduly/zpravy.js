@@ -48,5 +48,6 @@ MODULY.push({
   id: "zpravy",
   zalozka: "svet",
   maxStariHodin: 8, // stahují se každé 3 hodiny, víc než 8 h = něco se zaseklo
+  obnova: { kazdychMinut: 30, zdroje: [ZPRAVY_DATA] },
   dnes: [{ nazev: "Zprávy", odkaz: "svet.html#zpravy", poradi: 5, vykresli: vykresliZpravyDnes }],
 });

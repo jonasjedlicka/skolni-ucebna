@@ -202,6 +202,7 @@ MODULY.push({
   id: "skola",
   zalozka: "skola",
   maxStariHodin: 48, // starší data = skript se 2 dny nespustil, něco je špatně
+  obnova: { kazdychMinut: 60, zdroje: [SKOLA_DATA] }, // Edookit se stahuje jednou denně
   dnes: [
     { nazev: "Rozvrh na dnes", odkaz: "skola.html#rozvrh", poradi: 1, vysoka: true, vykresli: vykresliDnesniRozvrh },
     { nazev: "Nejbližší test", odkaz: "skola.html#testy", poradi: 2, vykresli: vykresliNejblizsiTest },

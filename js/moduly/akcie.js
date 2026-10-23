@@ -130,5 +130,6 @@ MODULY.push({
   id: "akcie",
   zalozka: "svet",
   maxStariHodin: 72, // o víkendu se nestahuje, takže v pondělí ráno jsou data z pátku
+  obnova: { kazdychMinut: 15, zdroje: [AKCIE_DATA] }, // ceny stahuje GitHub každou hodinu
   dnes: [{ nazev: "Finance", odkaz: "svet.html#finance", poradi: 4, vykresli: vykresliFinanceDnes }],
 });

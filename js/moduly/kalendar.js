@@ -119,5 +119,6 @@ MODULY.push({
   id: "kalendar",
   zalozka: "kalendar",
   maxStariHodin: 6, // stahuje se každé 2 hodiny
+  obnova: { kazdychMinut: 30, zdroje: [KALENDAR_DATA] },
   dnes: [{ nazev: "Kalendář na dnes", odkaz: "kalendar.html", poradi: 3, vykresli: vykresliKalendarDnes }],
 });

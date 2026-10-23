@@ -99,7 +99,9 @@ async function zobrazStav(prvek, id, maxHodin) {
 // "async" znamená, že funkce chvíli čeká (na odpověď serveru);
 // "await" je místo, kde se čeká.
 async function stahniJson(cesta) {
-  const odpoved = await fetch(cesta);
+  // no-cache: prohlížeč se vždy zeptá serveru, jestli nemá novější verzi
+  // (když ne, server odpoví krátce „beze změny“ a použije se uložená)
+  const odpoved = await fetch(cesta, { cache: "no-cache" });
   if (!odpoved.ok) {
     throw new Error(`Nepodařilo se načíst ${cesta} (chyba ${odpoved.status})`);
   }
@@ -117,6 +119,14 @@ function nactiJson(cesta) {
     slib.catch(() => nactene.delete(cesta)); // po chybě to příště zkusíme znovu
   }
   return nactene.get(cesta);
+}
+
+// Zapomene načtené soubory začínající danými cestami – příští nactiJson
+// je stáhne znovu (používá aktualizace dat v js/obnova.js)
+function zapomenNactene(predpony) {
+  for (const cesta of [...nactene.keys()]) {
+    if (predpony.some((predpona) => cesta.startsWith(predpona))) nactene.delete(cesta);
+  }
 }
 
 // Vytvoří HTML prvek, např. vytvor("div", "karta", "Ahoj")
@@ -188,7 +198,7 @@ function textZaKolik(dny) {
 // Dostane čas jako text ve formátu ISO, např. "2026-10-23T09:36:00".
 function textPredKolika(isoCas) {
   const minut = Math.round((Date.now() - new Date(isoCas)) / 60000);
-  if (minut < 5) return "před chvílí";
+  if (minut < 1) return "před chvílí";
   if (minut < 60) return `před ${minut} min`;
   const hodin = Math.round(minut / 60);
   if (hodin < 24) return `před ${hodin} h`;

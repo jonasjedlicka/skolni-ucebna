@@ -177,6 +177,7 @@ prevedStareOdpocty();
 MODULY.push({
   id: "odpocty",
   zalozka: "plan",
+  obnova: { kazdychMinut: 10, zapisy: ["odpocty"] }, // změny z jiného zařízení
   // bez maxStariHodin: nic se nestahuje
   dnes: [{ nazev: "Odpočty", odkaz: "plan.html#odpocty", poradi: 2.5, vykresli: vykresliOdpoctyDnes }],
 });

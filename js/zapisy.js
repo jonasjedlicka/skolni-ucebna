@@ -308,6 +308,7 @@ function vytvorZapisy(nazev, popis) {
       naplanujUlozeni();
     },
     naZmenu: (fn) => posluchaciZmeny.push(fn),
+    aktualniStav: () => stav,
     naStav(fn) {
       posluchaciStavu.push(fn);
       fn(stav);

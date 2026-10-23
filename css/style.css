@@ -1529,6 +1529,221 @@ a.polozka-nazev:hover {
   color: var(--text-slaby);
 }
 
+/* --- Aktualizace dat: čas a kolečko u widgetu --- */
+
+.obnova {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--text-slaby);
+}
+
+.obnova-cas {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nepovedená aktualizace: výrazně, ale bez barvy (stará data zůstávají) */
+.obnova-chyba {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+.obnovit-tlacitko {
+  position: relative;
+  z-index: 2; /* na Přehledu nad „roztaženým odkazem“ dlaždice */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: -6px -6px -6px 0; /* větší plocha na trefení, hlavička se nezvětší */
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-slaby);
+  cursor: pointer;
+  transition: color var(--prechod), background var(--prechod);
+}
+
+.obnovit-tlacitko:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.obnovit-tlacitko .ikona {
+  width: 15px;
+  height: 15px;
+}
+
+/* Kolečko se při načítání točí */
+@keyframes toceni {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.toci .ikona {
+  animation: toceni 0.8s linear infinite;
+}
+
+/* Hlavička s datem a tlačítkem „Aktualizovat vše“ */
+.dnes-radek,
+.hlavicka-s-obnovou {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.hlavni-obnova {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+.hlavni-obnova .ikona {
+  width: 15px;
+  height: 15px;
+}
+
+.hlavni-obnova:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.cast-obnova {
+  display: flex;
+  justify-content: flex-end;
+  margin: -8px 0 10px;
+}
+
+/* --- Známky --- */
+
+.znamky-nejhorsi {
+  margin: 6px 0 0;
+}
+
+.znamky-predmet {
+  background: var(--polozka);
+  border: 1px solid var(--polozka-okraj);
+  border-radius: var(--zaobleni-male);
+  padding: 12px 14px;
+}
+
+.znamky-hlavicka {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  list-style: none; /* bez trojúhelníčku – rozbaluje se klepnutím na celou kartu */
+}
+
+.znamky-hlavicka::-webkit-details-marker {
+  display: none;
+}
+
+.znamky-radek {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+/* Jedna známka jako malý čtvereček; váha dolním indexem (×2) */
+.znamka {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  min-width: 28px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid var(--sklo-okraj);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.znamka sub {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-slaby);
+  margin-left: 1px;
+}
+
+.znamky-prumer {
+  flex: none;
+  text-align: right;
+}
+
+.znamky-prumer-cislo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.znamky-detail {
+  margin: 12px 0;
+}
+
+.znamky-kalkulacka {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--polozka-okraj);
+}
+
+.znamky-kalkulacka input,
+.znamky-formular input,
+.znamky-formular select {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.znamky-vysledek {
+  margin: 0;
+  font-weight: 600;
+}
+
+.vyber-znamky .filtr {
+  min-width: 42px;
+  padding: 7px 10px;
+  font-weight: 700;
+}
+
+.znamky-vaha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.znamky-vaha .filtry {
+  margin-bottom: 0;
+}
+
+.znamky-vaha input {
+  width: 90px;
+}
+
+.znamky-formular .chyba:empty {
+  display: none;
+}
+
 /* --- Odpočty --- */
 
 .odpocet-nazev {

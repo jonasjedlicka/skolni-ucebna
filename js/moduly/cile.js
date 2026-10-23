@@ -127,5 +127,6 @@ function vykresliCileDnes(obsah) {
 MODULY.push({
   id: "cile",
   zalozka: "plan",
+  obnova: { kazdychMinut: 10, zapisy: ["cile"] }, // změny z jiného zařízení
   dnes: [{ nazev: "Cíle", odkaz: "plan.html#cile", poradi: 3.8, vykresli: vykresliCileDnes }],
 });

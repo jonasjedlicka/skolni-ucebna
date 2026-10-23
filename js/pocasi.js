@@ -3,24 +3,19 @@
 
 const HODIN_V_PREDPOVEDI = 12;
 
-async function zobrazPocasi() {
-  const obsah = document.getElementById("pocasi");
-  try {
-    const pocasi = await nactiPocasi();
-    obsah.replaceChildren();
+// Načte a vykreslí počasí. Chybu nechá vyletět – zachytí ji js/obnova.js
+// (stará předpověď pak zůstane a chyba se ukáže u kolečka).
+async function vykresliPocasiStranku() {
+  zapomenNactene([POCASI_URL]);
+  const pocasi = await nactiPocasi();
+  const novy = [];
 
-    const karta = vytvor("div", "karta sekce");
-    karta.append(vytvorAktualniPocasi(pocasi), vytvorUpozorneni(pocasi));
-    obsah.append(karta);
-
-    obsah.append(vytvor("h2", "", "Příštích 12 hodin"));
-    obsah.append(vytvorHodiny(pocasi));
-
-    obsah.append(vytvor("h2", "", "Dalších 5 dní"));
-    obsah.append(vytvorDny(pocasi));
-  } catch (chyba) {
-    ukazChybu(obsah, chyba);
-  }
+  const karta = vytvor("div", "karta sekce");
+  karta.append(vytvorAktualniPocasi(pocasi), vytvorUpozorneni(pocasi));
+  novy.push(karta);
+  novy.push(vytvor("h2", "", "Příštích 12 hodin"), vytvorHodiny(pocasi));
+  novy.push(vytvor("h2", "", "Dalších 5 dní"), vytvorDny(pocasi));
+  document.getElementById("pocasi").replaceChildren(...novy);
 }
 
 // Vodorovný pás hodin (na mobilu se dá posouvat prstem do strany)
@@ -68,4 +63,9 @@ function vytvorDny(pocasi) {
   return seznam;
 }
 
-zobrazPocasi();
+zaregistrujObnovu({
+  misto: document.getElementById("obnova-pocasi"),
+  kontejner: document.getElementById("pocasi"),
+  kazdychMinut: 30,
+  obnov: vykresliPocasiStranku,
+});

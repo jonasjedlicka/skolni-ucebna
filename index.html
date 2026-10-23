@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Přehled · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=15">
+  <link rel="stylesheet" href="css/style.css?v=16">
 </head>
 <!-- data-zalozka říká, která záložka v navigaci je aktivní -->
 <body data-zalozka="prehled">
@@ -23,7 +23,11 @@
   <main>
     <div class="hlavicka-stranky">
       <h1>Dnes</h1>
-      <p class="podnadpis" id="dnes-datum"></p>
+      <div class="dnes-radek">
+        <p class="podnadpis" id="dnes-datum"></p>
+        <!-- Tlačítko „Aktualizovat vše“ vloží js/index.js (logika v js/obnova.js) -->
+        <div id="obnovit-vse"></div>
+      </div>
     </div>
     <div class="prehled-mrizka" id="dnes">
       <p class="nacitani">Načítá se…</p>
@@ -34,24 +38,26 @@
 
   <!-- Pořadí je důležité: záložky, společné funkce, moduly, nakonec Přehled.
        Nový modul = nový soubor v js/moduly/ a jeden řádek tady.
-       ?v=15 je číslo verze: po větší změně ho zvyš na všech stránkách, ať
+       ?v=16 je číslo verze: po větší změně ho zvyš na všech stránkách, ať
        prohlížeče nenačítají staré soubory ze své mezipaměti. -->
-  <script src="js/zalozky.js?v=15"></script>
-  <script src="js/spolecne.js?v=15"></script>
-  <script src="js/zapisy.js?v=15"></script>
-  <script src="js/moduly/pocasi.js?v=15"></script>
-  <script src="js/moduly/skola.js?v=15"></script>
-  <script src="js/moduly/ukoly.js?v=15"></script>
-  <script src="js/moduly/doucovani.js?v=15"></script>
-  <script src="js/moduly/odpocty.js?v=15"></script>
-  <script src="js/moduly/navyky.js?v=15"></script>
-  <script src="js/moduly/trenink.js?v=15"></script>
-  <script src="js/moduly/kalendar.js?v=15"></script>
-  <script src="js/moduly/soustredeni.js?v=15"></script>
-  <script src="js/moduly/poznamky.js?v=15"></script>
-  <script src="js/moduly/cile.js?v=15"></script>
-  <script src="js/moduly/akcie.js?v=15"></script>
-  <script src="js/moduly/zpravy.js?v=15"></script>
-  <script src="js/index.js?v=15"></script>
+  <script src="js/zalozky.js?v=16"></script>
+  <script src="js/spolecne.js?v=16"></script>
+  <script src="js/zapisy.js?v=16"></script>
+  <script src="js/obnova.js?v=16"></script>
+  <script src="js/moduly/pocasi.js?v=16"></script>
+  <script src="js/moduly/skola.js?v=16"></script>
+  <script src="js/moduly/ukoly.js?v=16"></script>
+  <script src="js/moduly/doucovani.js?v=16"></script>
+  <script src="js/moduly/znamky.js?v=16"></script>
+  <script src="js/moduly/odpocty.js?v=16"></script>
+  <script src="js/moduly/navyky.js?v=16"></script>
+  <script src="js/moduly/trenink.js?v=16"></script>
+  <script src="js/moduly/kalendar.js?v=16"></script>
+  <script src="js/moduly/soustredeni.js?v=16"></script>
+  <script src="js/moduly/poznamky.js?v=16"></script>
+  <script src="js/moduly/cile.js?v=16"></script>
+  <script src="js/moduly/akcie.js?v=16"></script>
+  <script src="js/moduly/zpravy.js?v=16"></script>
+  <script src="js/index.js?v=16"></script>
 </body>
 </html>

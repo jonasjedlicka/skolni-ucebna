@@ -4,9 +4,11 @@
 //
 // Dlaždice: { nazev, odkaz, poradi, vysoka, vykresli(obsah, nadpis) }
 // Když vykresli vrátí false, dlaždice se na Přehledu vůbec neukáže.
+// Modul s „obnova“ dostane u dlaždice kolečko a čas aktualizace (js/obnova.js).
 
 function zobrazPrehled() {
   zobrazDatum();
+  document.getElementById("obnovit-vse").append(vytvorHlavniObnovu());
 
   const mrizka = document.getElementById("dnes");
   // flatMap: z každého modulu vezme jeho dlaždice (a k nim modul) do jednoho seznamu
@@ -44,20 +46,71 @@ function vytvorDlazdiciPrehledu(dlazdice, poradi, ukazStav) {
   nadpis.append(odkaz);
   hlavicka.append(nadpis);
 
-  if (ukazStav && dlazdice.modul.maxStariHodin) {
-    const stav = vytvor("span", "stav");
-    zobrazStav(stav, dlazdice.modul.id, dlazdice.modul.maxStariHodin);
-    hlavicka.append(stav);
-  }
-
   const obsah = vytvor("div", "dlazdice-obsah");
   obsah.append(vytvor("p", "nacitani", "Načítá se…"));
   sekce.append(hlavicka, obsah);
 
-  // Dlaždice se načítají každá zvlášť a nečekají na sebe,
-  // takže pomalý zdroj nezdrží ostatní.
-  vyplnObsah((novy) => dlazdice.vykresli(novy, odkaz), obsah);
+  const vykresli = (novy) => dlazdice.vykresli(novy, odkaz);
+  const obnova = dlazdice.modul.obnova;
+  if (obnova) {
+    // Widget s kolečkem: první načtení i každou další aktualizaci řídí js/obnova.js
+    const misto = vytvor("span", "obnova");
+    hlavicka.append(misto);
+    zaregistrujObnovu({
+      misto,
+      kontejner: obsah,
+      kazdychMinut: obnova.kazdychMinut,
+      maxStariHodin: dlazdice.modul.maxStariHodin,
+      obnov: vytvorObnovuDlazdice(dlazdice.modul, vykresli, obsah),
+    });
+  } else {
+    if (ukazStav && dlazdice.modul.maxStariHodin) {
+      const stav = vytvor("span", "stav");
+      zobrazStav(stav, dlazdice.modul.id, dlazdice.modul.maxStariHodin);
+      hlavicka.append(stav);
+    }
+    // Dlaždice se načítají každá zvlášť a nečekají na sebe,
+    // takže pomalý zdroj nezdrží ostatní.
+    vyplnObsah(vykresli, obsah);
+  }
   return sekce;
+}
+
+// Co udělat při aktualizaci dlaždice:
+// - data ze souborů / z API: zapomenout staré, znovu načíst a vykreslit;
+//   když se to nepovede, stará data zůstanou (chyba se ukáže u kolečka)
+// - zápisy (úkoly, poznámky…): jen znovu načíst z GitHubu – dlaždice se
+//   překreslí sama, protože poslouchá změny zápisů
+function vytvorObnovuDlazdice(modul, vykresli, obsah) {
+  let vykresleno = false;
+  return async () => {
+    if (modul.obnova.zapisy && vykresleno) {
+      await zkontrolujZapisy(modul.obnova.zapisy, true);
+      return new Date();
+    }
+    zapomenNactene([...(modul.obnova.zdroje || []), `data/${modul.id}/stav.json`]);
+    const novy = vytvor("div", "");
+    if ((await vykresli(novy)) === false) {
+      obsah.closest(".dlazdice-prehledu").remove(); // dnes není co ukázat
+      return null;
+    }
+    obsah.replaceChildren(...novy.childNodes);
+    vykresleno = true;
+    // U zápisů ještě počkáme na GitHub – když synchronizace selže, ukáže se to u kolečka
+    await zkontrolujZapisy(modul.obnova.zapisy || [], false);
+    return modul.maxStariHodin ? casZeStavu(modul.id) : new Date();
+  };
+}
+
+// Počká na načtení zápisů z GitHubu (znovu = stáhnout znovu) a vyhodí chybu,
+// když se synchronizace nepovedla
+async function zkontrolujZapisy(nazvy, znovu) {
+  for (const nazev of nazvy) {
+    const zapisy = otevriZapisy(nazev);
+    await (znovu ? zapisy.znovu() : zapisy.hotovo);
+    const stav = zapisy.aktualniStav();
+    if (stav.kod === "chyba" || stav.kod === "token") throw new Error(stav.text);
+  }
 }
 
 async function vyplnObsah(vykresli, obsah) {

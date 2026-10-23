@@ -109,5 +109,6 @@ async function vykresliUkolyDnes(obsah) {
 MODULY.push({
   id: "ukoly",
   zalozka: "plan",
+  obnova: { kazdychMinut: 10, zapisy: ["ukoly"] }, // změny z jiného zařízení
   dnes: [{ nazev: "Úkoly", odkaz: "plan.html#ukoly", poradi: 1.5, vykresli: vykresliUkolyDnes }],
 });

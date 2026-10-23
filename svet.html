@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Svět · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=15">
+  <link rel="stylesheet" href="css/style.css?v=16">
 </head>
 <body data-zalozka="svet">
   <header class="hlavicka">
@@ -16,8 +16,10 @@
   </header>
 
   <main>
-    <div class="hlavicka-stranky">
+    <div class="hlavicka-stranky hlavicka-s-obnovou">
       <h1>Svět</h1>
+      <!-- Tlačítko „Aktualizovat vše“ (logika v js/obnova.js) -->
+      <div id="obnovit-vse"></div>
     </div>
 
     <!-- Přepínač částí (řídí nastavPrepinac ze spolecne.js), část je v adrese: svet.html#zpravy -->
@@ -28,6 +30,8 @@
     </div>
 
     <section class="cast" id="cast-pocasi" role="tabpanel">
+      <!-- Čas poslední aktualizace a kolečko vloží js/obnova.js -->
+      <div class="obnova cast-obnova" id="obnova-pocasi"></div>
       <!-- Počasí vloží js/pocasi.js (živě z Open-Meteo) -->
       <div id="pocasi">
         <p class="nacitani">Načítá se…</p>
@@ -36,7 +40,7 @@
     </section>
 
     <section class="cast" id="cast-zpravy" role="tabpanel" hidden>
-      <p class="podnadpis cast-stav" data-stav="zpravy" data-max-hodin="8"></p>
+      <div class="obnova cast-obnova" id="obnova-zpravy"></div>
       <!-- Tlačítka zdrojů a zprávy vloží js/zpravy.js -->
       <div class="filtry" id="filtry"></div>
       <ul class="seznam" id="zpravy">
@@ -46,7 +50,7 @@
     </section>
 
     <section class="cast" id="cast-finance" role="tabpanel" hidden>
-      <p class="podnadpis cast-stav" data-stav="akcie" data-max-hodin="72"></p>
+      <div class="obnova cast-obnova" id="obnova-akcie"></div>
       <!-- Akcie a portfolio vloží js/akcie.js ze zašifrovaných dat v data/akcie/ -->
       <div id="akcie">
         <p class="nacitani">Načítá se…</p>
@@ -57,14 +61,18 @@
 
   <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
-  <script src="js/zalozky.js?v=15"></script>
-  <script src="js/spolecne.js?v=15"></script>
-  <script src="js/moduly/pocasi.js?v=15"></script>
-  <script src="js/moduly/zpravy.js?v=15"></script>
-  <script src="js/moduly/akcie.js?v=15"></script>
-  <script src="js/pocasi.js?v=15"></script>
-  <script src="js/zpravy.js?v=15"></script>
-  <script src="js/akcie.js?v=15"></script>
-  <script>nastavPrepinac();</script>
+  <script src="js/zalozky.js?v=16"></script>
+  <script src="js/spolecne.js?v=16"></script>
+  <script src="js/obnova.js?v=16"></script>
+  <script src="js/moduly/pocasi.js?v=16"></script>
+  <script src="js/moduly/zpravy.js?v=16"></script>
+  <script src="js/moduly/akcie.js?v=16"></script>
+  <script src="js/pocasi.js?v=16"></script>
+  <script src="js/zpravy.js?v=16"></script>
+  <script src="js/akcie.js?v=16"></script>
+  <script>
+    nastavPrepinac();
+    document.getElementById("obnovit-vse").append(vytvorHlavniObnovu());
+  </script>
 </body>
 </html>
