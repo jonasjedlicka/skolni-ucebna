@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Přehled · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <!-- data-zalozka říká, která záložka v navigaci je aktivní -->
 <body data-zalozka="prehled">
@@ -30,21 +30,22 @@
     </div>
   </main>
 
-  <footer class="paticka">Data: Edookit, Google Kalendář, Open-Meteo, RSS, Yahoo Finance, ČNB · <button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
+  <footer class="paticka">Data: Edookit, Google Kalendář, Open-Meteo, Golemio, RSS, Yahoo Finance, ČNB · <button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
   <!-- Pořadí je důležité: záložky, společné funkce, moduly, nakonec Přehled.
        Nový modul = nový soubor v js/moduly/ a jeden řádek tady.
-       ?v=7 je číslo verze: po větší změně ho zvyš na všech stránkách, ať
+       ?v=8 je číslo verze: po větší změně ho zvyš na všech stránkách, ať
        prohlížeče nenačítají staré soubory ze své mezipaměti. -->
-  <script src="js/zalozky.js?v=7"></script>
-  <script src="js/spolecne.js?v=7"></script>
-  <script src="js/moduly/pocasi.js?v=7"></script>
-  <script src="js/moduly/skola.js?v=7"></script>
-  <script src="js/moduly/odpocty.js?v=7"></script>
-  <script src="js/moduly/kalendar.js?v=7"></script>
-  <script src="js/moduly/soustredeni.js?v=7"></script>
-  <script src="js/moduly/akcie.js?v=7"></script>
-  <script src="js/moduly/zpravy.js?v=7"></script>
-  <script src="js/index.js?v=7"></script>
+  <script src="js/zalozky.js?v=8"></script>
+  <script src="js/spolecne.js?v=8"></script>
+  <script src="js/moduly/pocasi.js?v=8"></script>
+  <script src="js/moduly/mhd.js?v=8"></script>
+  <script src="js/moduly/skola.js?v=8"></script>
+  <script src="js/moduly/odpocty.js?v=8"></script>
+  <script src="js/moduly/kalendar.js?v=8"></script>
+  <script src="js/moduly/soustredeni.js?v=8"></script>
+  <script src="js/moduly/akcie.js?v=8"></script>
+  <script src="js/moduly/zpravy.js?v=8"></script>
+  <script src="js/index.js?v=8"></script>
 </body>
 </html>

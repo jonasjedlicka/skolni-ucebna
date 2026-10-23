@@ -738,6 +738,63 @@ a.polozka-nazev:hover {
   margin: -8px 0 12px;
 }
 
+/* --- MHD --- */
+
+.odjezd {
+  align-items: center;
+}
+
+/* Číslo linky jako štítek s obrysem; metro obrácené (bílé), ať je hned poznat */
+.linka {
+  flex: none;
+  min-width: 44px;
+  padding: 4px 8px;
+  border: 1.5px solid var(--text-slaby);
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.linka.metro {
+  background: var(--akcent);
+  border-color: var(--akcent);
+  color: var(--akcent-text);
+}
+
+.odjezd-cas {
+  flex: none;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.odjezd-minuty {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* „Vyraž hned“: obrácený štítek místo červené */
+.odjezd-cas.brzy {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--akcent);
+  color: var(--akcent-text);
+}
+
+.odjezd-cas.brzy .polozka-detail {
+  color: var(--akcent-text);
+}
+
+/* Zrušený spoj: přeškrtnutý a ztlumený */
+.odjezd.zruseno .polozka-nazev,
+.odjezd.zruseno .odjezd-minuty {
+  text-decoration: line-through;
+}
+
+.odjezd.zruseno {
+  opacity: 0.55;
+}
+
 /* --- Odpočty --- */
 
 .odpocet-nazev {
