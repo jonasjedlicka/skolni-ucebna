@@ -5,6 +5,7 @@
 let testyOdpoctu = []; // testy se načtou zvlášť, protože potřebují heslo
 
 async function zobrazOdpocty() {
+  document.getElementById("odpocty-hlavni").before(vytvorStavZapisu(odpoctyZapisy()));
   nastavFormularOdpoctu();
   vykresliOdpocty();
   try {
@@ -48,15 +49,11 @@ function vytvorTlacitkoOdebrat(u) {
   tlacitko.setAttribute("aria-label", (u.vlastni ? "Smazat " : "Skrýt ") + u.nazev);
   tlacitko.title = u.vlastni ? "Smazat" : "Skrýt";
   tlacitko.addEventListener("click", () => {
-    const ulozene = nactiUlozeneOdpocty();
     if (u.vlastni) {
-      if (!confirm(`Smazat odpočet „${u.nazev}“?`)) return;
-      ulozene.vlastni = ulozene.vlastni.filter((v) => v.id !== u.id);
+      if (confirm(`Smazat odpočet „${u.nazev}“?`)) odpoctyZapisy().smaz(u.id);
     } else {
-      ulozene.skryte.push(u.id);
+      skryjOdpocet(u.id);
     }
-    ulozOdpocty(ulozene);
-    vykresliOdpocty();
   });
   return tlacitko;
 }
@@ -69,11 +66,7 @@ function vykresliSkryte() {
   if (ulozene.skryte.length === 0) return;
   const tlacitko = vytvor("button", "odkaz-tlacitko", `Obnovit skryté termíny (${ulozene.skryte.length})`);
   tlacitko.type = "button";
-  tlacitko.addEventListener("click", () => {
-    ulozene.skryte = [];
-    ulozOdpocty(ulozene);
-    vykresliOdpocty();
-  });
+  tlacitko.addEventListener("click", obnovSkryteOdpocty);
   misto.append(tlacitko);
 }
 
@@ -90,26 +83,15 @@ function nastavFormularOdpoctu() {
       alert("Konec nemůže být dřív než začátek.");
       return;
     }
-    const ulozene = nactiUlozeneOdpocty();
-    ulozene.vlastni.push({
-      // Jedinečné id: čas + kousek náhody (kdyby vznikly dva ve stejné milisekundě)
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      nazev,
-      od, // formát "2026-11-02" – stejný, jaký čte parsujDatum
-      ...(doKdy ? { do: doKdy } : {}),
-    });
-    ulozOdpocty(ulozene);
+    pridejOdpocet(nazev, od, doKdy);
     formular.reset();
-    vykresliOdpocty();
   });
 }
 
 // O půlnoci se počty dní změní – stránka otevřená přes noc se sama obnoví
 setInterval(vykresliOdpocty, 10 * 60 * 1000);
 
-// Změna v jiné kartě prohlížeče
-window.addEventListener("storage", (udalost) => {
-  if (udalost.key === ODPOCTY_KLIC) vykresliOdpocty();
-});
+// Změna (i z jiného zařízení nebo karty) → překreslit
+odpoctyZapisy().naZmenu(vykresliOdpocty);
 
 zobrazOdpocty();

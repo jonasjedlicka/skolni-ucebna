@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Plán · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="css/style.css?v=11">
 </head>
 <body data-zalozka="plan">
   <header class="hlavicka">
@@ -23,12 +23,20 @@
     <!-- Přepínač částí (řídí nastavPrepinac ze spolecne.js). Další části
          (Úkoly, Odpočty, Cíle, Poznámky) přibudou s dalšími moduly. -->
     <div class="prepinac" role="tablist" aria-label="Části">
+      <button type="button" role="tab" data-cast="ukoly">Úkoly</button>
       <button type="button" role="tab" data-cast="odpocty">Odpočty</button>
       <button type="button" role="tab" data-cast="poznamky">Poznámky</button>
       <button type="button" role="tab" data-cast="soustredeni">Soustředění</button>
     </div>
 
-    <section class="cast" id="cast-odpocty" role="tabpanel">
+    <section class="cast" id="cast-ukoly" role="tabpanel">
+      <!-- Úkoly vloží js/ukoly.js, ukládají se zašifrovaně na GitHub (js/zapisy.js) -->
+      <div id="ukoly">
+        <p class="nacitani">Načítá se…</p>
+      </div>
+    </section>
+
+    <section class="cast" id="cast-odpocty" role="tabpanel" hidden>
       <!-- Odpočty vloží js/odpocty.js: pevné termíny, testy z Edookitu a vlastní odpočty -->
       <div class="karta sekce odpocty-hlavni" id="odpocty-hlavni">
         <p class="nacitani">Načítá se…</p>
@@ -46,7 +54,6 @@
           <label>Do (nepovinné, u vícedenních) <input type="date" name="do"></label>
         </div>
         <button type="submit" class="hlavni-tlacitko">Přidat</button>
-        <p class="polozka-detail">Vlastní odpočty se zatím ukládají jen v tomhle prohlížeči.</p>
       </form>
 
       <div id="odpocty-skryte"></div>
@@ -61,7 +68,7 @@
     </section>
 
     <section class="cast" id="cast-soustredeni" role="tabpanel" hidden>
-      <!-- Odpočet ovládá js/soustredeni.js, stav je uložený jen v tomhle prohlížeči -->
+      <!-- Odpočet ovládá js/soustredeni.js, stav odpočtu je v prohlížeči, statistiky na GitHubu -->
       <div class="karta sekce pomodoro">
         <div class="pomodoro-cifernik" id="pomodoro-cifernik">
           <div class="pomodoro-uvnitr">
@@ -95,23 +102,25 @@
           <label>Dlouhá pauza (min) <input type="number" name="dlouhaPauza" min="1" max="60" inputmode="numeric"></label>
           <label>Kol do dlouhé pauzy <input type="number" name="kolDoDlouhe" min="1" max="10" inputmode="numeric"></label>
         </div>
-        <p class="polozka-detail">Když odpočet právě běží, změna platí od příští fáze. Odpočet běží dál i po zavření stránky, ukládá se jen v tomhle prohlížeči.</p>
+        <p class="polozka-detail">Když odpočet právě běží, změna platí od příští fáze. Odpočet běží dál i po zavření stránky a na každém zařízení zvlášť; počty pomodor se ukládají na GitHub.</p>
       </details>
     </section>
   </main>
 
   <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
-  <script src="js/zalozky.js?v=10"></script>
-  <script src="js/spolecne.js?v=10"></script>
-  <script src="js/zapisy.js?v=10"></script>
-  <script src="js/moduly/skola.js?v=10"></script>
-  <script src="js/moduly/odpocty.js?v=10"></script>
-  <script src="js/moduly/poznamky.js?v=10"></script>
-  <script src="js/moduly/soustredeni.js?v=10"></script>
-  <script src="js/odpocty.js?v=10"></script>
-  <script src="js/poznamky.js?v=10"></script>
-  <script src="js/soustredeni.js?v=10"></script>
+  <script src="js/zalozky.js?v=11"></script>
+  <script src="js/spolecne.js?v=11"></script>
+  <script src="js/zapisy.js?v=11"></script>
+  <script src="js/moduly/skola.js?v=11"></script>
+  <script src="js/moduly/ukoly.js?v=11"></script>
+  <script src="js/moduly/odpocty.js?v=11"></script>
+  <script src="js/moduly/poznamky.js?v=11"></script>
+  <script src="js/moduly/soustredeni.js?v=11"></script>
+  <script src="js/ukoly.js?v=11"></script>
+  <script src="js/odpocty.js?v=11"></script>
+  <script src="js/poznamky.js?v=11"></script>
+  <script src="js/soustredeni.js?v=11"></script>
   <script>nastavPrepinac();</script>
 </body>
 </html>

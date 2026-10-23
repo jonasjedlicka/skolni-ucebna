@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Škola · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="css/style.css?v=11">
 </head>
 <body data-zalozka="skola">
   <header class="hlavicka">
@@ -27,6 +27,7 @@
       <button type="button" role="tab" data-cast="rozvrh">Rozvrh</button>
       <button type="button" role="tab" data-cast="testy">Testy</button>
       <button type="button" role="tab" data-cast="predmety">Předměty</button>
+      <button type="button" role="tab" data-cast="ukoly">Úkoly</button>
     </div>
 
     <section class="cast" id="cast-rozvrh" role="tabpanel">
@@ -49,15 +50,25 @@
         <p class="nacitani">Předměty se načítají…</p>
       </div>
     </section>
+
+    <section class="cast" id="cast-ukoly" role="tabpanel" hidden>
+      <!-- Jen školní úkoly; všechny jsou v Plánu → Úkoly. Vkládá js/ukoly.js -->
+      <div id="ukoly" data-druh="skola">
+        <p class="nacitani">Načítá se…</p>
+      </div>
+    </section>
   </main>
 
   <footer class="paticka">Data: Edookit · <button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
-  <script src="js/zalozky.js?v=10"></script>
-  <script src="js/spolecne.js?v=10"></script>
-  <script src="js/moduly/skola.js?v=10"></script>
-  <script src="js/rozvrh.js?v=10"></script>
-  <script src="js/testy.js?v=10"></script>
-  <script src="js/skola.js?v=10"></script>
+  <script src="js/zalozky.js?v=11"></script>
+  <script src="js/spolecne.js?v=11"></script>
+  <script src="js/zapisy.js?v=11"></script>
+  <script src="js/moduly/skola.js?v=11"></script>
+  <script src="js/rozvrh.js?v=11"></script>
+  <script src="js/testy.js?v=11"></script>
+  <script src="js/moduly/ukoly.js?v=11"></script>
+  <script src="js/skola.js?v=11"></script>
+  <script src="js/ukoly.js?v=11"></script>
 </body>
 </html>

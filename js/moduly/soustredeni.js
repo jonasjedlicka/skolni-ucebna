@@ -1,11 +1,12 @@
 // Modul SOUSTŘEDĚNÍ: odpočítávadlo Pomodoro (práce → pauza → práce …).
-// Stav se ukládá v prohlížeči (localStorage), takže odpočet běží dál,
+// Stav odpočtu se ukládá v prohlížeči (localStorage), takže odpočet běží dál,
 // i když stránku zavřeš nebo přepneš záložku. Ukládáme ČAS KONCE, ne zbývající
 // sekundy – prohlížeč totiž časovače na pozadí zpomaluje, hodiny ale ne.
-// Žádný server ani heslo: na každém zařízení se počítá zvlášť.
+// Odpočet běží na každém zařízení zvlášť; počty hotových pomodor se ukládají
+// zašifrovaně na GitHub (js/zapisy.js), takže statistiky jsou všude stejné.
 
 const POMODORO_KLIC = "ucebna-pomodoro";
-const POMODORO_HISTORIE_KLIC = "ucebna-pomodoro-historie";
+const POMODORO_HISTORIE_KLIC = "ucebna-pomodoro-historie"; // starý zápis (jen kvůli převodu)
 
 // Výchozí délky (v minutách); upravit jdou v Plánu → Soustředění → Nastavení
 const POMODORO_VYCHOZI = { prace: 25, pauza: 5, dlouhaPauza: 15, kolDoDlouhe: 4 };
@@ -97,30 +98,54 @@ function zkontrolujKonec(stav) {
 }
 
 // --- Historie: kolik pomodor a minut za který den ---
+// Každé dokončené pomodoro je jedna položka { datum, minut, pocet } v zápisech
+// (zašifrovaně na GitHubu), takže se počty sčítají ze všech zařízení.
+// Samotný odpočet (co právě běží) zůstává v prohlížeči – na každém zařízení svůj.
+
+function pomodoraZapisy() {
+  return otevriZapisy("soustredeni", "soustředění");
+}
 
 // Dnešní datum jako "2026-10-23" v místním čase (švédský formát je přesně tenhle)
 function datumKlic(datum = new Date()) {
   return datum.toLocaleDateString("sv-SE");
 }
 
+// { "2026-10-23": { pocet, minut }, … }
 function nactiHistorii() {
-  return nactiZProhlizece(POMODORO_HISTORIE_KLIC, {});
+  const historie = {};
+  for (const p of pomodoraZapisy().polozky()) {
+    const den = historie[p.datum] || { pocet: 0, minut: 0 };
+    historie[p.datum] = { pocet: den.pocet + (p.pocet || 1), minut: den.minut + p.minut };
+  }
+  return historie;
 }
 
 function zapisPomodoro(minut) {
-  const historie = nactiHistorii();
-  const dnes = datumKlic();
-  const den = historie[dnes] || { pocet: 0, minut: 0 };
-  historie[dnes] = { pocet: den.pocet + 1, minut: den.minut + minut };
-  // Nechceme, aby úložiště rostlo donekonečna: necháme posledních 60 dní
-  const dny = Object.keys(historie).sort();
-  for (const stary of dny.slice(0, -60)) delete historie[stary];
-  ulozDoProhlizece(POMODORO_HISTORIE_KLIC, historie);
+  pomodoraZapisy().uloz({ datum: datumKlic(), minut, pocet: 1 });
 }
 
 function dnesniPomodora() {
   return nactiHistorii()[datumKlic()] || { pocet: 0, minut: 0 };
 }
+
+// Dřív byla historie jen v prohlížeči – převedeme ji jednou na GitHub (den = jedna položka)
+async function prevedStarouHistorii() {
+  let stara = null;
+  try {
+    stara = JSON.parse(localStorage.getItem(POMODORO_HISTORIE_KLIC));
+  } catch {
+    return;
+  }
+  if (!stara) return;
+  await pomodoraZapisy().hotovo;
+  for (const [datum, den] of Object.entries(stara)) {
+    pomodoraZapisy().uloz({ id: "puvodni-" + datum, datum, minut: den.minut, pocet: den.pocet });
+  }
+  localStorage.removeItem(POMODORO_HISTORIE_KLIC);
+}
+
+prevedStarouHistorii();
 
 // --- Zobrazení ---
 

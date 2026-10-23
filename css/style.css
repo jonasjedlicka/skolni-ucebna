@@ -393,7 +393,19 @@ main {
   box-shadow: inset 0 1px 0 var(--sklo-odlesk);
 }
 
+/* Víc částí, než se vejde na šířku telefonu: přepínač se posouvá prstem */
+.prepinac {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.prepinac::-webkit-scrollbar {
+  display: none;
+}
+
 .prepinac button {
+  flex: none;
+  white-space: nowrap;
   font: inherit;
   font-size: 0.92rem;
   font-weight: 500;
@@ -875,6 +887,143 @@ a.polozka-nazev:hover {
   -webkit-line-clamp: 3;
   line-clamp: 3;
   overflow: hidden;
+}
+
+/* --- Úkoly --- */
+
+.ukol-formular {
+  display: grid;
+  gap: 10px;
+}
+
+.ukol-formular input,
+.ukol-formular select,
+.ukol-uprava input {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.ukol-pole {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.ukol-druhy {
+  margin-bottom: 0;
+}
+
+.ukol-formular .hlavni-tlacitko {
+  justify-self: start;
+}
+
+/* Kulaté zaškrtávátko: prázdný kroužek, hotové = plný bílý s fajfkou */
+.zaskrtavatko {
+  flex: none;
+  position: relative;
+  z-index: 2;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--text-slaby);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--prechod), border-color var(--prechod);
+}
+
+.zaskrtavatko:hover {
+  border-color: var(--text);
+}
+
+.zaskrtavatko[aria-checked="true"] {
+  background: var(--akcent);
+  border-color: var(--akcent);
+}
+
+.zaskrtavatko[aria-checked="true"]::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 3px;
+  width: 6px;
+  height: 12px;
+  border: solid var(--akcent-text);
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+/* Hotový úkol: přeškrtnutý a ztlumený */
+.ukol.hotovo .polozka-nazev {
+  text-decoration: line-through;
+  color: var(--text-slaby);
+}
+
+.ukol-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 3px;
+}
+
+.ukol-upravit .ikona {
+  width: 15px;
+  height: 15px;
+}
+
+.ukol .odebrat-tlacitko {
+  margin-left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ukol-uprava {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.ukol-uprava input:first-child {
+  flex: 1 1 200px;
+}
+
+.ukol-uprava input[type="date"] {
+  width: auto;
+}
+
+.ukoly-skupiny h2 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-slaby);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.ukoly-skupiny .sekce {
+  margin-bottom: 18px;
+}
+
+.ukoly-hotove summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.ukoly-hotove > .odkaz-tlacitko {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-slaby);
 }
 
 /* --- Odpočty --- */

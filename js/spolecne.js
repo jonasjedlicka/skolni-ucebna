@@ -56,11 +56,14 @@ function nastavPrepinac() {
       for (const tlacitko of tlacitka) {
         tlacitko.setAttribute("aria-selected", tlacitko.dataset.cast === cast);
       }
+      // Na úzkém telefonu se přepínač posouvá – vybranou část posuneme do záběru
+      tlacitka.find((t) => t.dataset.cast === cast)?.scrollIntoView({ block: "nearest", inline: "nearest" });
     };
     // View Transitions: prohlížeč plynule prolne starý a nový obsah.
     // Kde ji prohlížeč neumí, část se přepne hned (bez animace).
     if (animovat && document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      document.startViewTransition(prepni);
+      // Při rychlém přepnutí prohlížeč animaci přeskočí a ohlásí to jako chybu – nevadí
+      document.startViewTransition(prepni).ready.catch(() => {});
     } else {
       prepni();
     }

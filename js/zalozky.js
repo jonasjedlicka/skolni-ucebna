@@ -36,6 +36,7 @@ const IKONY = {
   pauza: "M8.5 5v14M15.5 5v14",
   preskocit: "M6 6l9 6-9 6zM18 6v12",
   znovu: "M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5",
+  upravit: "M4 20h4L19 9l-4-4L4 16zM14 6l4 4",
   zamek: "M6 11h12v10H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3",
   zpet: "M15 5l-7 7 7 7",
 };

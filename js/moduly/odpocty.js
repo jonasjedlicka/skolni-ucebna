@@ -3,9 +3,9 @@
 //   1. pevné termíny školního roku (níž v ODPOCTY_SKOLNI_ROK, z MŠMT – veřejné),
 //   2. testy ze školních dat (Edookit, zašifrované),
 //   3. vlastní odpočty, které si přidáš na stránce Plán → Odpočty
-//      (zatím se ukládají jen v tomhle prohlížeči).
+//      (ukládají se zašifrovaně na GitHub přes js/zapisy.js).
 
-const ODPOCTY_KLIC = "ucebna-odpocty";
+const ODPOCTY_KLIC = "ucebna-odpocty"; // starý zápis v prohlížeči (jen kvůli převodu)
 
 // Školní rok 2026/27 podle MŠMT. „do“ = poslední den (včetně).
 // Jarní prázdniny se v Praze liší podle obvodu: Praha 1–5 má 22.–28. 2.,
@@ -26,13 +26,49 @@ const ODPOCTY_SKOLNI_ROK = [
 ];
 
 // --- Uložené: vlastní odpočty a skryté pevné termíny ---
+// Ukládají se zašifrovaně na GitHub (js/zapisy.js), takže jsou všude stejné.
+// Položky: vlastní { druh: "vlastni", nazev, od, do? }, skrytý pevný termín
+// má id "skryte-<id termínu>" a { druh: "skryte" }.
 
-function nactiUlozeneOdpocty() {
-  return nactiZProhlizece(ODPOCTY_KLIC, { vlastni: [], skryte: [] });
+function odpoctyZapisy() {
+  return otevriZapisy("odpocty", "odpočty");
 }
 
-function ulozOdpocty(ulozene) {
-  ulozDoProhlizece(ODPOCTY_KLIC, ulozene);
+function nactiUlozeneOdpocty() {
+  const polozky = odpoctyZapisy().polozky();
+  return {
+    vlastni: polozky.filter((p) => p.druh === "vlastni"),
+    skryte: polozky.filter((p) => p.druh === "skryte").map((p) => p.id.replace(/^skryte-/, "")),
+  };
+}
+
+function pridejOdpocet(nazev, od, doKdy) {
+  odpoctyZapisy().uloz({ druh: "vlastni", nazev, od, ...(doKdy ? { do: doKdy } : {}) });
+}
+
+function skryjOdpocet(id) {
+  odpoctyZapisy().uloz({ id: "skryte-" + id, druh: "skryte" });
+}
+
+function obnovSkryteOdpocty() {
+  for (const id of nactiUlozeneOdpocty().skryte) odpoctyZapisy().smaz("skryte-" + id);
+}
+
+// Dřív se odpočty ukládaly jen v prohlížeči – převedeme je jednou na GitHub
+async function prevedStareOdpocty() {
+  let stare = null;
+  try {
+    stare = JSON.parse(localStorage.getItem(ODPOCTY_KLIC));
+  } catch {
+    return;
+  }
+  if (!stare) return;
+  await odpoctyZapisy().hotovo;
+  for (const u of stare.vlastni || []) {
+    odpoctyZapisy().uloz({ id: u.id, druh: "vlastni", nazev: u.nazev, od: u.od, ...(u.do ? { do: u.do } : {}) });
+  }
+  for (const id of stare.skryte || []) skryjOdpocet(id);
+  localStorage.removeItem(ODPOCTY_KLIC);
 }
 
 // --- Výpočet ---
@@ -116,19 +152,27 @@ function vytvorHlavniOdpocet(u) {
 // Dlaždice „Odpočty“ na Přehledu: nejbližší velký a další dva pod ním.
 // Testy tu nejsou – na ně má Přehled vlastní dlaždici „Nejbližší test“.
 function vykresliOdpoctyDnes(obsah) {
-  const [prvni, ...dalsi] = seradOdpocty(zakladniOdpocty());
-  if (!prvni) {
-    obsah.append(vytvor("p", "slaby", "Žádné nadcházející odpočty"));
-    return;
+  const misto = vytvor("div", "");
+  obsah.append(misto);
+  function prekresli() {
+    const [prvni, ...dalsi] = seradOdpocty(zakladniOdpocty());
+    if (!prvni) {
+      misto.replaceChildren(vytvor("p", "slaby", "Žádné nadcházející odpočty"));
+      return;
+    }
+    misto.replaceChildren(vytvorHlavniOdpocet(prvni));
+    if (dalsi.length) {
+      const seznam = vytvor("ul", "seznam");
+      seznam.style.marginTop = "10px";
+      seznam.append(...dalsi.slice(0, 2).map(vytvorRadekOdpoctu));
+      misto.append(seznam);
+    }
   }
-  obsah.append(vytvorHlavniOdpocet(prvni));
-  if (dalsi.length) {
-    const seznam = vytvor("ul", "seznam");
-    seznam.style.marginTop = "10px";
-    seznam.append(...dalsi.slice(0, 2).map(vytvorRadekOdpoctu));
-    obsah.append(seznam);
-  }
+  odpoctyZapisy().naZmenu(prekresli);
+  prekresli();
 }
+
+prevedStareOdpocty();
 
 MODULY.push({
   id: "odpocty",
