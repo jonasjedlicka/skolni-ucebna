@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Plán · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body data-zalozka="plan">
   <header class="hlavicka">
@@ -23,10 +23,36 @@
     <!-- Přepínač částí (řídí nastavPrepinac ze spolecne.js). Další části
          (Úkoly, Odpočty, Cíle, Poznámky) přibudou s dalšími moduly. -->
     <div class="prepinac" role="tablist" aria-label="Části">
+      <button type="button" role="tab" data-cast="odpocty">Odpočty</button>
       <button type="button" role="tab" data-cast="soustredeni">Soustředění</button>
     </div>
 
-    <section class="cast" id="cast-soustredeni" role="tabpanel">
+    <section class="cast" id="cast-odpocty" role="tabpanel">
+      <!-- Odpočty vloží js/odpocty.js: pevné termíny, testy z Edookitu a vlastní odpočty -->
+      <div class="karta sekce odpocty-hlavni" id="odpocty-hlavni">
+        <p class="nacitani">Načítá se…</p>
+      </div>
+
+      <h2>Další</h2>
+      <ul class="seznam sekce odpocty-seznam" id="odpocty-seznam"></ul>
+      <p class="polozka-detail" id="odpocty-testy"></p>
+
+      <form class="karta sekce formular" id="odpocty-formular">
+        <h2>Přidat vlastní odpočet</h2>
+        <div class="nastaveni-pole">
+          <label>Název <input type="text" name="nazev" required maxlength="80" placeholder="Např. Narozeniny, koncert…"></label>
+          <label>Datum <input type="date" name="od" required></label>
+          <label>Do (nepovinné, u vícedenních) <input type="date" name="do"></label>
+        </div>
+        <button type="submit" class="hlavni-tlacitko">Přidat</button>
+        <p class="polozka-detail">Vlastní odpočty se zatím ukládají jen v tomhle prohlížeči.</p>
+      </form>
+
+      <div id="odpocty-skryte"></div>
+      <p class="podnadpis">Termíny školního roku: MŠMT · testy: Edookit</p>
+    </section>
+
+    <section class="cast" id="cast-soustredeni" role="tabpanel" hidden>
       <!-- Odpočet ovládá js/soustredeni.js, stav je uložený jen v tomhle prohlížeči -->
       <div class="karta sekce pomodoro">
         <div class="pomodoro-cifernik" id="pomodoro-cifernik">
@@ -66,12 +92,15 @@
     </section>
   </main>
 
-  <footer class="paticka">Soustředění se ukládá jen v tomhle zařízení.</footer>
+  <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
-  <script src="js/zalozky.js?v=6"></script>
-  <script src="js/spolecne.js?v=6"></script>
-  <script src="js/moduly/soustredeni.js?v=6"></script>
-  <script src="js/soustredeni.js?v=6"></script>
+  <script src="js/zalozky.js?v=7"></script>
+  <script src="js/spolecne.js?v=7"></script>
+  <script src="js/moduly/skola.js?v=7"></script>
+  <script src="js/moduly/odpocty.js?v=7"></script>
+  <script src="js/moduly/soustredeni.js?v=7"></script>
+  <script src="js/odpocty.js?v=7"></script>
+  <script src="js/soustredeni.js?v=7"></script>
   <script>nastavPrepinac();</script>
 </body>
 </html>

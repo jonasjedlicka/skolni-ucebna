@@ -738,6 +738,55 @@ a.polozka-nazev:hover {
   margin: -8px 0 12px;
 }
 
+/* --- Odpočty --- */
+
+.odpocet-nazev {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.odpocty-hlavni {
+  position: relative;
+}
+
+/* Hlavní odpočet: křížek vpravo nahoře */
+.odpocty-hlavni > .odebrat-tlacitko {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.odpocty-seznam .polozka {
+  align-items: center;
+}
+
+/* Malé kulaté „×“ – smazat vlastní / skrýt pevný termín */
+.odebrat-tlacitko {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-left: 8px;
+  padding: 0;
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  border-radius: 50%;
+  border: 1px solid var(--polozka-okraj);
+  background: transparent;
+  color: var(--text-slaby);
+  cursor: pointer;
+  transition: color var(--prechod), background var(--prechod);
+}
+
+.odebrat-tlacitko:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.formular .hlavni-tlacitko {
+  margin: 4px 0 8px;
+}
+
 /* --- Soustředění (Pomodoro) --- */
 
 .pomodoro {

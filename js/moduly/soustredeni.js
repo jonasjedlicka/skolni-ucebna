@@ -16,26 +16,7 @@ const FAZE = {
   dlouhaPauza: "Dlouhá pauza",
 };
 
-// --- Ukládání ---
-
-// localStorage umí jen text, proto objekt převádíme na JSON a zpět.
-// try/catch: v anonymním okně nebo s vypnutým úložištěm čtení selže.
-function nactiZProhlizece(klic, vychozi) {
-  try {
-    const text = localStorage.getItem(klic);
-    return text ? { ...vychozi, ...JSON.parse(text) } : { ...vychozi };
-  } catch {
-    return { ...vychozi };
-  }
-}
-
-function ulozDoProhlizece(klic, hodnota) {
-  try {
-    localStorage.setItem(klic, JSON.stringify(hodnota));
-  } catch {
-    // Nejde uložit – odpočet poběží aspoň do zavření stránky
-  }
-}
+// --- Ukládání (nactiZProhlizece / ulozDoProhlizece jsou ve spolecne.js) ---
 
 // Stav: faze, konec (čas v ms, když běží), zbyva (ms, když je pozastaveno),
 // kolo = kolikáté pracovní kolo právě je (1–4), nastaveni = délky fází

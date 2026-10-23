@@ -126,6 +126,27 @@ function vytvor(znacka, trida, text) {
   return prvek;
 }
 
+// --- Ukládání v prohlížeči (Soustředění, Odpočty…) ---
+// Data zůstanou jen v tomhle prohlížeči na tomhle zařízení.
+// localStorage umí jen text, proto objekt převádíme na JSON a zpět.
+// try/catch: v anonymním okně nebo s vypnutým úložištěm čtení selže.
+function nactiZProhlizece(klic, vychozi) {
+  try {
+    const text = localStorage.getItem(klic);
+    return text ? { ...vychozi, ...JSON.parse(text) } : { ...vychozi };
+  } catch {
+    return { ...vychozi };
+  }
+}
+
+function ulozDoProhlizece(klic, hodnota) {
+  try {
+    localStorage.setItem(klic, JSON.stringify(hodnota));
+  } catch {
+    // Nejde uložit (anonymní okno) – data vydrží aspoň do zavření stránky
+  }
+}
+
 // Převede text "2026-11-02" na datum.
 // Nepoužíváme new Date("2026-11-02"), protože to prohlížeč bere
 // jako půlnoc v Londýně (UTC), a u nás by to pak mohl být jiný den.
