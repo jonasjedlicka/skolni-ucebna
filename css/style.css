@@ -384,6 +384,50 @@ a.polozka-nazev:hover {
   color: var(--hlavni-text);
 }
 
+/* --- Zámek (zadání hesla k šifrovaným datům) --- */
+
+.zamek {
+  width: min(360px, calc(100% - 32px));
+  border: 1px solid var(--okraj);
+  border-radius: var(--zaobleni);
+  background: var(--karta);
+  color: var(--text);
+  padding: 20px;
+}
+
+/* Ztmavení stránky za oknem */
+.zamek::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.zamek input[type="password"] {
+  width: 100%;
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--okraj);
+  border-radius: 8px;
+  background: var(--pozadi);
+  color: var(--text);
+}
+
+.zamek-zapamatovat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+/* Tlačítko, které vypadá jako odkaz (Zamknout v patičce) */
+.odkaz-tlacitko {
+  font: inherit;
+  color: var(--hlavni);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 /* --- Stránka předmětu --- */
 
 .predmet-hlavicka {

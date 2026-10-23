@@ -5,9 +5,9 @@ async function zobrazTesty() {
   const seznam = document.getElementById("testy");
   try {
     const [testy, predmety, rozvrh] = await Promise.all([
-      nactiJson(SKOLA_DATA + "testy.json"),
+      nactiSkolniData("testy"),
       nactiPredmety(),
-      nactiJson(SKOLA_DATA + "rozvrh.json"), // jen kvůli časům hodin
+      nactiSkolniData("rozvrh"), // jen kvůli časům hodin
     ]);
 
     const nadchazejici = nadchazejiciTesty(testy);

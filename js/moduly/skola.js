@@ -3,10 +3,16 @@
 
 const SKOLA_DATA = "data/skola/";
 
+// Školní data jsou zašifrovaná: nactiSkolniData("rozvrh") načte rozvrh.enc.json
+// a rozšifruje ho (při prvním načtení se zeptá na heslo).
+function nactiSkolniData(nazev) {
+  return nactiTajnyJson(SKOLA_DATA + nazev + ".enc.json");
+}
+
 // Načte předměty a vrátí je jako "slovník" podle id,
 // takže pak stačí napsat predmety["matematika"] a máš celý předmět.
 async function nactiPredmety() {
-  const seznam = await nactiJson(SKOLA_DATA + "predmety.json");
+  const seznam = await nactiSkolniData("predmety");
   const podleId = {};
   for (const predmet of seznam) {
     podleId[predmet.id] = predmet;
@@ -135,9 +141,9 @@ function naMinuty(cas) {
 
 async function vykresliSkolu(obsah) {
   const [rozvrh, predmety, testy] = await Promise.all([
-    nactiJson(SKOLA_DATA + "rozvrh.json"),
+    nactiSkolniData("rozvrh"),
     nactiPredmety(),
-    nactiJson(SKOLA_DATA + "testy.json"),
+    nactiSkolniData("testy"),
   ]);
 
   const sloupce = vytvor("div", "dva-sloupce");

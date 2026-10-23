@@ -6,7 +6,7 @@ async function zobrazRozvrh() {
   try {
     // Promise.all načte oba soubory najednou a počká na oba.
     const [rozvrh, predmety] = await Promise.all([
-      nactiJson(SKOLA_DATA + "rozvrh.json"),
+      nactiSkolniData("rozvrh"),
       nactiPredmety(),
     ]);
 

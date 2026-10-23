@@ -1,5 +1,6 @@
 """
-Stáhne aktuální data z Edookitu, uloží je do data/skola/*.json a nahraje na GitHub.
+Stáhne aktuální data z Edookitu, zašifruje je do data/skola/*.enc.json a nahraje
+na GitHub. Čitelné kopie zůstanou jen u tebe v soukrome/skola/.
 
 Spouštěj ze složky skolni-ucebna:
 
@@ -21,9 +22,13 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
+import sifrovani  # stahovani/sifrovani.py
+
 EDOOKIT = "https://gsgpraha.edookit.net"
 PROJEKT = Path(__file__).resolve().parent.parent  # složka skolni-ucebna
 DATA = PROJEKT / "data" / "skola"  # každý modul dashboardu má svou složku
+# Čitelné kopie dat. Jen v tomhle počítači, na GitHub jdou zašifrované.
+SOUKROME = PROJEKT / "soukrome" / "skola"
 # Sem si prohlížeč ukládá přihlášení. Je v .gitignore – nikdy ho nenahrávej!
 PROFIL = PROJEKT / ".edookit-prihlaseni"
 # Edookit drží přihlášení v cookie, která by po zavření prohlížeče zmizela,
@@ -258,18 +263,27 @@ def git(*argumenty):
     subprocess.run(["git", *argumenty], cwd=PROJEKT, check=True)
 
 
+def cesta_na_webu(nazev):
+    # stav.json je jen čas aktualizace, ten může zůstat čitelný.
+    # Ostatní data jdou na web jen zašifrovaná: rozvrh.json → rozvrh.enc.json
+    if nazev == "stav.json":
+        return DATA / nazev
+    return DATA / nazev.replace(".json", ".enc.json")
+
+
 def uloz(nazev, data):
-    """Uloží JSON. Vrátí True, jen když se obsah opravdu změnil."""
-    cesta = DATA / nazev
-    novy_text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
-    if cesta.exists() and cesta.read_text(encoding="utf-8") == novy_text:
-        return False
-    cesta.write_text(novy_text, encoding="utf-8")
-    return True
+    """Uloží data. Vrátí True, jen když se obsah opravdu změnil."""
+    if nazev == "stav.json":
+        cesta_na_webu(nazev).write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        return True
+    # Čitelná kopie zůstane jen u tebe v počítači (soukrome/ je v .gitignore)
+    SOUKROME.mkdir(parents=True, exist_ok=True)
+    (SOUKROME / nazev).write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return sifrovani.uloz_sifrovane(cesta_na_webu(nazev), data)
 
 
 def nahraj_na_github(soubory):
-    git("add", *[str((DATA / nazev).relative_to(PROJEKT)) for nazev in soubory])
+    git("add", *[str(cesta_na_webu(nazev).relative_to(PROJEKT)) for nazev in soubory])
     git("commit", "-m", f"Aktualizace dat z Edookitu ({date.today():%-d. %-m. %Y})")
     # Mezitím mohl nahrát zprávy GitHub Actions. Pak push selže, tak převezmeme
     # jeho změny (jsou v jiné složce, nepohádají se) a zkusíme to znovu.
@@ -301,7 +315,8 @@ def main():
 
     tydny, pisemky, ucivo = stahni_z_edookitu()
 
-    predmety = json.loads((DATA / "predmety.json").read_text(encoding="utf-8"))
+    # Předměty čteme z čitelné kopie – jsou v nich i tvoje ručně přidané materiály
+    predmety = json.loads((SOUKROME / "predmety.json").read_text(encoding="utf-8"))
     zkratky = {p["zkratka"].lower(): p for p in predmety}
 
     rozvrh, nezname_rozvrh, pocet_tydnu = sestav_rozvrh(tydny, zkratky)
@@ -326,7 +341,7 @@ def main():
     print(f"Rozvrh: {pocet_hodin} hodin týdně · nadcházející testy: {len(testy)}")
     nezname = (nezname_rozvrh | nezname_testy) - {"O3.D"}  # O3.D = oběd
     if nezname:
-        print("! Neznámé předměty (přidej je do data/skola/predmety.json):", ", ".join(sorted(nezname)))
+        print("! Neznámé předměty (přidej je do soukrome/skola/predmety.json):", ", ".join(sorted(nezname)))
 
     if zmenene:
         print("Změněno:", ", ".join(zmenene))

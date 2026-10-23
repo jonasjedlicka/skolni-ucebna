@@ -13,7 +13,7 @@ async function zobrazPredmet() {
   try {
     const [predmety, testy] = await Promise.all([
       nactiPredmety(),
-      nactiJson(SKOLA_DATA + "testy.json"),
+      nactiSkolniData("testy"),
     ]);
 
     // location.search je část adresy za „?“, tedy "?id=fyzika".
@@ -93,7 +93,7 @@ function vytvorMaterialy(materialy) {
 
   if (materialy.length === 0) {
     sekce.append(
-      vytvor("p", "karta slaby", "Zatím žádné materiály. Přidáš je do data/skola/predmety.json do pole „materialy“.")
+      vytvor("p", "karta slaby", "Zatím žádné materiály. Přidáš je do soukrome/skola/predmety.json do pole „materialy“.")
     );
     return sekce;
   }
