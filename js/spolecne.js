@@ -9,12 +9,25 @@ const MODULY = [];
 // Načte jeden JSON soubor a vrátí jeho obsah jako JavaScriptový objekt.
 // "async" znamená, že funkce chvíli čeká (na odpověď serveru);
 // "await" je místo, kde se čeká.
-async function nactiJson(cesta) {
+async function stahniJson(cesta) {
   const odpoved = await fetch(cesta);
   if (!odpoved.ok) {
     throw new Error(`Nepodařilo se načíst ${cesta} (chyba ${odpoved.status})`);
   }
   return odpoved.json();
+}
+
+// Mezipaměť: když stejný soubor chce víc karet (např. rozvrh dlaždice „Dnes“
+// i karta Škola), stáhne se jen jednou a ostatní dostanou stejný výsledek.
+const nactene = new Map();
+
+function nactiJson(cesta) {
+  if (!nactene.has(cesta)) {
+    const slib = stahniJson(cesta);
+    nactene.set(cesta, slib);
+    slib.catch(() => nactene.delete(cesta)); // po chybě to příště zkusíme znovu
+  }
+  return nactene.get(cesta);
 }
 
 // Vytvoří HTML prvek, např. vytvor("div", "karta", "Ahoj")
@@ -196,6 +209,12 @@ async function nactiTajnyJson(cesta) {
     throw new Error(`${cesta} nejde rozšifrovat. Nezměnilo se heslo?`);
   }
 }
+
+// Na mobilu se navigace posouvá do strany – posuneme ji tak,
+// aby odkaz na aktuální stránku byl vidět (block: "nearest" = stránka neposkočí dolů)
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelector(".navigace [aria-current]")?.scrollIntoView({ inline: "center", block: "nearest" });
+});
 
 // Tlačítko „Zamknout“ v patičce: smaže klíč z prohlížeče
 document.addEventListener("DOMContentLoaded", () => {

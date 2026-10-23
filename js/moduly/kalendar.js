@@ -103,11 +103,29 @@ function vykresliDny(kontejner, udalosti) {
   }
 }
 
+// Dlaždice „Kalendář na dnes“ v sekci Dnes: dnešní události
+// včetně vícedenních, které právě probíhají
+async function vykresliKalendarDnes(obsah) {
+  const zitra = pulnoc(new Date()).getTime() + 864e5;
+  const dnesni = (await nactiUdalosti()).filter((u) => u.zacatek.getTime() < zitra);
+  if (dnesni.length === 0) {
+    obsah.append(vytvor("p", "slaby", "Dnes nic naplánovaného 🎉"));
+    return;
+  }
+  const seznam = vytvor("ul", "seznam");
+  seznam.append(...dnesni.map(vytvorUdalost));
+  obsah.append(seznam);
+}
+
+// Karta Kalendář: příští dny (dnešek je nahoře v sekci Dnes)
 async function vykresliKalendar(obsah) {
   const udalosti = await nactiUdalosti();
-  const hranice = pulnoc(new Date()).getTime() + DNI_NA_KARTE * 864e5;
-  const tydenni = udalosti.filter((u) => u.zacatek.getTime() < hranice).slice(0, UDALOSTI_NA_KARTE);
-  vykresliDny(obsah, tydenni);
+  const zitra = pulnoc(new Date()).getTime() + 864e5;
+  const hranice = zitra + DNI_NA_KARTE * 864e5;
+  const pristi = udalosti
+    .filter((u) => u.zacatek.getTime() >= zitra && u.zacatek.getTime() < hranice)
+    .slice(0, UDALOSTI_NA_KARTE);
+  vykresliDny(obsah, pristi);
 
   const vice = vytvor("a", "odkaz-vice", `Všech ${udalosti.length} událostí na měsíc →`);
   vice.href = "kalendar.html";
@@ -120,4 +138,5 @@ MODULY.push({
   odkaz: "kalendar.html",
   maxStariHodin: 6, // stahuje se každé 2 hodiny
   vykresli: vykresliKalendar,
+  dnes: [{ nazev: "Kalendář na dnes", poradi: 3, vykresli: vykresliKalendarDnes }],
 });

@@ -128,9 +128,9 @@ function vytvorDlazdici(predmet) {
   return dlazdice;
 }
 
-// --- Karta na dashboardu ---
+// --- Dashboard: dlaždice „Dnes“ a karta modulu ---
 
-// Kolik nejbližších testů ukázat na dashboardu
+// Kolik nejbližších testů ukázat na kartě
 const POCET_TESTU_NA_KARTE = 3;
 
 // "08:45" → 525 (minut od půlnoci). Čísla se porovnávají snáz než text.
@@ -139,41 +139,15 @@ function naMinuty(cas) {
   return hodiny * 60 + minuty;
 }
 
-async function vykresliSkolu(obsah) {
-  const [rozvrh, predmety, testy] = await Promise.all([
-    nactiSkolniData("rozvrh"),
-    nactiPredmety(),
-    nactiSkolniData("testy"),
-  ]);
-
-  const sloupce = vytvor("div", "dva-sloupce");
-  sloupce.append(vytvorDnesniHodiny(rozvrh, predmety));
-  sloupce.append(vytvorNejblizsiTesty(testy, predmety, rozvrh.casy));
-  obsah.append(sloupce);
-
-  // Předměty jsou schované pod rozbalovacím nadpisem, ať karta není moc dlouhá.
-  // <details> a <summary> umí rozbalování samy, bez JavaScriptu.
-  const vsechny = Object.values(predmety);
-  const rozbal = vytvor("details", "predmety-rozbal");
-  rozbal.append(vytvor("summary", "", `Předměty (${vsechny.length})`));
-  const mrizka = vytvor("div", "mrizka");
-  mrizka.append(...vsechny.map(vytvorDlazdici));
-  rozbal.append(mrizka);
-  obsah.append(rozbal);
-}
-
-function vytvorDnesniHodiny(rozvrh, predmety) {
-  const sekce = vytvor("section", "sekce");
+// Dlaždice „Rozvrh“ v sekci Dnes. O víkendu ukáže pondělí a změní nadpis.
+async function vykresliDnesniRozvrh(obsah, nadpis) {
+  const [rozvrh, predmety] = await Promise.all([nactiSkolniData("rozvrh"), nactiPredmety()]);
   let den = dnesniDen();
   const jeVikend = !den;
-  if (jeVikend) den = DNY[0]; // o víkendu ukážeme, co tě čeká v pondělí
-
-  const nadpis = vytvor("div", "sekce-nadpis");
-  nadpis.append(vytvor("h3", "", jeVikend ? "V pondělí" : "Dnes"));
-  const odkaz = vytvor("a", "", "Celý rozvrh →");
-  odkaz.href = "rozvrh.html";
-  nadpis.append(odkaz);
-  sekce.append(nadpis);
+  if (jeVikend) {
+    den = DNY[0];
+    nadpis.textContent = "Rozvrh v pondělí";
+  }
 
   const seznam = vytvor("ul", "seznam");
   // [...pole] udělá kopii, aby .sort nezměnil původní data
@@ -198,19 +172,50 @@ function vytvorDnesniHodiny(rozvrh, predmety) {
     }
     seznam.append(polozka);
   }
-  sekce.append(seznam);
-  return sekce;
+  obsah.append(seznam);
+
+  const odkaz = vytvor("a", "odkaz-vice", "Celý rozvrh →");
+  odkaz.href = "rozvrh.html";
+  obsah.append(odkaz);
 }
 
-function vytvorNejblizsiTesty(testy, predmety, casy) {
-  const sekce = vytvor("section", "sekce");
-  const nadpis = vytvor("div", "sekce-nadpis");
-  nadpis.append(vytvor("h3", "", "Nejbližší testy"));
-  const odkaz = vytvor("a", "", "Všechny →");
-  odkaz.href = "testy.html";
-  nadpis.append(odkaz);
-  sekce.append(nadpis);
+// Dlaždice „Nejbližší test“ v sekci Dnes: velký odpočet a pod ním podrobnosti
+async function vykresliNejblizsiTest(obsah) {
+  const [testy, predmety, rozvrh] = await Promise.all([
+    nactiSkolniData("testy"),
+    nactiPredmety(),
+    nactiSkolniData("rozvrh"),
+  ]);
+  const [test] = nadchazejiciTesty(testy); // jen první = nejbližší
+  if (!test) {
+    obsah.append(vytvor("p", "slaby", "Žádné nadcházející testy 🎉"));
+    return;
+  }
 
+  const zaKolik = textZaKolik(test.dny);
+  const odpocet = vytvor("div", "odpocet", zaKolik[0].toUpperCase() + zaKolik.slice(1));
+  if (test.dny <= BRZY_DNI) odpocet.classList.add("brzy");
+  obsah.append(odpocet);
+
+  const seznam = vytvor("ul", "seznam");
+  seznam.append(vytvorTest(test, predmety[test.predmet], rozvrh.casy));
+  seznam.style.marginTop = "10px";
+  obsah.append(seznam);
+
+  const odkaz = vytvor("a", "odkaz-vice", "Všechny testy →");
+  odkaz.href = "testy.html";
+  obsah.append(odkaz);
+}
+
+// Karta Škola: nejbližší testy a předměty (dnešní rozvrh je nahoře v sekci Dnes)
+async function vykresliSkolu(obsah) {
+  const [rozvrh, predmety, testy] = await Promise.all([
+    nactiSkolniData("rozvrh"),
+    nactiPredmety(),
+    nactiSkolniData("testy"),
+  ]);
+
+  obsah.append(vytvor("h3", "", "Nejbližší testy"));
   const seznam = vytvor("ul", "seznam");
   // slice(0, 3) vezme jen první tři
   const nejblizsi = nadchazejiciTesty(testy).slice(0, POCET_TESTU_NA_KARTE);
@@ -218,18 +223,31 @@ function vytvorNejblizsiTesty(testy, predmety, casy) {
     seznam.append(vytvor("li", "slaby", "Žádné nadcházející testy 🎉"));
   }
   for (const test of nejblizsi) {
-    seznam.append(vytvorTest(test, predmety[test.predmet], casy));
+    seznam.append(vytvorTest(test, predmety[test.predmet], rozvrh.casy));
   }
-  sekce.append(seznam);
-  return sekce;
+  obsah.append(seznam);
+
+  // Předměty jsou schované pod rozbalovacím nadpisem, ať karta není moc dlouhá.
+  // <details> a <summary> umí rozbalování samy, bez JavaScriptu.
+  const vsechny = Object.values(predmety);
+  const rozbal = vytvor("details", "predmety-rozbal");
+  rozbal.style.marginTop = "14px";
+  rozbal.append(vytvor("summary", "", `Předměty (${vsechny.length})`));
+  const mrizka = vytvor("div", "mrizka");
+  mrizka.append(...vsechny.map(vytvorDlazdici));
+  rozbal.append(mrizka);
+  obsah.append(rozbal);
 }
 
-// Přihlásíme modul na dashboard
+// Přihlásíme modul na dashboard: jednu kartu a dvě dlaždice do sekce „Dnes“
 MODULY.push({
   id: "skola",
   nazev: "📚 Škola",
-  odkaz: "rozvrh.html",
-  sirka: "plna", // karta přes celou šířku dashboardu
+  odkaz: "testy.html",
   maxStariHodin: 48, // starší data = skript se 2 dny nespustil, něco je špatně
   vykresli: vykresliSkolu,
+  dnes: [
+    { nazev: "Rozvrh na dnes", poradi: 1, vysoka: true, vykresli: vykresliDnesniRozvrh },
+    { nazev: "Nejbližší test", poradi: 2, vykresli: vykresliNejblizsiTest },
+  ],
 });
