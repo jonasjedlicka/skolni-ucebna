@@ -79,7 +79,7 @@ function vytvorDlazdiciPrehledu(dlazdice, poradi, ukazStav) {
 // Co udělat při aktualizaci dlaždice:
 // - data ze souborů / z API: zapomenout staré, znovu načíst a vykreslit;
 //   když se to nepovede, stará data zůstanou (chyba se ukáže u kolečka)
-// - zápisy (úkoly, poznámky…): jen znovu načíst z GitHubu – dlaždice se
+// - zápisy (úkoly, poznámky…): jen znovu načíst ze serveru – dlaždice se
 //   překreslí sama, protože poslouchá změny zápisů
 function vytvorObnovuDlazdice(modul, vykresli, obsah) {
   let vykresleno = false;
@@ -96,13 +96,13 @@ function vytvorObnovuDlazdice(modul, vykresli, obsah) {
     }
     obsah.replaceChildren(...novy.childNodes);
     vykresleno = true;
-    // U zápisů ještě počkáme na GitHub – když synchronizace selže, ukáže se to u kolečka
+    // U zápisů ještě počkáme na server – když synchronizace selže, ukáže se to u kolečka
     await zkontrolujZapisy(modul.obnova.zapisy || [], false);
     return modul.maxStariHodin ? casZeStavu(modul.id) : new Date();
   };
 }
 
-// Počká na načtení zápisů z GitHubu (znovu = stáhnout znovu) a vyhodí chybu,
+// Počká na načtení zápisů ze serveru (znovu = stáhnout znovu) a vyhodí chybu,
 // když se synchronizace nepovedla
 async function zkontrolujZapisy(nazvy, znovu) {
   for (const nazev of nazvy) {

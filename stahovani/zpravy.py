@@ -1,11 +1,11 @@
 """
-Stáhne zprávy z RSS kanálů a uloží je do data/zpravy/zpravy.json.
+Stáhne zprávy z RSS kanálů a uloží je do ~/Dashboard-data/zpravy/zpravy.json.
 
 Seznam kanálů je v stahovani/zpravy-zdroje.json – přidat nebo odebrat
 zdroj znamená upravit jen ten soubor.
 
-Spouští ho GitHub Actions každé 3 hodiny (.github/workflows/zpravy.yml).
-Vyzkoušet ho můžeš i u sebe:  python3 stahovani/zpravy.py
+Každé 3 hodiny ho spouští stahovani/vse.py (ten pouští macOS přes launchd).
+Ručně:  python3 stahovani/zpravy.py
 
 Používá jen standardní knihovnu Pythonu, takže nic nemusíš instalovat.
 """
@@ -19,9 +19,10 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 
-PROJEKT = Path(__file__).resolve().parent.parent
+from umisteni import DATA as DASHBOARD_DATA, uloz_json, zapis_stav  # stahovani/umisteni.py
+
 ZDROJE = Path(__file__).parent / "zpravy-zdroje.json"
-DATA = PROJEKT / "data" / "zpravy"
+DATA = DASHBOARD_DATA / "zpravy"
 
 POCET_ZA_ZDROJ = 15  # kolik nejnovějších zpráv z každého zdroje uložit
 DELKA_PEREXU = 220  # kolik znaků úvodního textu ponechat
@@ -91,16 +92,6 @@ def precti_kanal(obsah, nazev_zdroje):
     ]
 
 
-def uloz(nazev, data):
-    """Uloží JSON. Vrátí True, jen když se obsah opravdu změnil."""
-    cesta = DATA / nazev
-    novy_text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
-    if cesta.exists() and cesta.read_text(encoding="utf-8") == novy_text:
-        return False
-    cesta.write_text(novy_text, encoding="utf-8")
-    return True
-
-
 def main():
     zdroje = json.loads(ZDROJE.read_text(encoding="utf-8"))
     vsechny = []
@@ -127,12 +118,8 @@ def main():
     for zprava in nejnovejsi:
         zprava["cas"] = zprava["cas"].isoformat(timespec="seconds")
 
-    DATA.mkdir(parents=True, exist_ok=True)
-    zmena = uloz("zpravy.json", nejnovejsi)
-    uloz("stav.json", {
-        "aktualizovano": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "nefunkcni_zdroje": chyby,
-    })
+    zmena = uloz_json(DATA / "zpravy.json", nejnovejsi)
+    zapis_stav("zpravy", nefunkcni_zdroje=chyby)
     print(f"Uloženo {len(nejnovejsi)} zpráv" + ("" if zmena else " (beze změny)"))
 
 

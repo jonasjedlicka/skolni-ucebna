@@ -1,5 +1,5 @@
 // Modul ZPRÁVY: titulky z RSS kanálů.
-// Data jsou v data/zpravy/ a plní je stahovani/zpravy.py přes GitHub Actions.
+// Data jsou v data/zpravy/ a plní je stahovani/zpravy.py na Macu (stahovani/vse.py).
 
 const ZPRAVY_DATA = "data/zpravy/";
 

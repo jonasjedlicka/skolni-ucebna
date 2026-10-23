@@ -1,5 +1,5 @@
 // Modul TRÉNINK: zápis cviků (váha × opakování), plán na každý den v týdnu
-// a progres. Ukládá se zašifrovaně na GitHub (js/zapisy.js). Položky:
+// a progres. Ukládá se na server v Macu (js/zapisy.js). Položky:
 //   série: { druh: "serie", datum, cvik, vaha (kg, 0 = vlastní váha), opakovani, cas }
 //   plán:  id "plan-<0–6>", { druh: "plan", den, cviky: [{ cvik, serie, opakovani }] }
 // Každá série je samostatná položka, takže zápis z mobilu a z počítače se nepřepíše.

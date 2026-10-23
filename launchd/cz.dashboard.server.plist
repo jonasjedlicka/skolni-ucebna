@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Server dashboardu (server/server.py). Spustí se po přihlášení do Macu
+  a běží pořád; když spadne, macOS ho za chvíli spustí znovu.
+  Instaluje ho launchd/zapnout.sh (dosadí místo __PROJEKT__ a __DATA__ skutečné cesty).
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>cz.dashboard.server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__PROJEKT__/.venv/bin/python</string>
+    <string>__PROJEKT__/server/server.py</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__PROJEKT__</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONUNBUFFERED</key>
+    <string>1</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <!-- Když server spadne, spustit ho znovu (nejdřív za 10 s, ať se netočí dokola) -->
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+  <key>StandardOutPath</key>
+  <string>__DATA__/logy/server.log</string>
+  <key>StandardErrorPath</key>
+  <string>__DATA__/logy/server.log</string>
+</dict>
+</plist>

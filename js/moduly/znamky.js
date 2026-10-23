@@ -1,5 +1,5 @@
 // Modul ZNÁMKY: známky po předmětech, vážené průměry a „co potřebuju dostat“.
-// Zatím se zadávají ručně; ukládají se zašifrovaně na GitHub (js/zapisy.js).
+// Zatím se zadávají ručně; ukládají se na server v Macu (js/zapisy.js).
 // Známka: { druh: "znamka", predmet (id z predmety.json), hodnota 1–5 (1,5 = „1-“),
 //           vaha (např. 1 zkoušení, 2 test), popis?, datum "2026-10-23" }
 //

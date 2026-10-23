@@ -1529,6 +1529,55 @@ a.polozka-nazev:hover {
   color: var(--text-slaby);
 }
 
+/* --- Přihlášení --- */
+
+/* Přihlašovací stránka nemá navigaci, takže dole nepotřebuje místo pro lištu */
+.prihlaseni-stranka {
+  padding-bottom: 0;
+}
+
+.prihlaseni-stranka main {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}
+
+.prihlaseni {
+  width: min(360px, 100%);
+  display: grid;
+  gap: 12px;
+  padding: 28px 24px;
+}
+
+.prihlaseni h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.prihlaseni p {
+  margin: 0;
+}
+
+.prihlaseni input {
+  font: inherit;
+  font-size: 1.1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.prihlaseni .chyba:empty {
+  display: none;
+}
+
+.prihlaseni .hlavni-tlacitko {
+  justify-content: center;
+}
+
 /* --- Aktualizace dat: čas a kolečko u widgetu --- */
 
 .obnova {

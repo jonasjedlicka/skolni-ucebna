@@ -1,4 +1,4 @@
-// Modul ÚKOLY: školní i osobní úkoly s termíny, ukládané zašifrovaně na GitHub
+// Modul ÚKOLY: školní i osobní úkoly s termíny, ukládané na server v Macu
 // (js/zapisy.js). Úkol: { nazev, termin?, druh: "skola"|"osobni", predmet?,
 // hotovo, hotovoKdy?, vytvoreno, zmeneno }. Termín je text "2026-11-02".
 

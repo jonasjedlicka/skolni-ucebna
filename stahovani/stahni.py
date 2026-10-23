@@ -1,15 +1,14 @@
 """
-Stáhne aktuální data z Edookitu, zašifruje je do data/skola/*.enc.json a nahraje
-na GitHub. Čitelné kopie zůstanou jen u tebe v soukrome/skola/.
+Stáhne aktuální data z Edookitu do ~/Dashboard-data/skola/ (mimo repozitář,
+na GitHub se nedostanou).
 
 Spouštěj ze složky skolni-ucebna:
 
   .venv/bin/python stahovani/stahni.py --prihlasit    poprvé: otevře prohlížeč a ty se přihlásíš
-  .venv/bin/python stahovani/stahni.py                stáhne data a nahraje je na GitHub
-  .venv/bin/python stahovani/stahni.py --bez-nahrani  jen stáhne, na GitHub nic neposílá
+  .venv/bin/python stahovani/stahni.py                stáhne data
 
-Každý den v 6:30 ho spouští macOS sám (viz cz.ucebna.stahovani.plist).
-Co při tom vypsal, najdeš v stahovani/posledni-behy.log.
+Jednou denně ho spouští stahovani/vse.py (ten pouští macOS přes launchd).
+Co při tom vypsal, najdeš v ~/Dashboard-data/logy/stahovani.log.
 """
 
 import argparse
@@ -22,17 +21,14 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-import sifrovani  # stahovani/sifrovani.py
+from umisteni import DATA as DASHBOARD_DATA, uloz_json, zapis_stav  # stahovani/umisteni.py
 
 EDOOKIT = "https://gsgpraha.edookit.net"
-PROJEKT = Path(__file__).resolve().parent.parent  # složka skolni-ucebna
-DATA = PROJEKT / "data" / "skola"  # každý modul dashboardu má svou složku
-# Čitelné kopie dat. Jen v tomhle počítači, na GitHub jdou zašifrované.
-SOUKROME = PROJEKT / "soukrome" / "skola"
-# Profil prohlížeče s přihlášením. Je v .gitignore – nikdy ho nenahrávej!
+DATA = DASHBOARD_DATA / "skola"  # každý modul dashboardu má svou složku
+# Profil prohlížeče s přihlášením – v datové složce, mimo repozitář.
 # Edookit přihlášení ukončí zhruba po hodině, ale Plus4U si tě v tomhle profilu
 # pamatuje déle. Při každém otevření Edookitu tě pak Plus4U přihlásí znovu samo.
-PROFIL = PROJEKT / ".edookit-prihlaseni"
+PROFIL = DASHBOARD_DATA / ".edookit-prihlaseni"
 JS =(Path(__file__).parent / "edookit.js").read_text(encoding="utf-8")
 
 # Kolik týdnů rozvrhu projít. Běžný rozvrh se pozná podle toho,
@@ -247,46 +243,14 @@ def upozorni(zprava):
     subprocess.run(["osascript", "-e", prikaz], check=False)
 
 
-def git(*argumenty):
-    subprocess.run(["git", *argumenty], cwd=PROJEKT, check=True)
-
-
-def cesta_na_webu(nazev):
-    # stav.json je jen čas aktualizace, ten může zůstat čitelný.
-    # Ostatní data jdou na web jen zašifrovaná: rozvrh.json → rozvrh.enc.json
-    if nazev == "stav.json":
-        return DATA / nazev
-    return DATA / nazev.replace(".json", ".enc.json")
-
-
 def uloz(nazev, data):
-    """Uloží data. Vrátí True, jen když se obsah opravdu změnil."""
-    if nazev == "stav.json":
-        cesta_na_webu(nazev).write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
-        return True
-    # Čitelná kopie zůstane jen u tebe v počítači (soukrome/ je v .gitignore)
-    SOUKROME.mkdir(parents=True, exist_ok=True)
-    (SOUKROME / nazev).write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return sifrovani.uloz_sifrovane(cesta_na_webu(nazev), data)
-
-
-def nahraj_na_github(soubory):
-    git("add", *[str(cesta_na_webu(nazev).relative_to(PROJEKT)) for nazev in soubory])
-    git("commit", "-m", f"Aktualizace dat z Edookitu ({date.today():%-d. %-m. %Y})")
-    # Mezitím mohl nahrát zprávy GitHub Actions. Pak push selže, tak převezmeme
-    # jeho změny (jsou v jiné složce, nepohádají se) a zkusíme to znovu.
-    for pokus in range(3):
-        if subprocess.run(["git", "push", "--quiet"], cwd=PROJEKT).returncode == 0:
-            print("✓ Nahráno na GitHub. Web se aktualizuje asi do minuty.")
-            return
-        git("pull", "--rebase", "--autostash", "--quiet")
-    raise RuntimeError("Nahrání na GitHub se nepovedlo ani na třetí pokus.")
+    """Uloží data do ~/Dashboard-data/skola/. Vrátí True, jen když se obsah opravdu změnil."""
+    return uloz_json(DATA / nazev, data)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Stáhne data z Edookitu do Učebny.")
     parser.add_argument("--prihlasit", action="store_true", help="otevře prohlížeč pro přihlášení")
-    parser.add_argument("--bez-nahrani", action="store_true", help="nenahrávat změny na GitHub")
     argumenty = parser.parse_args()
 
     if argumenty.prihlasit:
@@ -294,17 +258,11 @@ def main():
         return
 
     print(f"=== {datetime.now():%-d. %-m. %Y %H:%M} ===")
-    if not argumenty.bez_nahrani:
-        # Nejdřív převezmeme, co se mezitím změnilo na GitHubu (třeba
-        # materiál, který jsi přidal přes web), ať to nepřepíšeme.
-        # --autostash: když máš v počítači rozdělanou změnu, git ji na chvíli
-        # odloží stranou a pak vrátí, místo aby odmítl pokračovat.
-        git("pull", "--rebase", "--autostash", "--quiet")
 
     tydny, pisemky, ucivo = stahni_z_edookitu()
 
-    # Předměty čteme z čitelné kopie – jsou v nich i tvoje ručně přidané materiály
-    predmety = json.loads((SOUKROME / "predmety.json").read_text(encoding="utf-8"))
+    # Předměty – jsou v nich i tvoje ručně přidané materiály
+    predmety = json.loads((DATA / "predmety.json").read_text(encoding="utf-8"))
     zkratky = {p["zkratka"].lower(): p for p in predmety}
 
     rozvrh, nezname_rozvrh, pocet_tydnu = sestav_rozvrh(tydny, zkratky)
@@ -329,7 +287,7 @@ def main():
     print(f"Rozvrh: {pocet_hodin} hodin týdně · nadcházející testy: {len(testy)}")
     nezname = (nezname_rozvrh | nezname_testy) - {"O3.D"}  # O3.D = oběd
     if nezname:
-        print("! Neznámé předměty (přidej je do soukrome/skola/predmety.json):", ", ".join(sorted(nezname)))
+        print("! Neznámé předměty (přidej je do ~/Dashboard-data/skola/predmety.json):", ", ".join(sorted(nezname)))
 
     if zmenene:
         print("Změněno:", ", ".join(zmenene))
@@ -338,17 +296,12 @@ def main():
 
     # Čas úspěšné kontroly zapisujeme vždy, i když se nic nezměnilo.
     # Dashboard podle něj pozná, že stahování funguje.
-    uloz("stav.json", {"aktualizovano": datetime.now().isoformat(timespec="seconds")})
-
-    if argumenty.bez_nahrani:
-        print("(na GitHub jsem nic neposílal)")
-    else:
-        nahraj_na_github(zmenene + ["stav.json"])
+    zapis_stav("skola")
 
 
 if __name__ == "__main__":
     try:
         main()
     except Exception:
-        upozorni("Stahování z Edookitu selhalo. Podrobnosti jsou v stahovani/posledni-behy.log")
+        upozorni("Stahování z Edookitu selhalo. Podrobnosti jsou v ~/Dashboard-data/logy/stahovani.log")
         raise

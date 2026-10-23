@@ -1,15 +1,26 @@
-.DS_Store
-.claude/
+# Repozitář je jen záloha KÓDU. Osobní data jsou mimo něj v ~/Dashboard-data
+# (stahovani/umisteni.py) – tyhle řádky jsou pojistka, kdyby se sem něco dostalo.
 
-# Python knihovny pro stahovací skript (dají se kdykoli nainstalovat znovu)
+# Osobní data a jejich kopie
+data/
+soukrome/
+Dashboard-data/
+zalohy/
+*.zip
+
+# Přihlášení, hesla, klíče
+.env
+.env.*
+*.env
+.edookit-prihlaseni/
+prihlaseni.json
+relace.json
+
+# Záznamy běhů
+*.log
+
+# Python a systém
 .venv/
 __pycache__/
-
-# Záznam automatických běhů stahovacího skriptu
-stahovani/posledni-behy.log
-
-# Čitelné kopie osobních dat – na GitHub jdou jen zašifrované (data/**/*.enc.json)
-soukrome/
-
-# Uložené přihlášení do Edookitu – NIKDY nenahrávat na GitHub!
-.edookit-prihlaseni/
+.DS_Store
+.claude/

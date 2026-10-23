@@ -1,5 +1,5 @@
-// Modul DOUČOVÁNÍ: rozpis lekcí a poznámky k nim, ukládané zašifrovaně
-// na GitHub (js/zapisy.js). Funguje stejně, ať doučuješ ty, nebo doučují tebe.
+// Modul DOUČOVÁNÍ: rozpis lekcí a poznámky k nim, ukládané na server
+// v Macu (js/zapisy.js). Funguje stejně, ať doučuješ ty, nebo doučují tebe.
 // Lekce: { s, predmet?, datum: "2026-10-27", cas: "16:00", delka: 60, misto?,
 //          cena?, zaplaceno, zruseno, probrali?, naPriste?, vytvoreno, zmeneno }
 

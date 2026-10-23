@@ -1,9 +1,9 @@
 // Modul ODPOČTY: kolik dní zbývá do prázdnin, maturity, testů a vlastních událostí.
 // Tři zdroje:
 //   1. pevné termíny školního roku (níž v ODPOCTY_SKOLNI_ROK, z MŠMT – veřejné),
-//   2. testy ze školních dat (Edookit, zašifrované),
+//   2. testy ze školních dat (Edookit),
 //   3. vlastní odpočty, které si přidáš na stránce Plán → Odpočty
-//      (ukládají se zašifrovaně na GitHub přes js/zapisy.js).
+//      (ukládají se na server v Macu přes js/zapisy.js).
 
 const ODPOCTY_KLIC = "ucebna-odpocty"; // starý zápis v prohlížeči (jen kvůli převodu)
 
@@ -26,7 +26,7 @@ const ODPOCTY_SKOLNI_ROK = [
 ];
 
 // --- Uložené: vlastní odpočty a skryté pevné termíny ---
-// Ukládají se zašifrovaně na GitHub (js/zapisy.js), takže jsou všude stejné.
+// Ukládají se na server v Macu (js/zapisy.js), takže jsou všude stejné.
 // Položky: vlastní { druh: "vlastni", nazev, od, do? }, skrytý pevný termín
 // má id "skryte-<id termínu>" a { druh: "skryte" }.
 
@@ -54,7 +54,7 @@ function obnovSkryteOdpocty() {
   for (const id of nactiUlozeneOdpocty().skryte) odpoctyZapisy().smaz("skryte-" + id);
 }
 
-// Dřív se odpočty ukládaly jen v prohlížeči – převedeme je jednou na GitHub
+// Dřív se odpočty ukládaly jen v prohlížeči – převedeme je jednou na server
 async function prevedStareOdpocty() {
   let stare = null;
   try {

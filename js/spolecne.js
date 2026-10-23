@@ -102,10 +102,20 @@ async function stahniJson(cesta) {
   // no-cache: prohlížeč se vždy zeptá serveru, jestli nemá novější verzi
   // (když ne, server odpoví krátce „beze změny“ a použije se uložená)
   const odpoved = await fetch(cesta, { cache: "no-cache" });
+  overPrihlaseni(odpoved);
   if (!odpoved.ok) {
     throw new Error(`Nepodařilo se načíst ${cesta} (chyba ${odpoved.status})`);
   }
   return odpoved.json();
+}
+
+// Server odpověděl „nejsi přihlášený“ (přihlášení vypršelo) → na přihlašovací
+// stránku; po přihlášení se vrátíme sem
+function overPrihlaseni(odpoved) {
+  if (odpoved.status === 401 && new URL(odpoved.url).origin === location.origin) {
+    location.href = "/prihlaseni.html?dalsi=" + encodeURIComponent(location.pathname + location.search + location.hash);
+    throw new Error("Přihlášení vypršelo.");
+  }
 }
 
 // Mezipaměť: když stejný soubor chce víc karet (např. rozvrh dlaždice „Dnes“
@@ -206,158 +216,6 @@ function textPredKolika(isoCas) {
   return dni === 1 ? "včera" : `před ${dni} dny`;
 }
 
-// --- Šifrovaná data ---
-// Osobní data jsou na GitHubu zašifrovaná (*.enc.json, viz stahovani/sifrovani.py).
-// Tady je rozšifrujeme. Klíč se počítá z hesla úplně stejně jako v Pythonu:
-// PBKDF2-SHA256(heslo, sůl z data/sifra.json) → klíč pro AES-256-GCM.
-
-const KLIC_V_PROHLIZECI = "ucebna-klic";
-let cekaniNaKlic = null; // všechny karty čekají na stejné zadání hesla
-
-function zBase64(text) {
-  return Uint8Array.from(atob(text), (znak) => znak.charCodeAt(0));
-}
-
-function doBase64(bajty) {
-  // Po kouscích: String.fromCharCode(...pole) by u velkých dat (dlouhé poznámky) spadlo
-  const pole = new Uint8Array(bajty);
-  let text = "";
-  for (let i = 0; i < pole.length; i += 0x8000) {
-    text += String.fromCharCode(...pole.subarray(i, i + 0x8000));
-  }
-  return btoa(text);
-}
-
-async function klicZBajtu(bajty) {
-  return crypto.subtle.importKey("raw", bajty, "AES-GCM", false, ["encrypt", "decrypt"]);
-}
-
-async function desifruj(obal, klic) {
-  const text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: zBase64(obal.iv) }, klic, zBase64(obal.data));
-  return JSON.parse(new TextDecoder().decode(text));
-}
-
-// Opak desifruj – stejný formát jako zasifruj ve stahovani/sifrovani.py,
-// takže soubor zašifrovaný v prohlížeči umí přečíst i Python a naopak.
-async function sifruj(data, klic) {
-  const iv = crypto.getRandomValues(new Uint8Array(12)); // pokaždé jiné
-  const text = new TextEncoder().encode(JSON.stringify(data));
-  const sifra = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, klic, text);
-  return { v: 1, iv: doBase64(iv), data: doBase64(sifra) };
-}
-
-// Vrátí klíč, nebo null, když heslo nesedí (rozšifrování kontrolního souboru selže)
-async function overKlic(bajty) {
-  try {
-    const klic = await klicZBajtu(bajty);
-    await desifruj(await nactiJson("data/kontrola.enc.json"), klic);
-    return klic;
-  } catch {
-    return null;
-  }
-}
-
-async function klicZHesla(heslo) {
-  const { sul, iterace } = await nactiJson("data/sifra.json");
-  const zaklad = await crypto.subtle.importKey("raw", new TextEncoder().encode(heslo), "PBKDF2", false, ["deriveBits"]);
-  // Tohle schválně chvíli trvá (600 000 opakování) – přesně kvůli tomu je hádání hesla pomalé
-  return crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: zBase64(sul), iterations: iterace }, zaklad, 256);
-}
-
-function ziskejKlic() {
-  if (!cekaniNaKlic) cekaniNaKlic = nactiUlozenyKlic().then((klic) => klic || zeptejSeNaHeslo());
-  return cekaniNaKlic;
-}
-
-async function nactiUlozenyKlic() {
-  let ulozeny = null;
-  try {
-    ulozeny = localStorage.getItem(KLIC_V_PROHLIZECI);
-  } catch {
-    // v anonymním okně může být úložiště zakázané – pak se jen zeptáme na heslo
-  }
-  if (!ulozeny) return null;
-  const klic = await overKlic(zBase64(ulozeny));
-  if (!klic) zapomenKlic(); // heslo se mezitím změnilo
-  return klic;
-}
-
-function zapomenKlic() {
-  try {
-    localStorage.removeItem(KLIC_V_PROHLIZECI);
-  } catch {
-    // nic, nebylo co mazat
-  }
-}
-
-// Ukáže okno pro zadání hesla a počká, dokud nezadáš správné
-function zeptejSeNaHeslo() {
-  return new Promise((hotovo) => {
-    const okno = vytvor("dialog", "zamek");
-    const formular = vytvor("form", "");
-    formular.method = "dialog";
-    const nadpis = vytvor("h2", "zamek-nadpis");
-    nadpis.append(vytvorIkonu("zamek"), "Odemknout dashboard");
-    formular.append(nadpis);
-    formular.append(vytvor("p", "slaby", "Osobní data jsou zašifrovaná. Zadej heslo."));
-
-    const pole = vytvor("input", "");
-    pole.type = "password";
-    pole.autocomplete = "current-password";
-    pole.required = true;
-
-    const zapamatovat = vytvor("label", "zamek-zapamatovat");
-    const zaskrtavatko = vytvor("input", "");
-    zaskrtavatko.type = "checkbox";
-    zaskrtavatko.checked = true;
-    zapamatovat.append(zaskrtavatko, " Zapamatovat na tomhle zařízení");
-
-    const zprava = vytvor("p", "chyba");
-    const tlacitko = vytvor("button", "filtr vybrany", "Odemknout");
-    formular.append(pole, zapamatovat, zprava, tlacitko);
-    okno.append(formular);
-    okno.addEventListener("cancel", (udalost) => udalost.preventDefault()); // Esc okno nezavře
-
-    formular.addEventListener("submit", async (udalost) => {
-      udalost.preventDefault();
-      tlacitko.disabled = true;
-      zprava.textContent = "Ověřuji…";
-      const bajty = await klicZHesla(pole.value);
-      const klic = await overKlic(bajty);
-      if (!klic) {
-        zprava.textContent = "Špatné heslo.";
-        tlacitko.disabled = false;
-        pole.select();
-        return;
-      }
-      if (zaskrtavatko.checked) {
-        try {
-          localStorage.setItem(KLIC_V_PROHLIZECI, doBase64(bajty));
-        } catch {
-          // nejde uložit (anonymní okno) – příště se zeptáme znovu
-        }
-      }
-      okno.close();
-      okno.remove();
-      hotovo(klic);
-    });
-
-    document.body.append(okno);
-    okno.showModal();
-  });
-}
-
-// Načte zašifrovaný soubor a vrátí rozšifrovaná data
-async function nactiTajnyJson(cesta) {
-  const [obal, klic] = await Promise.all([nactiJson(cesta), ziskejKlic()]);
-  try {
-    return await desifruj(obal, klic);
-  } catch {
-    throw new Error(`${cesta} nejde rozšifrovat. Nezměnilo se heslo?`);
-  }
-}
-
-// Po načtení stránky: navigace, stav „aktualizováno“ v hlavičce a tlačítko Zamknout
 document.addEventListener("DOMContentLoaded", () => {
   vykresliNavigaci();
 
@@ -369,13 +227,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // Odkaz „zpět“ (např. z detailu předmětu do Školy) dostane šipku
   document.getElementById("zpet")?.prepend(vytvorIkonu("zpet"));
 
-  // Tlačítko „Zamknout“ v patičce: smaže klíč z prohlížeče
-  const zamknout = document.getElementById("zamknout");
-  if (zamknout) {
-    zamknout.prepend(vytvorIkonu("zamek"));
-    zamknout.addEventListener("click", () => {
-      zapomenKlic();
-      location.reload();
+  // Tlačítko „Odhlásit“ v patičce: zruší přihlášení tohoto zařízení na serveru
+  const odhlasit = document.getElementById("odhlasit");
+  if (odhlasit) {
+    odhlasit.prepend(vytvorIkonu("zamek"));
+    odhlasit.addEventListener("click", async () => {
+      await fetch("/api/odhlaseni", { method: "POST" });
+      location.href = "/prihlaseni.html";
     });
   }
 });

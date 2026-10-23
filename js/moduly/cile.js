@@ -1,4 +1,4 @@
-// Modul CÍLE: cíle s ukazatelem pokroku, ukládané zašifrovaně na GitHub (js/zapisy.js).
+// Modul CÍLE: cíle s ukazatelem pokroku, ukládané na server v Macu (js/zapisy.js).
 // Dva druhy cílů:
 //   číselný: { typ: "cislo", nazev, cil: 12, aktualne: 3, jednotka: "knih", termin? }
 //   kroky:   { typ: "kroky", nazev, kroky: [{ id, text, hotovo }], termin? }

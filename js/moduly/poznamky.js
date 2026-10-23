@@ -1,4 +1,4 @@
-// Modul POZNÁMKY: rychlé poznámky, ukládané zašifrovaně na GitHub (js/zapisy.js).
+// Modul POZNÁMKY: rychlé poznámky, ukládané na server v Macu (js/zapisy.js).
 // Poznámka: { text, pripnuto, vytvoreno, upraveno?, zmeneno }
 
 function poznamky() {

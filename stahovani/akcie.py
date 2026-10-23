@@ -1,33 +1,25 @@
 """
 Modul AKCIE: ceny sledovaných a držených akcií a kurzy měn.
 
-Dva režimy:
+Co máš (portfolio) vyplňuješ do ~/Dashboard-data/akcie/portfolio.json.
+Skript podle něj stáhne ceny a kurzy do ~/Dashboard-data/akcie/ceny.json;
+hodnotu portfolia pak spočítá prohlížeč. Každou hodinu ve všední dny ho
+spouští stahovani/vse.py (ten pouští macOS přes launchd).
 
-  .venv/bin/python stahovani/akcie.py --ulozit-portfolio
-      Na Macu: zašifruje tvoje portfolio ze soukrome/akcie/portfolio.json
-      do data/akcie/portfolio.enc.json. Spusť po každé úpravě portfolia.
-
-  python3 stahovani/akcie.py
-      V cloudu (GitHub Actions): rozšifruje portfolio, aby věděl, které
-      akcie stáhnout, stáhne ceny a kurzy a uloží je zašifrované do
-      data/akcie/ceny.enc.json. Hodnotu portfolia pak spočítá prohlížeč.
+  .venv/bin/python stahovani/akcie.py      stáhne ceny hned
 
 Ceny: Yahoo Finance (neoficiální rozhraní bez klíče, data se zpožděním).
 Kurzy: Česká národní banka.
 Tenhle modul data jen zobrazuje – nic nekupuje ani neprodává.
 """
 
-import argparse
 import json
 import urllib.request
-from datetime import datetime, timezone
-from pathlib import Path
 
-import sifrovani  # stahovani/sifrovani.py
+from umisteni import DATA as DASHBOARD_DATA, uloz_json, zapis_stav  # stahovani/umisteni.py
 
-PROJEKT = Path(__file__).resolve().parent.parent
-DATA = PROJEKT / "data" / "akcie"
-PORTFOLIO = PROJEKT / "soukrome" / "akcie" / "portfolio.json"
+DATA = DASHBOARD_DATA / "akcie"
+PORTFOLIO = DATA / "portfolio.json"
 
 YAHOO = "https://query1.finance.yahoo.com/v8/finance/chart/{}?range=1mo&interval=1d"
 CNB = "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt"
@@ -68,24 +60,11 @@ def stahni_kurzy():
     return {"datum": radky[0].split(" ")[0], "kurzy": kurzy}
 
 
-def uloz_portfolio():
-    portfolio = json.loads(PORTFOLIO.read_text(encoding="utf-8"))
-    portfolio.pop("_navod", None)
-    for drzena in portfolio["drzene"]:
-        if not {"symbol", "kusu", "nakupni_cena"} <= drzena.keys():
-            raise SystemExit(f"✗ U {drzena} chybí symbol, kusu nebo nakupni_cena.")
-    DATA.mkdir(parents=True, exist_ok=True)
-    zmena = sifrovani.uloz_sifrovane(DATA / "portfolio.enc.json", portfolio)
-    print("✓ Portfolio zašifrováno" + ("" if zmena else " (beze změny)"))
-    print("  Nahraj ho:  git add data/akcie/portfolio.enc.json && git commit -m Portfolio && git push")
-
-
 def stahni_ceny():
-    portfolio = sifrovani.desifruj(json.loads((DATA / "portfolio.enc.json").read_text(encoding="utf-8")))
+    portfolio = json.loads(PORTFOLIO.read_text(encoding="utf-8"))
     symboly = list(dict.fromkeys(portfolio["sledovane"] + [d["symbol"] for d in portfolio["drzene"]]))
 
-    # POZOR: výpisy běhů GitHub Actions jsou u veřejného repozitáře veřejné.
-    # Proto nikdy nevypisujeme symboly ani ceny, jen počty.
+    # Nevypisujeme symboly ani ceny, jen počty.
     akcie = {}
     chyby = []
     for poradi, symbol in enumerate(symboly, start=1):
@@ -102,24 +81,10 @@ def stahni_ceny():
     kurzy = stahni_kurzy()
     print(f"✓ Kurzy ČNB z {kurzy['datum']}")
 
-    zmena = sifrovani.uloz_sifrovane(DATA / "ceny.enc.json", {"akcie": akcie, "kurzy": kurzy})
-    (DATA / "stav.json").write_text(
-        json.dumps(
-            {"aktualizovano": datetime.now(timezone.utc).isoformat(timespec="seconds"), "pocet_chyb": len(chyby)},
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    # Které akcie selhaly, schválně nepíšeme do stav.json ani do výpisu –
-    # obojí je veřejné a prozradilo by, co sleduješ. Na webu u nich chybí cena.
+    zmena = uloz_json(DATA / "ceny.json", {"akcie": akcie, "kurzy": kurzy})
+    zapis_stav("akcie", pocet_chyb=len(chyby))
     print("Uloženo" + ("" if zmena else " (ceny beze změny)"))
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ceny akcií pro dashboard.")
-    parser.add_argument("--ulozit-portfolio", action="store_true", help="zašifrovat soukrome/akcie/portfolio.json")
-    if parser.parse_args().ulozit_portfolio:
-        uloz_portfolio()
-    else:
-        stahni_ceny()
+    stahni_ceny()

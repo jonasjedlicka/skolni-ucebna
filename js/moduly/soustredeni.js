@@ -3,7 +3,7 @@
 // i když stránku zavřeš nebo přepneš záložku. Ukládáme ČAS KONCE, ne zbývající
 // sekundy – prohlížeč totiž časovače na pozadí zpomaluje, hodiny ale ne.
 // Odpočet běží na každém zařízení zvlášť; počty hotových pomodor se ukládají
-// zašifrovaně na GitHub (js/zapisy.js), takže statistiky jsou všude stejné.
+// na server v Macu (js/zapisy.js), takže statistiky jsou všude stejné.
 
 const POMODORO_KLIC = "ucebna-pomodoro";
 const POMODORO_HISTORIE_KLIC = "ucebna-pomodoro-historie"; // starý zápis (jen kvůli převodu)
@@ -99,7 +99,7 @@ function zkontrolujKonec(stav) {
 
 // --- Historie: kolik pomodor a minut za který den ---
 // Každé dokončené pomodoro je jedna položka { datum, minut, pocet } v zápisech
-// (zašifrovaně na GitHubu), takže se počty sčítají ze všech zařízení.
+// (na serveru v Macu), takže se počty sčítají ze všech zařízení.
 // Samotný odpočet (co právě běží) zůstává v prohlížeči – na každém zařízení svůj.
 
 function pomodoraZapisy() {
@@ -124,7 +124,7 @@ function dnesniPomodora() {
   return nactiHistorii()[datumKlic()] || { pocet: 0, minut: 0 };
 }
 
-// Dřív byla historie jen v prohlížeči – převedeme ji jednou na GitHub (den = jedna položka)
+// Dřív byla historie jen v prohlížeči – převedeme ji jednou na server (den = jedna položka)
 async function prevedStarouHistorii() {
   let stara = null;
   try {

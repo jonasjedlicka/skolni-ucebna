@@ -3,10 +3,10 @@
 
 const SKOLA_DATA = "data/skola/";
 
-// Školní data jsou zašifrovaná: nactiSkolniData("rozvrh") načte rozvrh.enc.json
-// a rozšifruje ho (při prvním načtení se zeptá na heslo).
+// nactiSkolniData("rozvrh") načte data/skola/rozvrh.json (server ho posílá
+// z ~/Dashboard-data na Macu, jen přihlášenému)
 function nactiSkolniData(nazev) {
-  return nactiTajnyJson(SKOLA_DATA + nazev + ".enc.json");
+  return nactiJson(SKOLA_DATA + nazev + ".json");
 }
 
 // Načte předměty a vrátí je jako "slovník" podle id,

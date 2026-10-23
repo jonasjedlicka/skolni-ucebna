@@ -3,44 +3,37 @@ Modul KALENDÁŘ: události z Google Kalendáře na příštích 30 dní.
 
 Kalendář se stahuje přes „tajnou adresu ve formátu iCal“ (Google Kalendář →
 Nastavení → tvůj kalendář → Integrace kalendáře). Kdo tu adresu zná, vidí
-celý kalendář, proto je jen v GitHub Secrets (KALENDAR_ICAL) a nikde jinde.
+celý kalendář, proto je jen v ~/Dashboard-data/nastaveni/kalendar-adresy.txt
+(mimo repozitář).
 
-Do KALENDAR_ICAL můžeš dát víc kalendářů, každý na nový řádek:
+Do souboru můžeš dát víc kalendářů, každý na nový řádek:
     Osobní=https://calendar.google.com/calendar/ical/.../basic.ics
     Škola=https://calendar.google.com/calendar/ical/.../basic.ics
 (Název před „=“ se ukáže u události. Bez názvu stačí jen adresa.)
 
-Spouští ho GitHub Actions (.github/workflows/kalendar.yml). U sebe ho
-vyzkoušíš tak, že adresy dáš do soukrome/kalendar/adresy.txt (stejný formát).
-
-Události se ukládají zašifrované do data/kalendar/udalosti.enc.json.
+Každé 2 hodiny ho spouští stahovani/vse.py (ten pouští macOS přes launchd).
+Události se ukládají do ~/Dashboard-data/kalendar/udalosti.json.
 """
 
-import json
-import os
 import urllib.request
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import icalendar
 import recurring_ical_events
 
-import sifrovani  # stahovani/sifrovani.py
+from umisteni import DATA as DASHBOARD_DATA, NASTAVENI, uloz_json, zapis_stav  # stahovani/umisteni.py
 
-PROJEKT = Path(__file__).resolve().parent.parent
-DATA = PROJEKT / "data" / "kalendar"
-ADRESY_U_SEBE = PROJEKT / "soukrome" / "kalendar" / "adresy.txt"
+DATA = DASHBOARD_DATA / "kalendar"
+ADRESY = NASTAVENI / "kalendar-adresy.txt"
 PRAHA = ZoneInfo("Europe/Prague")
 DNI_DOPREDU = 30
 
 
 def nacti_kalendare():
-    text = os.environ.get("KALENDAR_ICAL")
-    if not text and ADRESY_U_SEBE.exists():
-        text = ADRESY_U_SEBE.read_text(encoding="utf-8")
-    if not text:
-        raise SystemExit("✗ Chybí adresa kalendáře (GitHub Secret KALENDAR_ICAL).")
+    text = ADRESY.read_text(encoding="utf-8") if ADRESY.exists() else ""
+    if not text.strip():
+        raise SystemExit(f"✗ Chybí adresa kalendáře – vlož ji do {ADRESY}.")
 
     kalendare = []
     for radek in text.splitlines():
@@ -96,8 +89,8 @@ def main():
     dnes = datetime.now(PRAHA).replace(hour=0, minute=0, second=0, microsecond=0)
     od, do = dnes, dnes + timedelta(days=DNI_DOPREDU + 1)
 
-    # POZOR: výpis běhu GitHub Actions je veřejný. Nevypisujeme názvy událostí,
-    # adresy kalendářů ani text chyb (mohl by adresu obsahovat), jen počty.
+    # Nevypisujeme názvy událostí, adresy kalendářů ani text chyb (mohl by
+    # adresu obsahovat), jen počty – log je sice jen u tebe, ale pro jistotu.
     vsechny = []
     chyby = 0
     kalendare = nacti_kalendare()
@@ -115,13 +108,8 @@ def main():
     # Celodenní "2026-10-23" se seřadí před "2026-10-23T08:00…" – to chceme
     vsechny.sort(key=lambda u: (u["zacatek"], u["nazev"]))
 
-    DATA.mkdir(parents=True, exist_ok=True)
-    zmena = sifrovani.uloz_sifrovane(DATA / "udalosti.enc.json", vsechny)
-    (DATA / "stav.json").write_text(
-        json.dumps({"aktualizovano": datetime.now(timezone.utc).isoformat(timespec="seconds"), "pocet_chyb": chyby}, indent=2)
-        + "\n",
-        encoding="utf-8",
-    )
+    zmena = uloz_json(DATA / "udalosti.json", vsechny)
+    zapis_stav("kalendar", pocet_chyb=chyby)
     print(f"Uloženo {len(vsechny)} událostí na {DNI_DOPREDU} dní" + ("" if zmena else " (beze změny)"))
 
 

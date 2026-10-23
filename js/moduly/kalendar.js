@@ -1,6 +1,6 @@
 // Modul KALENDÁŘ: události z Google Kalendáře na příštích 30 dní.
-// Data jsou zašifrovaná v data/kalendar/ a plní je stahovani/kalendar.py
-// přes GitHub Actions.
+// Data jsou v ~/Dashboard-data/kalendar/ a plní je stahovani/kalendar.py
+// na Macu (stahovani/vse.py).
 
 const KALENDAR_DATA = "data/kalendar/";
 
@@ -19,7 +19,7 @@ function pripravUdalost(udalost) {
 
 // Vrátí jen události, které ještě neskončily, seřazené podle začátku
 async function nactiUdalosti() {
-  const udalosti = await nactiTajnyJson(KALENDAR_DATA + "udalosti.enc.json");
+  const udalosti = await nactiJson(KALENDAR_DATA + "udalosti.json");
   const ted = new Date();
   return udalosti
     .map(pripravUdalost)

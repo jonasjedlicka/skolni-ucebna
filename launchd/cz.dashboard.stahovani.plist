@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Plánovač stahování (stahovani/vse.py): každých 30 minut a hned po přihlášení.
+  Sám pozná, co je na řadě (zprávy, kalendář, akcie, Edookit), takže po
+  probuzení nebo zapnutí Macu dožene, co zmeškal.
+  Instaluje ho launchd/zapnout.sh.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>cz.dashboard.stahovani</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__PROJEKT__/.venv/bin/python</string>
+    <string>__PROJEKT__/stahovani/vse.py</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__PROJEKT__</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONUNBUFFERED</key>
+    <string>1</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>1800</integer>
+  <key>StandardOutPath</key>
+  <string>__DATA__/logy/stahovani.log</string>
+  <key>StandardErrorPath</key>
+  <string>__DATA__/logy/stahovani.log</string>
+</dict>
+</plist>

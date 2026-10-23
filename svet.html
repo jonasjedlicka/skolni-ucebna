@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Svět · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=16">
+  <link rel="stylesheet" href="css/style.css?v=17">
 </head>
 <body data-zalozka="svet">
   <header class="hlavicka">
@@ -51,7 +51,7 @@
 
     <section class="cast" id="cast-finance" role="tabpanel" hidden>
       <div class="obnova cast-obnova" id="obnova-akcie"></div>
-      <!-- Akcie a portfolio vloží js/akcie.js ze zašifrovaných dat v data/akcie/ -->
+      <!-- Akcie a portfolio vloží js/akcie.js z dat v ~/Dashboard-data/akcie/ -->
       <div id="akcie">
         <p class="nacitani">Načítá se…</p>
       </div>
@@ -59,17 +59,17 @@
     </section>
   </main>
 
-  <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
+  <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="odhlasit">Odhlásit</button></footer>
 
-  <script src="js/zalozky.js?v=16"></script>
-  <script src="js/spolecne.js?v=16"></script>
-  <script src="js/obnova.js?v=16"></script>
-  <script src="js/moduly/pocasi.js?v=16"></script>
-  <script src="js/moduly/zpravy.js?v=16"></script>
-  <script src="js/moduly/akcie.js?v=16"></script>
-  <script src="js/pocasi.js?v=16"></script>
-  <script src="js/zpravy.js?v=16"></script>
-  <script src="js/akcie.js?v=16"></script>
+  <script src="js/zalozky.js?v=17"></script>
+  <script src="js/spolecne.js?v=17"></script>
+  <script src="js/obnova.js?v=17"></script>
+  <script src="js/moduly/pocasi.js?v=17"></script>
+  <script src="js/moduly/zpravy.js?v=17"></script>
+  <script src="js/moduly/akcie.js?v=17"></script>
+  <script src="js/pocasi.js?v=17"></script>
+  <script src="js/zpravy.js?v=17"></script>
+  <script src="js/akcie.js?v=17"></script>
   <script>
     nastavPrepinac();
     document.getElementById("obnovit-vse").append(vytvorHlavniObnovu());

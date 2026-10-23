@@ -1,5 +1,5 @@
 // Modul NÁVYKY: denní návyky a kolik dní v řadě je plníš.
-// Ukládá se zašifrovaně na GitHub (js/zapisy.js). Dva druhy položek:
+// Ukládá se na server v Macu (js/zapisy.js). Dva druhy položek:
 //   návyk:   { druh: "navyk", nazev, dny: [0–6], vytvoreno }   (0 = pondělí … 6 = neděle)
 //   splnění: id "s-<id návyku>-<datum>", { druh: "splneno", navyk, datum }
 // Každé odškrtnutí je samostatná položka, takže se odškrtávání z mobilu

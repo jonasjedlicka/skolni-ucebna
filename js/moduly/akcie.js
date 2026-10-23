@@ -1,14 +1,14 @@
 // Modul AKCIE: hodnota portfolia a ceny sledovaných akcií.
-// Data jsou zašifrovaná v data/akcie/: portfolio (co máš) nahráváš z Macu,
-// ceny stahuje GitHub Actions (stahovani/akcie.py). Hodnotu počítáme až tady.
+// Data jsou v ~/Dashboard-data/akcie/ na Macu: portfolio (co máš) vyplňuješ ty,
+// ceny stahuje stahovani/akcie.py. Hodnotu počítáme až tady.
 // Jen zobrazujeme – nic nekupujeme ani neprodáváme.
 
 const AKCIE_DATA = "data/akcie/";
 
 async function nactiAkcie() {
   const [portfolio, ceny] = await Promise.all([
-    nactiTajnyJson(AKCIE_DATA + "portfolio.enc.json"),
-    nactiTajnyJson(AKCIE_DATA + "ceny.enc.json"),
+    nactiJson(AKCIE_DATA + "portfolio.json"),
+    nactiJson(AKCIE_DATA + "ceny.json"),
   ]);
   return { portfolio, ceny };
 }
@@ -130,6 +130,6 @@ MODULY.push({
   id: "akcie",
   zalozka: "svet",
   maxStariHodin: 72, // o víkendu se nestahuje, takže v pondělí ráno jsou data z pátku
-  obnova: { kazdychMinut: 15, zdroje: [AKCIE_DATA] }, // ceny stahuje GitHub každou hodinu
+  obnova: { kazdychMinut: 15, zdroje: [AKCIE_DATA] }, // ceny se na Macu stahují každou hodinu
   dnes: [{ nazev: "Finance", odkaz: "svet.html#finance", poradi: 4, vykresli: vykresliFinanceDnes }],
 });
