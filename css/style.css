@@ -844,7 +844,8 @@ a.polozka-nazev:hover {
   z-index: 2;
 }
 
-.nova-poznamka .kulate-tlacitko {
+.nova-poznamka .kulate-tlacitko,
+.cil-novy-krok .kulate-tlacitko {
   font-size: 1.5rem;
   font-weight: 300;
 }
@@ -1147,6 +1148,178 @@ a.polozka-nazev:hover {
 
 .navyky-seznam {
   margin-bottom: 22px;
+}
+
+/* --- Cíle --- */
+
+/* Ukazatel pokroku: šedá dráha, bílá výplň */
+.ukazatel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 4px;
+}
+
+.ukazatel-draha {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.ukazatel-vypln {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--akcent);
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ukazatel-procenta {
+  flex: none;
+  min-width: 3em;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.plus-jedna {
+  flex: none;
+  padding: 6px 12px;
+  font-weight: 600;
+  position: relative;
+  z-index: 2; /* na Přehledu nad „roztaženým odkazem“ dlaždice */
+}
+
+.cil {
+  align-items: center;
+}
+
+.cil-karta {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  background: var(--polozka);
+  border: 1px solid var(--polozka-okraj);
+  border-radius: var(--zaobleni-male);
+}
+
+.cil-karta.splneny {
+  opacity: 0.75;
+}
+
+.cil-hlavicka {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cil-hlavicka .polozka-nazev {
+  flex: 1;
+  min-width: 0;
+}
+
+.cil-hlavicka .odebrat-tlacitko {
+  margin-left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cil-hlavicka .odebrat-tlacitko .ikona {
+  width: 15px;
+  height: 15px;
+}
+
+.cil-ovladani {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cil-ovladani .filtr {
+  padding: 6px 12px;
+  font-weight: 600;
+}
+
+.cil-ovladani input,
+.cil-novy-krok input,
+.cil-formular input {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.cil-ovladani input {
+  width: 90px;
+}
+
+.cil-kroky-seznam {
+  list-style: none;
+  margin: 4px 0 8px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.cil-krok {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cil-krok-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.cil-krok.hotovo .cil-krok-text {
+  text-decoration: line-through;
+  color: var(--text-slaby);
+}
+
+.cil-novy-krok {
+  display: flex;
+  gap: 8px;
+}
+
+.cil-novy-krok input {
+  flex: 1;
+  min-width: 0;
+}
+
+.cil-formular {
+  display: grid;
+  gap: 10px;
+}
+
+.cil-formular input {
+  width: 100%;
+}
+
+.cil-formular > .hlavni-tlacitko {
+  justify-self: start;
+}
+
+.cil-formular .filtry {
+  margin-bottom: 0;
+}
+
+.cil-termin {
+  display: grid;
+  gap: 4px;
+  font-size: 0.88rem;
+  color: var(--text-slaby);
+}
+
+.cile-seznam {
+  margin-bottom: 18px;
 }
 
 /* --- Odpočty --- */

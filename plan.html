@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
   <title>Plán · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=12">
+  <link rel="stylesheet" href="css/style.css?v=13">
 </head>
 <body data-zalozka="plan">
   <header class="hlavicka">
@@ -25,6 +25,7 @@
     <div class="prepinac" role="tablist" aria-label="Části">
       <button type="button" role="tab" data-cast="ukoly">Úkoly</button>
       <button type="button" role="tab" data-cast="odpocty">Odpočty</button>
+      <button type="button" role="tab" data-cast="cile">Cíle</button>
       <button type="button" role="tab" data-cast="poznamky">Poznámky</button>
       <button type="button" role="tab" data-cast="soustredeni">Soustředění</button>
     </div>
@@ -58,6 +59,13 @@
 
       <div id="odpocty-skryte"></div>
       <p class="podnadpis">Termíny školního roku: MŠMT · testy: Edookit</p>
+    </section>
+
+    <section class="cast" id="cast-cile" role="tabpanel" hidden>
+      <!-- Cíle vloží js/cile.js, ukládají se zašifrovaně na GitHub (js/zapisy.js) -->
+      <div id="cile">
+        <p class="nacitani">Načítá se…</p>
+      </div>
     </section>
 
     <section class="cast" id="cast-poznamky" role="tabpanel" hidden>
@@ -109,18 +117,20 @@
 
   <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
 
-  <script src="js/zalozky.js?v=12"></script>
-  <script src="js/spolecne.js?v=12"></script>
-  <script src="js/zapisy.js?v=12"></script>
-  <script src="js/moduly/skola.js?v=12"></script>
-  <script src="js/moduly/ukoly.js?v=12"></script>
-  <script src="js/moduly/odpocty.js?v=12"></script>
-  <script src="js/moduly/poznamky.js?v=12"></script>
-  <script src="js/moduly/soustredeni.js?v=12"></script>
-  <script src="js/ukoly.js?v=12"></script>
-  <script src="js/odpocty.js?v=12"></script>
-  <script src="js/poznamky.js?v=12"></script>
-  <script src="js/soustredeni.js?v=12"></script>
+  <script src="js/zalozky.js?v=13"></script>
+  <script src="js/spolecne.js?v=13"></script>
+  <script src="js/zapisy.js?v=13"></script>
+  <script src="js/moduly/skola.js?v=13"></script>
+  <script src="js/moduly/ukoly.js?v=13"></script>
+  <script src="js/moduly/odpocty.js?v=13"></script>
+  <script src="js/moduly/cile.js?v=13"></script>
+  <script src="js/moduly/poznamky.js?v=13"></script>
+  <script src="js/moduly/soustredeni.js?v=13"></script>
+  <script src="js/ukoly.js?v=13"></script>
+  <script src="js/odpocty.js?v=13"></script>
+  <script src="js/cile.js?v=13"></script>
+  <script src="js/poznamky.js?v=13"></script>
+  <script src="js/soustredeni.js?v=13"></script>
   <script>nastavPrepinac();</script>
 </body>
 </html>
