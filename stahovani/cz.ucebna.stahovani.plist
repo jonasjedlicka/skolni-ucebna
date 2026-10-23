@@ -21,6 +21,14 @@
     <string>/Users/jonasjedlicka/skolni-ucebna/stahovani/stahni.py</string>
   </array>
 
+  <!-- Python jinak do souboru zapisuje se zpožděním a výpis by se v záznamu
+       přeházel s výpisem gitu. Tohle mu řekne, ať zapisuje hned. -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PYTHONUNBUFFERED</key>
+    <string>1</string>
+  </dict>
+
   <key>WorkingDirectory</key>
   <string>/Users/jonasjedlicka/skolni-ucebna</string>
 
