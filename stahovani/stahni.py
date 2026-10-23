@@ -29,12 +29,11 @@ PROJEKT = Path(__file__).resolve().parent.parent  # složka skolni-ucebna
 DATA = PROJEKT / "data" / "skola"  # každý modul dashboardu má svou složku
 # Čitelné kopie dat. Jen v tomhle počítači, na GitHub jdou zašifrované.
 SOUKROME = PROJEKT / "soukrome" / "skola"
-# Sem si prohlížeč ukládá přihlášení. Je v .gitignore – nikdy ho nenahrávej!
+# Profil prohlížeče s přihlášením. Je v .gitignore – nikdy ho nenahrávej!
+# Edookit přihlášení ukončí zhruba po hodině, ale Plus4U si tě v tomhle profilu
+# pamatuje déle. Při každém otevření Edookitu tě pak Plus4U přihlásí znovu samo.
 PROFIL = PROJEKT / ".edookit-prihlaseni"
-# Edookit drží přihlášení v cookie, která by po zavření prohlížeče zmizela,
-# proto si cookies po přihlášení uložíme sem a při stahování je načteme.
-STAV = PROFIL / "prihlaseni.json"
-JS = (Path(__file__).parent / "edookit.js").read_text(encoding="utf-8")
+JS =(Path(__file__).parent / "edookit.js").read_text(encoding="utf-8")
 
 # Kolik týdnů rozvrhu projít. Běžný rozvrh se pozná podle toho,
 # co se v těch týdnech opakuje; jednorázové změny (supl, zrušení) propadnou.
@@ -53,21 +52,11 @@ SKRYT_AUTOMATIZACI = {
 }
 
 
-def otevri_prohlizec_pro_prihlaseni(p):
-    # Viditelné okno s vlastním profilem: Google/Microsoft si tě v něm pamatují,
-    # takže příští přihlášení bude rychlejší.
+def otevri_prohlizec(p, viditelne):
+    # Pokaždé stejný profil (složka PROFIL), viditelně jen při přihlašování
     return p.chromium.launch_persistent_context(
-        str(PROFIL), headless=False, locale="cs-CZ", **SKRYT_AUTOMATIZACI
+        str(PROFIL), headless=not viditelne, locale="cs-CZ", **SKRYT_AUTOMATIZACI
     )
-
-
-def otevri_neviditelny_prohlizec(p):
-    prohlizec = p.chromium.launch(headless=True, **SKRYT_AUTOMATIZACI)
-    # Neviditelný prohlížeč se jinak představuje jako „HeadlessChrome“,
-    # Edookit by ho pak mohl brát jako jiný prohlížeč a přihlášení neuznat.
-    user_agent = prohlizec.new_page().evaluate("navigator.userAgent").replace("HeadlessChrome", "Chrome")
-    kontext = prohlizec.new_context(storage_state=str(STAV), locale="cs-CZ", user_agent=user_agent)
-    return prohlizec, kontext
 
 
 # Odkaz „Odhlásit se“ je v menu jen tehdy, když jsi přihlášený.
@@ -105,32 +94,33 @@ def spust_js(stranka, funkce):
 
 def prihlasit():
     with sync_playwright() as p:
-        prohlizec = otevri_prohlizec_pro_prihlaseni(p)
+        prohlizec = otevri_prohlizec(p, viditelne=True)
         stranka = prohlizec.new_page()
         stranka.goto(EDOOKIT)
         print("Přihlas se v okně prohlížeče, které se otevřelo. Čekám až 5 minut…")
         # Hotovo je, až se v Edookitu objeví odkaz „Odhlásit se“
         stranka.wait_for_selector(ODHLASIT, state="attached", timeout=5 * 60 * 1000)
-        prohlizec.storage_state(path=str(STAV))  # uložíme cookies dřív, než okno zavřeme
         prohlizec.close()
     print("✓ Přihlášeno. Teď spusť skript bez --prihlasit.")
 
 
 def stahni_z_edookitu():
-    if not STAV.exists():
-        sys.exit("✗ Ještě ses nepřihlásil. Spusť skript s --prihlasit.")
-
     with sync_playwright() as p:
-        prohlizec, kontext = otevri_neviditelny_prohlizec(p)
-        stranka = kontext.new_page()
+        prohlizec = otevri_prohlizec(p, viditelne=False)
+        stranka = prohlizec.new_page()
 
-        stranka.goto(EDOOKIT + "/timetable/")
+        # Na hlavní stránce se případně proběhne přihlášení přes Plus4U
+        # (Edookit → Plus4U → zpátky). networkidle = počkáme, až to doběhne.
+        stranka.goto(EDOOKIT + "/")
+        stranka.wait_for_load_state("networkidle")
         if not je_prihlaseny(stranka):
             prohlizec.close()
+            # Sem se dostaneme, jen když tě zapomnělo i Plus4U
             upozorni("Přihlášení do Edookitu vypršelo. Spusť stahni.py --prihlasit.")
             sys.exit("✗ Přihlášení do Edookitu vypršelo. Spusť skript s --prihlasit.")
 
         print("Čtu rozvrh…")
+        stranka.goto(EDOOKIT + "/timetable/")
         # Edookit si pamatuje naposledy zobrazený týden, tak nejdřív na ten aktuální
         na_aktualni_tyden(stranka)
         tydny = [spust_js(stranka, "prectiTyden")]
@@ -148,8 +138,6 @@ def stahni_z_edookitu():
         stranka.goto(EDOOKIT + "/courses/")
         ucivo = spust_js(stranka, "prectiUcivo")
 
-        # Edookit může cookie během návštěvy obnovit, tak si uložíme tu nejnovější
-        kontext.storage_state(path=str(STAV))
         prohlizec.close()
     return tydny, pisemky, ucivo
 
