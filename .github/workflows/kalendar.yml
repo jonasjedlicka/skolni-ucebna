@@ -1,0 +1,44 @@
+# GitHub Actions: každé 2 hodiny stáhne Google Kalendář a uloží události
+# na příštích 30 dní zašifrované. Potřebuje dva Secrets:
+#   KALENDAR_ICAL  – tajná adresa (nebo adresy) kalendáře ve formátu iCal
+#   UCEBNA_HESLO   – heslo k šifrování (stejné jako u akcií)
+# Spustit ručně: záložka Actions → Kalendář → Run workflow.
+
+name: Kalendář
+
+on:
+  schedule:
+    - cron: "37 */2 * * *" # v 37. minutě každé 2. hodiny (UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stahni:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stáhnout repozitář
+        uses: actions/checkout@v4
+
+      - name: Nainstalovat knihovny
+        run: pip install --quiet cryptography icalendar recurring-ical-events
+
+      - name: Stáhnout kalendář
+        env:
+          KALENDAR_ICAL: ${{ secrets.KALENDAR_ICAL }}
+          UCEBNA_HESLO: ${{ secrets.UCEBNA_HESLO }}
+        run: python3 stahovani/kalendar.py
+
+      - name: Nahrát změny
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/kalendar/
+          git diff --cached --quiet && exit 0
+          git commit -m "Aktualizace kalendáře"
+          for pokus in 1 2 3; do
+            git pull --rebase --quiet && git push && exit 0
+            sleep 5
+          done
+          exit 1
