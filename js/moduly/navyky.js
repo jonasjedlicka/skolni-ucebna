@@ -20,11 +20,6 @@ function seznamNavyku() {
     .sort((a, b) => a.vytvoreno - b.vytvoreno);
 }
 
-// Den v týdnu: 0 = pondělí … 6 = neděle (getDay() má 0 = neděle)
-function denVTydnu(datum) {
-  return (datum.getDay() + 6) % 7;
-}
-
 function maNaplanovano(navyk, datum) {
   return (navyk.dny || VSECHNY_DNY).includes(denVTydnu(datum));
 }

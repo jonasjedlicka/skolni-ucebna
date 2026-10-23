@@ -1407,6 +1407,128 @@ a.polozka-nazev:hover {
   margin: 12px 0 18px;
 }
 
+/* --- Trénink --- */
+
+.cvik-dnes.klikatelny {
+  cursor: pointer;
+}
+
+.cvik-dnes.klikatelny:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.trenink-mezititulek {
+  margin: 14px 0 8px;
+}
+
+.trenink-zapis input {
+  width: 100%;
+}
+
+.trenink-vyber,
+.plan-radek input {
+  font: inherit;
+  font-size: 1rem; /* aspoň 16 px, jinak iPhone při psaní stránku přiblíží */
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--sklo-okraj);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.trenink-vyber {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* Graf progresu: bílá 2px čára, body, nenápadná mřížka a osy */
+.trenink-graf svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 6px;
+}
+
+.trenink-graf-popisek {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.5em;
+  margin-top: 8px;
+}
+
+.graf-cara {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.graf-bod {
+  fill: var(--text);
+  stroke: var(--pozadi); /* tmavý prstenec odliší bod od čáry */
+  stroke-width: 2;
+}
+
+.graf-terc {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.graf-mrizka {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+}
+
+.graf-osa {
+  fill: var(--text-slaby);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.trenink-plan summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.plan-den {
+  margin-top: 14px;
+}
+
+.plan-radky {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.plan-radek {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-radek .plan-cvik {
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-radek .plan-serie {
+  width: 56px;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.plan-radek .plan-opakovani {
+  width: 70px;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.plan-pridat {
+  font-size: 0.88rem;
+  color: var(--text-slaby);
+}
+
 /* --- Odpočty --- */
 
 .odpocet-nazev {

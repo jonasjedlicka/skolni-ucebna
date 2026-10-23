@@ -54,7 +54,7 @@ function vykresliDoucovani() {
     ...(dny.size
       ? [...dny].map(([datum, lekce]) => {
           const sekce = vytvor("section", "sekce");
-          sekce.append(vytvor("h2", "", nazevDne(datum)));
+          sekce.append(vytvor("h2", "", nazevDneLekce(datum)));
           const ul = vytvor("ul", "seznam");
           ul.append(...lekce.map(vytvorKartuLekce));
           sekce.append(ul);
@@ -81,7 +81,7 @@ function vykresliDoucovani() {
 }
 
 // „Dnes“, „Zítra“, „úterý 3. 11.“
-function nazevDne(datum) {
+function nazevDneLekce(datum) {
   const dny = dnyDo(parsujDatum(datum));
   if (dny === 0) return "Dnes";
   if (dny === 1) return "Zítra";
@@ -136,7 +136,7 @@ function vytvorPoznamkuLekce(nadpis, text) {
 function vytvorUpravuLekce(l) {
   const karta = vytvor("li", "lekce-karta upravuje");
   const formular = vytvor("form", "cil-formular lekce-formular");
-  formular.append(vytvor("div", "polozka-nazev", `${l.s} · ${nazevDne(l.datum).toLowerCase()} ${casText(l.zacatek)}`));
+  formular.append(vytvor("div", "polozka-nazev", `${l.s} · ${nazevDneLekce(l.datum).toLowerCase()} ${casText(l.zacatek)}`));
 
   const probrali = vytvorTextovePole("Co jsme probrali", l.probrali);
   const naPriste = vytvorTextovePole("Na příště (úkol, co zopakovat…)", l.naPriste);

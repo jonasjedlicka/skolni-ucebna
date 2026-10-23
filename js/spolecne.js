@@ -163,6 +163,11 @@ function datumKlic(datum = new Date()) {
   return datum.toLocaleDateString("sv-SE");
 }
 
+// Den v týdnu: 0 = pondělí … 6 = neděle (getDay() má 0 = neděle)
+function denVTydnu(datum) {
+  return (datum.getDay() + 6) % 7;
+}
+
 // Kolik dní zbývá od dneška do zadaného data (dnes = 0, zítra = 1, včera = -1).
 function dnyDo(datum) {
   const dnes = new Date();
