@@ -46,7 +46,7 @@ async function vykresliZpravyDnes(obsah) {
 
 MODULY.push({
   id: "zpravy",
-  zalozka: "zpravy",
+  zalozka: "svet",
   maxStariHodin: 8, // stahují se každé 3 hodiny, víc než 8 h = něco se zaseklo
-  dnes: [{ nazev: "Zprávy", odkaz: "zpravy.html", poradi: 5, vykresli: vykresliZpravyDnes }],
+  dnes: [{ nazev: "Zprávy", odkaz: "svet.html#zpravy", poradi: 5, vykresli: vykresliZpravyDnes }],
 });

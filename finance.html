@@ -2,36 +2,12 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0b0c">
+  <!-- Stará adresa: stránka se přesunula do záložky Svět. Přesměrování nechává
+       funkční záložky v prohlížeči a odkazy uložené v mobilu. -->
+  <meta http-equiv="refresh" content="0; url=svet.html#finance">
   <title>Finance · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
-<body data-zalozka="finance">
-  <header class="hlavicka">
-    <div class="hlavicka-obsah">
-      <a class="logo" href="index.html">Dashboard</a>
-      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
-    </div>
-  </header>
-
-  <main>
-    <div class="hlavicka-stranky">
-      <h1>Finance</h1>
-      <p class="podnadpis" data-stav="akcie" data-max-hodin="72"></p>
-    </div>
-    <!-- Akcie a portfolio vloží js/akcie.js ze zašifrovaných dat v data/akcie/.
-         Další finance (třeba účty nebo rozpočet) přibudou jako další sekce. -->
-    <div id="akcie">
-      <p class="nacitani">Načítá se…</p>
-    </div>
-  </main>
-
-  <footer class="paticka">Ceny: Yahoo Finance · kurzy: ČNB · <button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
-
-  <script src="js/zalozky.js?v=4"></script>
-  <script src="js/spolecne.js?v=4"></script>
-  <script src="js/moduly/akcie.js?v=4"></script>
-  <script src="js/akcie.js?v=4"></script>
+<body>
+  <p>Stránka se přesunula: <a href="svet.html#finance">Finance</a></p>
 </body>
 </html>

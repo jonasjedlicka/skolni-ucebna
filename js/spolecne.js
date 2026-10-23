@@ -37,6 +37,45 @@ function vykresliNavigaci() {
   }
 }
 
+// --- Přepínač částí záložky (např. Škola: Rozvrh | Testy | Předměty) ---
+// V HTML: <div class="prepinac"> s tlačítky data-cast="rozvrh" a k nim
+// <section id="cast-rozvrh">. Vybraná část je i v adrese (skola.html#testy),
+// takže funguje tlačítko Zpět i odkaz z Přehledu rovnou na konkrétní část.
+function nastavPrepinac() {
+  const tlacitka = [...document.querySelectorAll(".prepinac button")];
+  const casti = tlacitka.map((t) => t.dataset.cast);
+
+  // animovat = false při načtení stránky: tam už běží animace přechodu mezi
+  // záložkami a druhou animaci by prohlížeč i se změnou zahodil.
+  function ukaz(cast, animovat = true) {
+    if (!casti.includes(cast)) cast = casti[0];
+    const prepni = () => {
+      for (const nazev of casti) {
+        document.getElementById("cast-" + nazev).hidden = nazev !== cast;
+      }
+      for (const tlacitko of tlacitka) {
+        tlacitko.setAttribute("aria-selected", tlacitko.dataset.cast === cast);
+      }
+    };
+    // View Transitions: prohlížeč plynule prolne starý a nový obsah.
+    // Kde ji prohlížeč neumí, část se přepne hned (bez animace).
+    if (animovat && document.startViewTransition && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.startViewTransition(prepni);
+    } else {
+      prepni();
+    }
+  }
+
+  for (const tlacitko of tlacitka) {
+    tlacitko.addEventListener("click", () => {
+      history.replaceState(null, "", "#" + tlacitko.dataset.cast); // zapíše část do adresy
+      ukaz(tlacitko.dataset.cast);
+    });
+  }
+  window.addEventListener("hashchange", () => ukaz(location.hash.slice(1)));
+  ukaz(location.hash.slice(1), false);
+}
+
 // Text „aktualizováno před 3 h“ podle data/<id>/stav.json.
 // Když jsou data starší než maxHodin, stahování se nejspíš zaseklo – dáme to najevo.
 async function zobrazStav(prvek, id, maxHodin) {

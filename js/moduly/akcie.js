@@ -128,7 +128,7 @@ async function vykresliFinanceDnes(obsah) {
 
 MODULY.push({
   id: "akcie",
-  zalozka: "finance",
+  zalozka: "svet",
   maxStariHodin: 72, // o víkendu se nestahuje, takže v pondělí ráno jsou data z pátku
-  dnes: [{ nazev: "Finance", odkaz: "finance.html", poradi: 4, vykresli: vykresliFinanceDnes }],
+  dnes: [{ nazev: "Finance", odkaz: "svet.html#finance", poradi: 4, vykresli: vykresliFinanceDnes }],
 });

@@ -659,6 +659,85 @@ a.polozka-nazev:hover {
   stroke-dasharray: 4 3;
 }
 
+/* --- Počasí --- */
+
+.pocasi-ted {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.pocasi-ikona-velka {
+  width: 52px;
+  height: 52px;
+  stroke-width: 1.3;
+}
+
+.pocasi-teplota {
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Upozornění na déšť: obrácené barvy místo modré/červené */
+.pocasi-varovani {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: var(--akcent);
+  color: var(--akcent-text);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+/* Pás hodin: na mobilu se posouvá do strany */
+.pocasi-hodiny {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.pocasi-hodiny::-webkit-scrollbar {
+  display: none;
+}
+
+.pocasi-hodina {
+  flex: 0 0 auto;
+  min-width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  background: var(--sklo);
+  border: 1px solid var(--sklo-okraj);
+  border-radius: var(--zaobleni-male);
+}
+
+/* Hodina s pravděpodobným deštěm: tučně a podtržené */
+.pocasi-mokro {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pocasi-rozsah {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cast-stav {
+  margin: -8px 0 12px;
+}
+
 /* --- Zámek (zadání hesla k šifrovaným datům) --- */
 
 .zamek {

@@ -43,7 +43,7 @@ function vytvorDlazdiciPrehledu(dlazdice, poradi, ukazStav) {
   nadpis.append(odkaz);
   hlavicka.append(nadpis);
 
-  if (ukazStav) {
+  if (ukazStav && dlazdice.modul.maxStariHodin) {
     const stav = vytvor("span", "stav");
     zobrazStav(stav, dlazdice.modul.id, dlazdice.modul.maxStariHodin);
     hlavicka.append(stav);

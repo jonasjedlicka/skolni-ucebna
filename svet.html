@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>Svět · Dashboard</title>
+  <link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body data-zalozka="svet">
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">Dashboard</a>
+      <nav class="navigace" id="navigace" aria-label="Záložky"></nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hlavicka-stranky">
+      <h1>Svět</h1>
+    </div>
+
+    <!-- Přepínač částí (řídí nastavPrepinac ze spolecne.js), část je v adrese: svet.html#zpravy -->
+    <div class="prepinac" role="tablist" aria-label="Části">
+      <button type="button" role="tab" data-cast="pocasi">Počasí</button>
+      <button type="button" role="tab" data-cast="zpravy">Zprávy</button>
+      <button type="button" role="tab" data-cast="finance">Finance</button>
+    </div>
+
+    <section class="cast" id="cast-pocasi" role="tabpanel">
+      <!-- Počasí vloží js/pocasi.js (živě z Open-Meteo) -->
+      <div id="pocasi">
+        <p class="nacitani">Načítá se…</p>
+      </div>
+      <p class="podnadpis">Zdroj: Open-Meteo.com</p>
+    </section>
+
+    <section class="cast" id="cast-zpravy" role="tabpanel" hidden>
+      <p class="podnadpis cast-stav" data-stav="zpravy" data-max-hodin="8"></p>
+      <!-- Tlačítka zdrojů a zprávy vloží js/zpravy.js -->
+      <div class="filtry" id="filtry"></div>
+      <ul class="seznam" id="zpravy">
+        <li class="nacitani">Zprávy se načítají…</li>
+      </ul>
+      <p class="podnadpis">Zdroje: ČT24, iRozhlas, BBC (RSS)</p>
+    </section>
+
+    <section class="cast" id="cast-finance" role="tabpanel" hidden>
+      <p class="podnadpis cast-stav" data-stav="akcie" data-max-hodin="72"></p>
+      <!-- Akcie a portfolio vloží js/akcie.js ze zašifrovaných dat v data/akcie/ -->
+      <div id="akcie">
+        <p class="nacitani">Načítá se…</p>
+      </div>
+      <p class="podnadpis">Ceny: Yahoo Finance · kurzy: ČNB</p>
+    </section>
+  </main>
+
+  <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="zamknout">Zamknout</button></footer>
+
+  <script src="js/zalozky.js?v=5"></script>
+  <script src="js/spolecne.js?v=5"></script>
+  <script src="js/moduly/pocasi.js?v=5"></script>
+  <script src="js/moduly/zpravy.js?v=5"></script>
+  <script src="js/moduly/akcie.js?v=5"></script>
+  <script src="js/pocasi.js?v=5"></script>
+  <script src="js/zpravy.js?v=5"></script>
+  <script src="js/akcie.js?v=5"></script>
+  <script>nastavPrepinac();</script>
+</body>
+</html>
