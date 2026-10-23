@@ -63,6 +63,20 @@ function textPredKolika(isoCas) {
   return dni === 1 ? "včera" : `před ${dni} dny`;
 }
 
+// Povolíme jen běžné webové adresy (http, https) a soubory z našeho webu.
+// Adresa typu "javascript:…" by po kliknutí spustila kód, tu nepustíme.
+// Důležité hlavně u dat z cizích zdrojů (Edookit, RSS).
+function bezpecnaAdresa(adresa) {
+  if (!adresa) return null;
+  try {
+    const url = new URL(adresa, location.href);
+    if (url.protocol === "http:" || url.protocol === "https:") return adresa;
+  } catch {
+    // new URL vyhodí chybu, když adresa nedává smysl
+  }
+  return null;
+}
+
 // Když se něco pokazí, vypíše chybu přímo na stránku,
 // abys hned viděl, co je špatně (a ne jen prázdnou stránku).
 function ukazChybu(kontejner, chyba) {

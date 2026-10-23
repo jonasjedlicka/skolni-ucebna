@@ -1,0 +1,42 @@
+# GitHub Actions: každé 3 hodiny stáhne zprávy z RSS a nahraje je do repozitáře.
+# Běží na serverech GitHubu, takže funguje i když máš Mac vypnutý.
+# Spustit ručně: na GitHubu záložka Actions → Zprávy → Run workflow.
+
+name: Zprávy
+
+on:
+  schedule:
+    # Formát cron: minuta hodina den měsíc den-v-týdnu, čas je v UTC (u nás +1/+2 h).
+    # "17 */3 * * *" = v 17. minutě každé 3. hodiny. Nekulatá minuta je schválně:
+    # v celou hodinu spouští GitHub nejvíc úloh a ty se pak zpožďují.
+    - cron: "17 */3 * * *"
+  workflow_dispatch: # tlačítko „Run workflow“ pro ruční spuštění
+
+# Úloha smí měnit obsah repozitáře (nahrát nová data), nic víc
+permissions:
+  contents: write
+
+jobs:
+  stahni:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stáhnout repozitář
+        uses: actions/checkout@v4
+
+      - name: Stáhnout zprávy
+        run: python3 stahovani/zpravy.py
+
+      - name: Nahrát změny
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/zpravy/
+          git diff --cached --quiet && exit 0   # nic se nezměnilo → konec
+          git commit -m "Aktualizace zpráv"
+          # Mezitím mohl nahrát data i skript ze školy z Macu. Převezmeme jeho
+          # změny (týkají se jiné složky, takže se nepohádají) a zkusíme to znovu.
+          for pokus in 1 2 3; do
+            git pull --rebase --quiet && git push && exit 0
+            sleep 5
+          done
+          exit 1

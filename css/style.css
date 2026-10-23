@@ -347,6 +347,43 @@ a.polozka-nazev:hover {
   margin-bottom: 8px;
 }
 
+/* --- Zprávy --- */
+
+.zprava-perex {
+  font-size: 0.92rem;
+  margin: 2px 0 4px;
+}
+
+.odkaz-vice {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.filtry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.filtr {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--okraj);
+  background: var(--karta);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.filtr.vybrany {
+  background: var(--hlavni);
+  border-color: var(--hlavni);
+  color: var(--hlavni-text);
+}
+
 /* --- Stránka předmětu --- */
 
 .predmet-hlavicka {

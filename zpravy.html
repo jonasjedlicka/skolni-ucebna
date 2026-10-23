@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zprávy · Učebna</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">📚 Učebna</a>
+      <nav class="navigace">
+        <a href="index.html">Přehled</a>
+        <a href="rozvrh.html">Rozvrh</a>
+        <a href="testy.html">Testy</a>
+        <a href="zpravy.html" aria-current="page">Zprávy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>Zprávy ze světa</h1>
+    <!-- Tlačítka pro výběr zdroje a seznam zpráv vloží js/zpravy.js -->
+    <div class="filtry" id="filtry"></div>
+    <ul class="seznam" id="zpravy">
+      <li class="nacitani">Zprávy se načítají…</li>
+    </ul>
+  </main>
+
+  <footer class="paticka">Zdroje: ČT24, iRozhlas, BBC (RSS)</footer>
+
+  <script src="js/spolecne.js"></script>
+  <script src="js/moduly/zpravy.js"></script>
+  <script src="js/zpravy.js"></script>
+</body>
+</html>

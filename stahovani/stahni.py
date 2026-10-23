@@ -271,8 +271,14 @@ def uloz(nazev, data):
 def nahraj_na_github(soubory):
     git("add", *[str((DATA / nazev).relative_to(PROJEKT)) for nazev in soubory])
     git("commit", "-m", f"Aktualizace dat z Edookitu ({date.today():%-d. %-m. %Y})")
-    git("push")
-    print("✓ Nahráno na GitHub. Web se aktualizuje asi do minuty.")
+    # Mezitím mohl nahrát zprávy GitHub Actions. Pak push selže, tak převezmeme
+    # jeho změny (jsou v jiné složce, nepohádají se) a zkusíme to znovu.
+    for pokus in range(3):
+        if subprocess.run(["git", "push", "--quiet"], cwd=PROJEKT).returncode == 0:
+            print("✓ Nahráno na GitHub. Web se aktualizuje asi do minuty.")
+            return
+        git("pull", "--rebase", "--autostash", "--quiet")
+    raise RuntimeError("Nahrání na GitHub se nepovedlo ani na třetí pokus.")
 
 
 def main():
@@ -289,7 +295,9 @@ def main():
     if not argumenty.bez_nahrani:
         # Nejdřív převezmeme, co se mezitím změnilo na GitHubu (třeba
         # materiál, který jsi přidal přes web), ať to nepřepíšeme.
-        git("pull", "--ff-only", "--quiet")
+        # --autostash: když máš v počítači rozdělanou změnu, git ji na chvíli
+        # odloží stranou a pak vrátí, místo aby odmítl pokračovat.
+        git("pull", "--rebase", "--autostash", "--quiet")
 
     tydny, pisemky, ucivo = stahni_z_edookitu()
 

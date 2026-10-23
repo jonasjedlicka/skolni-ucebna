@@ -139,19 +139,6 @@ function vytvorMaterial(material) {
   return polozka;
 }
 
-// Povolíme jen běžné webové adresy (http, https) a soubory z našeho webu.
-// Adresa typu "javascript:…" by po kliknutí spustila kód, tu nepustíme.
-function bezpecnaAdresa(adresa) {
-  if (!adresa) return null;
-  try {
-    const url = new URL(adresa, location.href);
-    if (url.protocol === "http:" || url.protocol === "https:") return adresa;
-  } catch {
-    // new URL vyhodí chybu, když adresa nedává smysl
-  }
-  return null;
-}
-
 // Pod odkazem ukážeme, kam vede: u webu doménu, u souboru jeho jméno.
 function popisAdresy(adresa, typ) {
   const url = new URL(adresa, location.href);

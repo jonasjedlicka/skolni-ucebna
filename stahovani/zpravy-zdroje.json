@@ -1,0 +1,5 @@
+[
+  { "nazev": "ČT24", "url": "https://ct24.ceskatelevize.cz/rss/rubrika/svet-16" },
+  { "nazev": "iRozhlas", "url": "https://www.irozhlas.cz/rss/irozhlas/section/zpravy-svet" },
+  { "nazev": "BBC", "url": "https://feeds.bbci.co.uk/news/world/rss.xml" }
+]
