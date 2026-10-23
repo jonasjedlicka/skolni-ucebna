@@ -1,0 +1,389 @@
+/* =========================================================
+   Vzhled celé Učebny.
+   Píšeme "mobile first": základní styly jsou pro úzký mobil
+   a až dole přidáváme úpravy pro širší obrazovky.
+   ========================================================= */
+
+/* --- Proměnné (barvy, rozestupy) ---
+   Hodnotu napíšeme jednou sem a jinde ji používáme přes var(--nazev).
+   Když chceš změnit barvu webu, stačí ji změnit tady. */
+:root {
+  --pozadi: #f4f5f7;
+  --karta: #ffffff;
+  --text: #1f2933;
+  --text-slaby: #6b7280;
+  --okraj: #e2e5ea;
+  --hlavni: #2563eb;
+  --hlavni-text: #ffffff;
+  --varovani: #dc2626;
+  --zaobleni: 12px;
+  --mezera: 16px;
+  --max-sirka: 960px;
+}
+
+/* Tmavý režim: když má telefon nebo počítač zapnutý tmavý vzhled,
+   prohlížeč použije tyhle hodnoty místo těch nahoře. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pozadi: #111418;
+    --karta: #1c2128;
+    --text: #e6e8eb;
+    --text-slaby: #9aa3ad;
+    --okraj: #2d333b;
+    --hlavni: #60a5fa;
+    --hlavni-text: #0b1220;
+    --varovani: #f87171;
+  }
+}
+
+/* --- Základ --- */
+
+/* box-sizing: border-box = šířka prvku zahrnuje i padding a rámeček.
+   Bez toho se rozměry počítají zmateně. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  background: var(--pozadi);
+  color: var(--text);
+}
+
+a {
+  color: var(--hlavni);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+
+/* --- Hlavička a navigace --- */
+
+.hlavicka {
+  background: var(--karta);
+  border-bottom: 1px solid var(--okraj);
+  /* sticky = hlavička zůstane nahoře, i když stránku posouváš */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.hlavicka-obsah {
+  max-width: var(--max-sirka);
+  margin: 0 auto;
+  padding: 10px var(--mezera);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.navigace {
+  display: flex;
+  gap: 4px;
+}
+
+.navigace a {
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.navigace a:hover {
+  background: var(--pozadi);
+}
+
+/* Odkaz na stránku, na které právě jsi (má v HTML aria-current="page") */
+.navigace a[aria-current="page"] {
+  background: var(--hlavni);
+  color: var(--hlavni-text);
+}
+
+/* --- Obsah stránky --- */
+
+main {
+  max-width: var(--max-sirka);
+  margin: 0 auto;
+  padding: var(--mezera);
+}
+
+.sekce {
+  margin-bottom: 28px;
+}
+
+.sekce-nadpis {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sekce-nadpis a {
+  font-size: 0.9rem;
+}
+
+/* Karta = bílý obdélník se zaoblenými rohy. Používáme ji všude. */
+.karta {
+  background: var(--karta);
+  border: 1px solid var(--okraj);
+  border-radius: var(--zaobleni);
+  padding: var(--mezera);
+}
+
+.slaby {
+  color: var(--text-slaby);
+}
+
+/* Text, který se ukáže, než JavaScript načte data */
+.nacitani {
+  color: var(--text-slaby);
+  font-style: italic;
+}
+
+/* --- Seznam (hodiny, testy) --- */
+
+.seznam {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.polozka {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--karta);
+  border: 1px solid var(--okraj);
+  /* Barevný proužek vlevo. Barvu předmětu nastaví JavaScript
+     přes proměnnou --barva-predmetu. */
+  border-left: 6px solid var(--barva-predmetu, var(--okraj));
+  border-radius: var(--zaobleni);
+  padding: 10px 12px;
+}
+
+.polozka-cas {
+  min-width: 3.2rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-slaby);
+  font-size: 0.9rem;
+}
+
+.polozka-hlavni {
+  flex: 1;
+  min-width: 0;
+}
+
+.polozka-nazev {
+  font-weight: 600;
+}
+
+.polozka-detail {
+  color: var(--text-slaby);
+  font-size: 0.9rem;
+}
+
+/* Název předmětu jako odkaz: vypadá jako text, podtrhne se až při najetí */
+a.polozka-nazev {
+  color: var(--text);
+  text-decoration: none;
+}
+
+a.polozka-nazev:hover {
+  text-decoration: underline;
+}
+
+/* Volná hodina: jen čárkovaný rámeček, ať nepřitahuje pozornost */
+.polozka.volno {
+  background: transparent;
+  border-style: dashed;
+  border-left-width: 1px;
+}
+
+/* Úvodní stránka: hodina, která už skončila, a hodina, která právě běží */
+.polozka.probehla {
+  opacity: 0.5;
+}
+
+.polozka.ted {
+  box-shadow: 0 0 0 2px var(--hlavni);
+}
+
+.chyba {
+  color: var(--varovani);
+  font-weight: 600;
+}
+
+/* --- Rozvrh --- */
+
+.den {
+  margin-bottom: 24px;
+}
+
+.den-nazev {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+}
+
+/* Dnešní den má modrý štítek „dnes“ */
+.den.dnes .stitek {
+  background: var(--hlavni);
+  color: var(--hlavni-text);
+}
+
+/* Štítek, např. „za 3 dny“ u testu */
+.stitek {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pozadi);
+  white-space: nowrap;
+}
+
+.stitek.brzy {
+  color: var(--varovani);
+}
+
+/* --- Mřížka předmětů --- */
+
+.mrizka {
+  display: grid;
+  /* Na mobilu 2 sloupce vedle sebe */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.dlazdice {
+  display: block;
+  background: var(--karta);
+  border: 1px solid var(--okraj);
+  border-top: 5px solid var(--barva-predmetu, var(--hlavni));
+  border-radius: var(--zaobleni);
+  padding: 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.dlazdice:hover {
+  border-color: var(--barva-predmetu, var(--hlavni));
+}
+
+.dlazdice-zkratka {
+  font-size: 0.8rem;
+  color: var(--text-slaby);
+}
+
+/* --- Stránka předmětu --- */
+
+.predmet-hlavicka {
+  border-left: 6px solid var(--barva-predmetu, var(--hlavni));
+  padding-left: 12px;
+  margin-bottom: 20px;
+}
+
+.predmet-hlavicka h1 {
+  margin: 0;
+}
+
+.predmet-hlavicka p {
+  margin: 4px 0 0;
+}
+
+.tema {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* U materiálů je ikonka nahoře, i když je poznámka dlouhá */
+.polozka.material {
+  align-items: flex-start;
+}
+
+.material-ikona {
+  font-size: 1.3rem;
+  line-height: 1.4;
+}
+
+/* pre-line = zalomení řádků z JSON (\n) se na stránce zachová */
+.poznamka-text {
+  white-space: pre-line;
+  margin-top: 4px;
+}
+
+/* --- Patička --- */
+
+.paticka {
+  max-width: var(--max-sirka);
+  margin: 0 auto;
+  padding: 24px var(--mezera);
+  color: var(--text-slaby);
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   Širší obrazovky (tablet, počítač).
+   Tohle platí jen tehdy, když je okno široké aspoň 700 px.
+   ========================================================= */
+@media (min-width: 700px) {
+  .mrizka {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Na úvodní stránce dáme „Dnes“ a „Testy“ vedle sebe */
+  .dva-sloupce {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+
+/* Na počítači ukážeme rozvrh jako tabulku: 5 dnů vedle sebe */
+@media (min-width: 900px) {
+  .rozvrh-mrizka {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  /* V úzkém sloupci dáme čas nad název místo vedle něj */
+  .rozvrh-mrizka .polozka {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    /* Stejná výška všech políček, aby hodiny seděly v řádcích */
+    height: 6.5rem;
+    overflow: hidden;
+  }
+
+  /* Dlouhý název zkrátíme na 2 řádky a zbytek nahradíme „…“ */
+  .rozvrh-mrizka .polozka-nazev {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+}

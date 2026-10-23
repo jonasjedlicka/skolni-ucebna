@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rozvrh · Učebna</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">📚 Učebna</a>
+      <nav class="navigace">
+        <a href="index.html">Přehled</a>
+        <a href="rozvrh.html" aria-current="page">Rozvrh</a>
+        <a href="testy.html">Testy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>Týdenní rozvrh</h1>
+    <!-- Sem vykreslí js/rozvrh.js rozvrh z data/rozvrh.json -->
+    <div id="rozvrh" class="rozvrh-mrizka">
+      <p class="nacitani">Rozvrh se načítá…</p>
+    </div>
+  </main>
+
+  <footer class="paticka">Data: Edookit</footer>
+
+  <!-- Skripty dáváme až na konec, aby už existovalo všechno HTML nad nimi.
+       data.js musí být první, protože rozvrh.js používá jeho funkce. -->
+  <script src="js/data.js"></script>
+  <script src="js/rozvrh.js"></script>
+</body>
+</html>

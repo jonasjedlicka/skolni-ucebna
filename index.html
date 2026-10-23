@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <!-- Bez tohohle řádku by se stránka na mobilu zobrazila zmenšená jako na počítači -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Učebna</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">📚 Učebna</a>
+      <nav class="navigace">
+        <a href="index.html" aria-current="page">Přehled</a>
+        <a href="rozvrh.html">Rozvrh</a>
+        <a href="testy.html">Testy</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Obsah sekcí vloží js/index.js z JSON souborů ve složce data/ -->
+  <main>
+    <div class="dva-sloupce">
+      <section class="sekce">
+        <div class="sekce-nadpis">
+          <h2 id="dnes-nadpis">Dnes</h2>
+          <a href="rozvrh.html">Celý rozvrh →</a>
+        </div>
+        <ul class="seznam" id="dnesni-hodiny">
+          <li class="nacitani">Načítá se…</li>
+        </ul>
+      </section>
+
+      <section class="sekce">
+        <div class="sekce-nadpis">
+          <h2>Nejbližší testy</h2>
+          <a href="testy.html">Všechny →</a>
+        </div>
+        <ul class="seznam" id="nejblizsi-testy">
+          <li class="nacitani">Načítá se…</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="sekce">
+      <h2>Předměty</h2>
+      <div class="mrizka" id="predmety">
+        <p class="nacitani">Načítá se…</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="paticka">Data: Edookit</footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

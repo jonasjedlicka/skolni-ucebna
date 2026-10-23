@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Předmět · Učebna</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">📚 Učebna</a>
+      <nav class="navigace">
+        <a href="index.html">Přehled</a>
+        <a href="rozvrh.html">Rozvrh</a>
+        <a href="testy.html">Testy</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Tahle jedna stránka slouží pro všechny předměty.
+       Který předmět ukázat, pozná js/predmet.js z adresy,
+       např. predmet.html?id=matematika
+       Celý obsah <main> vytvoří JavaScript. -->
+  <main id="predmet">
+    <p class="nacitani">Předmět se načítá…</p>
+  </main>
+
+  <footer class="paticka">Data: Edookit</footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/predmet.js"></script>
+</body>
+</html>
