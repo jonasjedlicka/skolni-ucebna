@@ -11,7 +11,6 @@ const ZALOZKY = [
   { id: "kalendar", nazev: "Kalendář", odkaz: "kalendar.html", ikona: "kalendar" },
   { id: "zpravy", nazev: "Zprávy", odkaz: "zpravy.html", ikona: "zpravy" },
   { id: "finance", nazev: "Finance", odkaz: "finance.html", ikona: "finance" },
-  { id: "jarvis", nazev: "Jarvis", odkaz: "jarvis.html", ikona: "jarvis" },
 ];
 
 // Ikony jako SVG cesty (obrysy, 24×24). Kreslí se barvou textu, takže jsou vždy šedé/bílé.
@@ -22,7 +21,6 @@ const IKONY = {
   kalendar: "M4 6h16v15H4zM4 10h16M8 3v4M16 3v4",
   zpravy: "M4 5h13v15H6.5A2.5 2.5 0 0 1 4 17.5zM17 9h3v8.5a2.5 2.5 0 0 1-2.5 2.5M7.5 9h6M7.5 12.5h6M7.5 16h4",
   finance: "M4 20h16M6 16l4.5-4.5 3 3L19 9M15 9h4v4",
-  jarvis: "M4 5h16v11H10l-5 4v-4H4zM9 10.5h.01M12 10.5h.01M15 10.5h.01",
   zamek: "M6 11h12v10H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3",
   zpet: "M15 5l-7 7 7 7",
 };
