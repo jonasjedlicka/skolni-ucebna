@@ -1,0 +1,9 @@
+.DS_Store
+.claude/
+
+# Python knihovny pro stahovací skript (dají se kdykoli nainstalovat znovu)
+.venv/
+__pycache__/
+
+# Uložené přihlášení do Edookitu – NIKDY nenahrávat na GitHub!
+.edookit-prihlaseni/
