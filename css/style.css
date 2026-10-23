@@ -16,6 +16,7 @@
   --hlavni: #2563eb;
   --hlavni-text: #ffffff;
   --varovani: #dc2626;
+  --zisk: #16a34a;
   --zaobleni: 12px;
   --mezera: 16px;
   --max-sirka: 960px;
@@ -33,6 +34,7 @@
     --hlavni: #60a5fa;
     --hlavni-text: #0b1220;
     --varovani: #f87171;
+    --zisk: #4ade80;
   }
 }
 
@@ -97,6 +99,7 @@ h3 {
 
 .navigace {
   display: flex;
+  flex-wrap: wrap; /* na úzkém mobilu se odkazy zalomí na další řádek */
   gap: 4px;
 }
 
@@ -382,6 +385,54 @@ a.polozka-nazev:hover {
   background: var(--hlavni);
   border-color: var(--hlavni);
   color: var(--hlavni-text);
+}
+
+/* --- Akcie --- */
+
+.zisk {
+  color: var(--zisk);
+}
+
+.ztrata {
+  color: var(--varovani);
+}
+
+/* „−1,08 %“ se nesmí rozdělit na dva řádky */
+.zisk,
+.ztrata {
+  white-space: nowrap;
+}
+
+.akcie-souhrn {
+  margin-bottom: 12px;
+}
+
+.akcie-hodnota {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Malý graf vpravo u každé akcie */
+.graf {
+  width: 80px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.graf polyline {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke; /* čára zůstane tenká i při roztažení */
+}
+
+.graf-zisk {
+  stroke: var(--zisk);
+}
+
+.graf-ztrata {
+  stroke: var(--varovani);
 }
 
 /* --- Zámek (zadání hesla k šifrovaným datům) --- */

@@ -1,0 +1,44 @@
+# GitHub Actions: ve všední dny každou hodinu stáhne ceny akcií a kurzy ČNB.
+# Potřebuje heslo k šifrování v Secrets (Settings → Secrets and variables →
+# Actions → UCEBNA_HESLO). Bez něj by nevěděl, které akcie stáhnout.
+# Spustit ručně: záložka Actions → Akcie → Run workflow.
+
+name: Akcie
+
+on:
+  schedule:
+    # Po–Pá, každou hodinu v 47. minutě mezi 7:47 a 21:47 UTC
+    # (u nás 8:47–22:47, resp. 9:47–23:47 v létě) – pokryje Prahu, Evropu i USA
+    - cron: "47 7-21 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stahni:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stáhnout repozitář
+        uses: actions/checkout@v4
+
+      - name: Nainstalovat šifrovací knihovnu
+        run: pip install --quiet cryptography
+
+      - name: Stáhnout ceny
+        env:
+          UCEBNA_HESLO: ${{ secrets.UCEBNA_HESLO }}
+        run: python3 stahovani/akcie.py
+
+      - name: Nahrát změny
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/akcie/
+          git diff --cached --quiet && exit 0
+          git commit -m "Aktualizace akcií"
+          for pokus in 1 2 3; do
+            git pull --rebase --quiet && git push && exit 0
+            sleep 5
+          done
+          exit 1

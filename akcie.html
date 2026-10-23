@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Akcie · Učebna</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="hlavicka">
+    <div class="hlavicka-obsah">
+      <a class="logo" href="index.html">📚 Učebna</a>
+      <nav class="navigace">
+        <a href="index.html">Přehled</a>
+        <a href="rozvrh.html">Rozvrh</a>
+        <a href="testy.html">Testy</a>
+        <a href="zpravy.html">Zprávy</a>
+        <a href="akcie.html" aria-current="page">Akcie</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>Akcie</h1>
+    <!-- Obsah vloží js/akcie.js ze zašifrovaných dat v data/akcie/ -->
+    <div id="akcie">
+      <p class="nacitani">Načítá se…</p>
+    </div>
+  </main>
+
+  <footer class="paticka">Ceny: Yahoo Finance · kurzy: ČNB · <button type="button" class="odkaz-tlacitko" id="zamknout">🔒 Zamknout</button></footer>
+
+  <script src="js/spolecne.js"></script>
+  <script src="js/moduly/akcie.js"></script>
+  <script src="js/akcie.js"></script>
+</body>
+</html>
