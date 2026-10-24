@@ -1,5 +1,5 @@
 """
-Plánovač stahování: macOS ho spouští každých 30 minut (launchd, viz
+Plánovač stahování a záloh: macOS ho spouští každých 30 minut (launchd, viz
 launchd/cz.dashboard.stahovani.plist) a on sám pozná, co je na řadě.
 
 Když Mac spal nebo byl vypnutý, po probuzení se zmeškané stažení dožene –
@@ -33,6 +33,8 @@ ULOHY = [
     {"nazev": "akcie", "skript": "akcie.py", "kazdych": timedelta(hours=1), "po_chybe": timedelta(minutes=30), "jen_vsedni": True},
     # Edookit jednou denně, nejdřív v 6:00 (rozvrh na ten den už je známý)
     {"nazev": "skola", "skript": "stahni.py", "kazdych": timedelta(hours=20), "po_chybe": timedelta(hours=2), "od_hodiny": 6},
+    # Záloha dat jednou týdně (do iCloud Drive nebo složky ze zaloha.py --slozka)
+    {"nazev": "zaloha", "skript": "zaloha.py", "kazdych": timedelta(days=7), "po_chybe": timedelta(hours=6)},
 ]
 
 
