@@ -51,7 +51,7 @@ VEREJNE_SOUBORY = {"manifest.webmanifest", "sw.js"}  # sw.js jen kvůli odregist
 # (sw.js neobsahuje nic osobního a prohlížeč ho stahuje i mimo stránku – při aktualizaci)
 BEZ_PRIHLASENI = ("/prihlaseni.html", "/css/", "/ikony/", "/js/prihlaseni.js", "/manifest.webmanifest", "/sw.js")
 # Data, která smí prohlížeč číst (zápisy jdou přes /api/zapisy, nastavení nikdy)
-DATOVE_SLOZKY = {"skola", "zpravy", "akcie", "kalendar", "obedy"}
+DATOVE_SLOZKY = {"skola", "zpravy", "akcie", "kalendar"}
 
 ZAMEK = threading.Lock()  # zápisy a relace mění vždy jen jedno vlákno naráz
 neuspesne_pokusy = {"pocet": 0, "do": 0.0}

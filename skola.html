@@ -14,7 +14,7 @@
   <!-- black-translucent: obsah sahá až pod hodiny a baterii (okraj řeší env(safe-area-inset-top) v CSS) -->
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Škola · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=21">
+  <link rel="stylesheet" href="css/style.css?v=20">
 </head>
 <body data-zalozka="skola">
   <header class="hlavicka">
@@ -39,7 +39,6 @@
       <button type="button" role="tab" data-cast="predmety">Předměty</button>
       <button type="button" role="tab" data-cast="ukoly">Úkoly</button>
       <button type="button" role="tab" data-cast="doucovani">Doučování</button>
-      <button type="button" role="tab" data-cast="obedy">Obědy</button>
     </div>
 
     <section class="cast" id="cast-rozvrh" role="tabpanel">
@@ -84,33 +83,23 @@
       </div>
     </section>
 
-    <section class="cast" id="cast-obedy" role="tabpanel" hidden>
-      <!-- Čas aktualizace a kolečko vloží js/obnova.js; obědy objednává stahovani/obedy.py -->
-      <div class="obnova cast-obnova" id="obnova-obedy"></div>
-      <div id="obedy">
-        <p class="nacitani">Načítá se…</p>
-      </div>
-      <p class="podnadpis">Zdroj: e-jidelnicek.cz · objednávání v pátek v 8:00, uzávěrka den předem v 11:00</p>
-    </section>
   </main>
 
-  <footer class="paticka">Data: Edookit, e-jidelnicek.cz · <button type="button" class="odkaz-tlacitko" id="odhlasit">Odhlásit</button></footer>
+  <footer class="paticka">Data: Edookit · <button type="button" class="odkaz-tlacitko" id="odhlasit">Odhlásit</button></footer>
 
-  <script src="js/zalozky.js?v=21"></script>
-  <script src="js/spolecne.js?v=21"></script>
-  <script src="js/zapisy.js?v=21"></script>
-  <script src="js/obnova.js?v=21"></script>
-  <script src="js/moduly/skola.js?v=21"></script>
-  <script src="js/rozvrh.js?v=21"></script>
-  <script src="js/testy.js?v=21"></script>
-  <script src="js/moduly/ukoly.js?v=21"></script>
-  <script src="js/moduly/doucovani.js?v=21"></script>
-  <script src="js/moduly/znamky.js?v=21"></script>
-  <script src="js/moduly/obedy.js?v=21"></script>
-  <script src="js/skola.js?v=21"></script>
-  <script src="js/ukoly.js?v=21"></script>
-  <script src="js/doucovani.js?v=21"></script>
-  <script src="js/znamky.js?v=21"></script>
-  <script src="js/obedy.js?v=21"></script>
+  <script src="js/zalozky.js?v=20"></script>
+  <script src="js/spolecne.js?v=20"></script>
+  <script src="js/zapisy.js?v=20"></script>
+  <script src="js/obnova.js?v=20"></script>
+  <script src="js/moduly/skola.js?v=20"></script>
+  <script src="js/rozvrh.js?v=20"></script>
+  <script src="js/testy.js?v=20"></script>
+  <script src="js/moduly/ukoly.js?v=20"></script>
+  <script src="js/moduly/doucovani.js?v=20"></script>
+  <script src="js/moduly/znamky.js?v=20"></script>
+  <script src="js/skola.js?v=20"></script>
+  <script src="js/ukoly.js?v=20"></script>
+  <script src="js/doucovani.js?v=20"></script>
+  <script src="js/znamky.js?v=20"></script>
 </body>
 </html>

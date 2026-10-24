@@ -3,7 +3,7 @@ Záloha dat dashboardu: jednou týdně zabalí ~/Dashboard-data do ZIPu ve slož
 kterou sis vybral (výchozí: iCloud Drive/Dashboard-zalohy). Nechává si
 posledních 8 záloh (2 měsíce), starší maže.
 
-Do zálohy NEjdou: uložená přihlášení do Edookitu a e-jidelnicek.cz (po obnově
+Do zálohy NEjdou: uložené přihlášení do Edookitu (po obnově
 se jen znovu přihlásíš přes --prihlasit), přihlášená zařízení a logy.
 
 Spouští ho stahovani/vse.py (plánovač) – když je poslední záloha starší než
@@ -29,7 +29,7 @@ NASTAVENI_ZALOHY = NASTAVENI / "zaloha.json"
 VYCHOZI_SLOZKA = Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Dashboard-zalohy"
 PONECHAT = 8
 # Co do zálohy nepatří (cesty uvnitř ~/Dashboard-data)
-VYNECHAT_SLOZKY = {".edookit-prihlaseni", ".jidelnicek-prihlaseni", "logy", "zalohy-gitu"}
+VYNECHAT_SLOZKY = {".edookit-prihlaseni", "logy", "zalohy-gitu"}
 VYNECHAT_SOUBORY = {"nastaveni/relace.json"}
 
 
@@ -103,7 +103,7 @@ def obnov(zip_cesta):
         with tempfile.TemporaryDirectory() as docasna:
             zip_soubor.extractall(docasna)
             shutil.copytree(docasna, DATA, dirs_exist_ok=True)
-    print(f"✓ Obnoveno ze zálohy {zip_cesta.name}. Přihlášení do Edookitu a jídelny zůstala, jak byla.")
+    print(f"✓ Obnoveno ze zálohy {zip_cesta.name}. Přihlášení do Edookitu zůstalo, jak bylo.")
 
 
 def main():
