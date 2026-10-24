@@ -239,9 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Service worker (sw.js): aplikace se otevře i bez spojení s Macem
-  // a ukáže poslední načtená data
-  navigator.serviceWorker?.register("/sw.js").catch((chyba) => console.warn("Service worker:", chyba));
+  // Dřívější service worker (offline režim pro iPhone) odregistrovat – dashboard
+  // běží jen na Macu a stará kopie by mohla ukazovat zastaralá data
+  navigator.serviceWorker?.getRegistrations().then((registrace) => registrace.forEach((r) => r.unregister()));
 });
 
 // Povolíme jen běžné webové adresy (http, https) a soubory z našeho webu.

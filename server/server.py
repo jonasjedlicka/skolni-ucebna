@@ -1,13 +1,12 @@
 """
 Lokální server dashboardu. Běží jen na tomhle Macu a poslouchá jen na
-127.0.0.1 – z Wi-Fi ani z internetu se k němu nikdo nedostane. K iPhonu ho
-pustí až Tailscale (tailscale serve), a to jen přes tvou soukromou síť.
+127.0.0.1 – z Wi-Fi, z internetu ani z jiných zařízení se k němu nikdo nedostane.
 
 Co dělá:
   - posílá stránky dashboardu (html, js, css, ikony) z repozitáře,
   - posílá data z ~/Dashboard-data (rozvrh, zprávy, akcie…) – jen přihlášenému,
   - ukládá zápisy (úkoly, poznámky, známky…) do ~/Dashboard-data/zapisy,
-  - hlídá přihlášení heslem (druhá pojistka vedle Tailscale).
+  - hlídá přihlášení heslem (pojistka, kdyby k Macu sedl někdo jiný).
 
 Spouští ho macOS sám po zapnutí (launchd/cz.dashboard.server.plist).
 Ručně:  .venv/bin/python server/server.py   →  http://localhost:8765
@@ -47,7 +46,7 @@ PLATNOST_RELACE = 60 * 60 * 24 * 30  # přihlášení vydrží 30 dní
 
 # Co smí server poslat ze složky repozitáře (nic jiného – ani skripty, ani .git)
 VEREJNE_SLOZKY = ("js/", "css/", "ikony/")
-VEREJNE_SOUBORY = {"manifest.webmanifest", "sw.js"}
+VEREJNE_SOUBORY = {"manifest.webmanifest", "sw.js"}  # sw.js jen kvůli odregistrování staré verze
 # Bez přihlášení jde jen přihlašovací stránka a to, co potřebuje (vzhled, ikony)
 # (sw.js neobsahuje nic osobního a prohlížeč ho stahuje i mimo stránku – při aktualizaci)
 BEZ_PRIHLASENI = ("/prihlaseni.html", "/css/", "/ikony/", "/js/prihlaseni.js", "/manifest.webmanifest", "/sw.js")
@@ -196,9 +195,8 @@ class Obsluha(BaseHTTPRequestHandler):
 
     def povoleny_host(self):
         # Ochrana proti „DNS rebinding“: přijímáme jen požadavky na tenhle Mac
-        # (localhost) nebo přes Tailscale (*.ts.net)
         host = (self.headers.get("Host") or "").split(":")[0].lower()
-        return host in ("localhost", "127.0.0.1") or host.endswith(".ts.net")
+        return host in ("localhost", "127.0.0.1")
 
     # --- GET ---
 
@@ -288,8 +286,6 @@ class Obsluha(BaseHTTPRequestHandler):
         token = nova_relace()
         # HttpOnly = JavaScript na stránce cookie nevidí; SameSite=Strict = cizí web ji nepošle
         cookie = f"{COOKIE}={token}; Path=/; Max-Age={PLATNOST_RELACE}; HttpOnly; SameSite=Strict"
-        if self.headers.get("X-Forwarded-Proto") == "https" or (self.headers.get("Host") or "").endswith(".ts.net"):
-            cookie += "; Secure"
         self.odpovez_json(200, {"ok": True}, [("Set-Cookie", cookie)])
 
     def zaznamenej(self, zprava):

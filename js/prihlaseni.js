@@ -28,7 +28,7 @@ formular.addEventListener("submit", async (udalost) => {
     chyba.textContent = (await odpoved.json()).chyba || "Přihlášení se nepovedlo.";
     formular.heslo.select();
   } catch {
-    chyba.textContent = "Nejde se spojit s Macem. Běží a jsi připojený přes Tailscale?";
+    chyba.textContent = "Nejde se spojit se serverem dashboardu. Běží? (launchd/zapnout.sh)";
   } finally {
     tlacitko.disabled = false;
   }

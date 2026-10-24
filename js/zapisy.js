@@ -1,13 +1,13 @@
 // ZÁPISY: ukládání toho, co do dashboardu napíšeš (úkoly, poznámky, známky,
 // trénink…) na server v Macu – do ~/Dashboard-data/zapisy/<nazev>.json.
-// Mac i iPhone tak vidí stejná data.
+// Všechny stránky (i otevřené v několika oknech) tak vidí stejná data.
 //
 // Jak to funguje:
 //   - Každý druh zápisů je jeden soubor; server ho posílá a přijímá přes
 //     /api/zapisy/<nazev> (jen přihlášenému).
 //   - Kopie se drží i v prohlížeči, takže se stránka ukáže hned a změny se
-//     neztratí, ani když se zrovna nejde spojit s Macem – odešlou se příště.
-//   - Když něco změníš na dvou zařízeních zároveň, nic se nepřepíše:
+//     neztratí, ani když server zrovna neběží – odešlou se příště.
+//   - Když něco změníš ve dvou oknech zároveň, nic se nepřepíše:
 //     u každé položky vyhraje ta novější verze (podle času změny).
 //
 // Uvnitř souboru: { polozky: { "<id>": { …, zmeneno: <čas v ms>, smazano?: true } } }
@@ -19,7 +19,7 @@ const ULOZIT_PO_MS = 1000; // počkáme, až dopíšeš – ať se neukládá po
 // --- Server ---
 
 // Vrátí { data, verze } – verze je „otisk“ souboru. Server ji chce při zápisu,
-// aby poznal, že nepřepisujeme novější verzi z jiného zařízení.
+// aby poznal, že nepřepisujeme novější verzi z jiného okna.
 async function serverNacti(nazev) {
   const odpoved = await fetch(`/api/zapisy/${nazev}`, { cache: "no-store" });
   overPrihlaseni(odpoved);
@@ -28,7 +28,7 @@ async function serverNacti(nazev) {
 }
 
 // Zapíše zápisy. Vrátí { ok: true, verze } nebo { ok: false, data, verze },
-// když mezitím jiné zařízení uložilo novější verzi.
+// když mezitím jiné okno uložilo novější verzi.
 async function serverUloz(nazev, data, verze) {
   const odpoved = await fetch(`/api/zapisy/${nazev}`, {
     method: "PUT",
@@ -93,7 +93,7 @@ function vytvorZapisy(nazev) {
     posluchaciZmeny.forEach((fn) => fn());
   }
 
-  // Kopie v prohlížeči – zobrazí se hned, i bez spojení s Macem
+  // Kopie v prohlížeči – zobrazí se hned, i když server zrovna neběží
   const ulozKopii = () => ulozDoProhlizece(klicKopie, data);
   const nactiKopii = () => nactiZProhlizece(klicKopie, { polozky: {} });
 
@@ -115,7 +115,7 @@ function vytvorZapisy(nazev) {
             nastavStav("ulozeno", "Uloženo");
             return;
           }
-          // Jiné zařízení mezitím uložilo svou verzi → spojíme a zkusíme znovu
+          // Jiné okno mezitím uložilo svou verzi → spojíme a zkusíme znovu
           data = spojZapisy(data, vysledek.data);
           verze = vysledek.verze;
           ulozKopii();
@@ -123,7 +123,7 @@ function vytvorZapisy(nazev) {
         }
         throw new Error("Nepodařilo se uložit, zkusím to znovu později.");
       } catch (chyba) {
-        nastavStav("chyba", "Nejde se spojit s Macem – změny jsou v tomhle zařízení a odešlou se později.");
+        nastavStav("chyba", "Nejde se spojit se serverem – změny jsou zatím jen v prohlížeči a odešlou se později.");
         console.error(chyba);
       } finally {
         ukladani = null;
@@ -148,7 +148,7 @@ function vytvorZapisy(nazev) {
         nastavStav("ulozeno", "Uloženo");
       }
     } catch (chyba) {
-      nastavStav("chyba", "Nejde se spojit s Macem – ukazuji kopii z tohoto zařízení.");
+      nastavStav("chyba", "Nejde se spojit se serverem – ukazuji kopii z prohlížeče.");
       console.error(chyba);
     }
   }
