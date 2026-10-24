@@ -29,7 +29,7 @@ NASTAVENI_ZALOHY = NASTAVENI / "zaloha.json"
 VYCHOZI_SLOZKA = Path.home() / "Library" / "Mobile Documents" / "com~apple~CloudDocs" / "Dashboard-zalohy"
 PONECHAT = 8
 # Co do zálohy nepatří (cesty uvnitř ~/Dashboard-data)
-VYNECHAT_SLOZKY = {".edookit-prihlaseni", ".jidelnicek-prihlaseni", "logy"}
+VYNECHAT_SLOZKY = {".edookit-prihlaseni", ".jidelnicek-prihlaseni", "logy", "zalohy-gitu"}
 VYNECHAT_SOUBORY = {"nastaveni/relace.json"}
 
 

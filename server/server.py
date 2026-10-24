@@ -292,10 +292,16 @@ class Obsluha(BaseHTTPRequestHandler):
             cookie += "; Secure"
         self.odpovez_json(200, {"ok": True}, [("Set-Cookie", cookie)])
 
+    def zaznamenej(self, zprava):
+        # Krátký záznam do logu (bez obsahu zápisů) – kvůli hledání chyb při ukládání
+        print(f"{time.strftime('%d.%m. %H:%M:%S')} {self.command} {urlsplit(self.path).path} → {zprava}", flush=True)
+
     def do_PUT(self):  # noqa: N802
         if not self.povoleny_host():
+            self.zaznamenej("403 nepovolená adresa")
             return self.odpovez_json(403, {"chyba": "Nepovolená adresa."})
         if not self.prihlaseny():
+            self.zaznamenej("401 nepřihlášený")
             return self.odpovez_json(401, {"chyba": "Nejsi přihlášený."})
         cesta = posixpath.normpath(unquote(urlsplit(self.path).path))
         if not cesta.startswith("/api/zapisy/"):
@@ -309,15 +315,18 @@ class Obsluha(BaseHTTPRequestHandler):
             if not isinstance(data, dict) or not isinstance(data.get("polozky"), dict):
                 raise ValueError
         except (ValueError, KeyError):
+            self.zaznamenej("400 špatný formát")
             return self.odpovez_json(400, {"chyba": "Špatný formát zápisů."})
 
         with ZAMEK:
             aktualni, verze = precti_zapisy(soubor)
             # Jiné zařízení mezitím uložilo novější verzi → klient ji spojí se svou a zkusí znovu
             if telo.get("verze") != verze:
+                self.zaznamenej("409 kolize verzí (klient spojí a zkusí znovu)")
                 return self.odpovez_json(409, {"data": aktualni, "verze": verze})
             uloz_json(soubor, data)
             nova = verze_textu(soubor.read_text(encoding="utf-8"))
+        self.zaznamenej(f"200 uloženo ({len(data['polozky'])} položek)")
         self.odpovez_json(200, {"verze": nova})
 
 
