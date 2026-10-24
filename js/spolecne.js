@@ -233,9 +233,15 @@ document.addEventListener("DOMContentLoaded", () => {
     odhlasit.prepend(vytvorIkonu("zamek"));
     odhlasit.addEventListener("click", async () => {
       await fetch("/api/odhlaseni", { method: "POST" });
+      // Po odhlášení smazat i uložené kopie stránek a dat v tomhle zařízení
+      if (window.caches) for (const nazev of await caches.keys()) await caches.delete(nazev);
       location.href = "/prihlaseni.html";
     });
   }
+
+  // Service worker (sw.js): aplikace se otevře i bez spojení s Macem
+  // a ukáže poslední načtená data
+  navigator.serviceWorker?.register("/sw.js").catch((chyba) => console.warn("Service worker:", chyba));
 });
 
 // Povolíme jen běžné webové adresy (http, https) a soubory z našeho webu.

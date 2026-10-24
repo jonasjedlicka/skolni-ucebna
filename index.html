@@ -5,8 +5,17 @@
   <!-- viewport-fit=cover: stránka sahá až k okrajům iPhonu (kvůli liště dole) -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
+  <!-- Aplikace na ploše (PWA): manifest, ikona a celá obrazovka bez lišty prohlížeče -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/ikony/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/ikony/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Dashboard">
+  <!-- black-translucent: obsah sahá až pod hodiny a baterii (okraj řeší env(safe-area-inset-top) v CSS) -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Přehled · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=17">
+  <link rel="stylesheet" href="css/style.css?v=18">
 </head>
 <!-- data-zalozka říká, která záložka v navigaci je aktivní -->
 <body data-zalozka="prehled">
@@ -38,26 +47,26 @@
 
   <!-- Pořadí je důležité: záložky, společné funkce, moduly, nakonec Přehled.
        Nový modul = nový soubor v js/moduly/ a jeden řádek tady.
-       ?v=17 je číslo verze: po větší změně ho zvyš na všech stránkách, ať
+       ?v=18 je číslo verze: po větší změně ho zvyš na všech stránkách, ať
        prohlížeče nenačítají staré soubory ze své mezipaměti. -->
-  <script src="js/zalozky.js?v=17"></script>
-  <script src="js/spolecne.js?v=17"></script>
-  <script src="js/zapisy.js?v=17"></script>
-  <script src="js/obnova.js?v=17"></script>
-  <script src="js/moduly/pocasi.js?v=17"></script>
-  <script src="js/moduly/skola.js?v=17"></script>
-  <script src="js/moduly/ukoly.js?v=17"></script>
-  <script src="js/moduly/doucovani.js?v=17"></script>
-  <script src="js/moduly/znamky.js?v=17"></script>
-  <script src="js/moduly/odpocty.js?v=17"></script>
-  <script src="js/moduly/navyky.js?v=17"></script>
-  <script src="js/moduly/trenink.js?v=17"></script>
-  <script src="js/moduly/kalendar.js?v=17"></script>
-  <script src="js/moduly/soustredeni.js?v=17"></script>
-  <script src="js/moduly/poznamky.js?v=17"></script>
-  <script src="js/moduly/cile.js?v=17"></script>
-  <script src="js/moduly/akcie.js?v=17"></script>
-  <script src="js/moduly/zpravy.js?v=17"></script>
-  <script src="js/index.js?v=17"></script>
+  <script src="js/zalozky.js?v=18"></script>
+  <script src="js/spolecne.js?v=18"></script>
+  <script src="js/zapisy.js?v=18"></script>
+  <script src="js/obnova.js?v=18"></script>
+  <script src="js/moduly/pocasi.js?v=18"></script>
+  <script src="js/moduly/skola.js?v=18"></script>
+  <script src="js/moduly/ukoly.js?v=18"></script>
+  <script src="js/moduly/doucovani.js?v=18"></script>
+  <script src="js/moduly/znamky.js?v=18"></script>
+  <script src="js/moduly/odpocty.js?v=18"></script>
+  <script src="js/moduly/navyky.js?v=18"></script>
+  <script src="js/moduly/trenink.js?v=18"></script>
+  <script src="js/moduly/kalendar.js?v=18"></script>
+  <script src="js/moduly/soustredeni.js?v=18"></script>
+  <script src="js/moduly/poznamky.js?v=18"></script>
+  <script src="js/moduly/cile.js?v=18"></script>
+  <script src="js/moduly/akcie.js?v=18"></script>
+  <script src="js/moduly/zpravy.js?v=18"></script>
+  <script src="js/index.js?v=18"></script>
 </body>
 </html>

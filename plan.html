@@ -4,8 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0b0c">
+  <!-- Aplikace na ploše (PWA): manifest, ikona a celá obrazovka bez lišty prohlížeče -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/ikony/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/ikony/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Dashboard">
+  <!-- black-translucent: obsah sahá až pod hodiny a baterii (okraj řeší env(safe-area-inset-top) v CSS) -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Plán · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=17">
+  <link rel="stylesheet" href="css/style.css?v=18">
 </head>
 <body data-zalozka="plan">
   <header class="hlavicka">
@@ -117,20 +126,20 @@
 
   <footer class="paticka"><button type="button" class="odkaz-tlacitko" id="odhlasit">Odhlásit</button></footer>
 
-  <script src="js/zalozky.js?v=17"></script>
-  <script src="js/spolecne.js?v=17"></script>
-  <script src="js/zapisy.js?v=17"></script>
-  <script src="js/moduly/skola.js?v=17"></script>
-  <script src="js/moduly/ukoly.js?v=17"></script>
-  <script src="js/moduly/odpocty.js?v=17"></script>
-  <script src="js/moduly/cile.js?v=17"></script>
-  <script src="js/moduly/poznamky.js?v=17"></script>
-  <script src="js/moduly/soustredeni.js?v=17"></script>
-  <script src="js/ukoly.js?v=17"></script>
-  <script src="js/odpocty.js?v=17"></script>
-  <script src="js/cile.js?v=17"></script>
-  <script src="js/poznamky.js?v=17"></script>
-  <script src="js/soustredeni.js?v=17"></script>
+  <script src="js/zalozky.js?v=18"></script>
+  <script src="js/spolecne.js?v=18"></script>
+  <script src="js/zapisy.js?v=18"></script>
+  <script src="js/moduly/skola.js?v=18"></script>
+  <script src="js/moduly/ukoly.js?v=18"></script>
+  <script src="js/moduly/odpocty.js?v=18"></script>
+  <script src="js/moduly/cile.js?v=18"></script>
+  <script src="js/moduly/poznamky.js?v=18"></script>
+  <script src="js/moduly/soustredeni.js?v=18"></script>
+  <script src="js/ukoly.js?v=18"></script>
+  <script src="js/odpocty.js?v=18"></script>
+  <script src="js/cile.js?v=18"></script>
+  <script src="js/poznamky.js?v=18"></script>
+  <script src="js/soustredeni.js?v=18"></script>
   <script>nastavPrepinac();</script>
 </body>
 </html>

@@ -49,7 +49,8 @@ PLATNOST_RELACE = 60 * 60 * 24 * 30  # přihlášení vydrží 30 dní
 VEREJNE_SLOZKY = ("js/", "css/", "ikony/")
 VEREJNE_SOUBORY = {"manifest.webmanifest", "sw.js"}
 # Bez přihlášení jde jen přihlašovací stránka a to, co potřebuje (vzhled, ikony)
-BEZ_PRIHLASENI = ("/prihlaseni.html", "/css/", "/ikony/", "/js/prihlaseni.js", "/manifest.webmanifest")
+# (sw.js neobsahuje nic osobního a prohlížeč ho stahuje i mimo stránku – při aktualizaci)
+BEZ_PRIHLASENI = ("/prihlaseni.html", "/css/", "/ikony/", "/js/prihlaseni.js", "/manifest.webmanifest", "/sw.js")
 # Data, která smí prohlížeč číst (zápisy jdou přes /api/zapisy, nastavení nikdy)
 DATOVE_SLOZKY = {"skola", "zpravy", "akcie", "kalendar", "obedy"}
 

@@ -179,7 +179,9 @@ h3 {
 .hlavicka-obsah {
   max-width: var(--max-sirka);
   margin: 0 auto;
-  padding: 14px var(--mezera) 0;
+  /* env(safe-area-inset-top): v aplikaci na ploše iPhonu sahá stránka až pod
+     hodiny a výřez displeje – hlavičku o to posuneme dolů (v prohlížeči je 0) */
+  padding: calc(14px + env(safe-area-inset-top)) var(--mezera) 0;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -1537,6 +1539,7 @@ a.polozka-nazev:hover {
 }
 
 .prihlaseni-stranka main {
+  padding-top: calc(16px + env(safe-area-inset-top));
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
@@ -2117,6 +2120,7 @@ a.polozka-nazev:hover {
 }
 
 .rezim-soustredeni main {
+  padding-top: env(safe-area-inset-top);
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -2382,7 +2386,7 @@ a.polozka-nazev:hover {
   }
 
   .hlavicka-obsah {
-    padding-top: 18px;
+    padding-top: calc(18px + env(safe-area-inset-top));
   }
 
   .mrizka {
