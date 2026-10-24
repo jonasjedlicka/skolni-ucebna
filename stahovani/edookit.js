@@ -90,3 +90,46 @@ function prectiUcivo() {
   }
   return vysledek;
 }
+
+// Datum známky jako "2026-10-20". Edookit píše „Út 20. 10. 2026“,
+// u čerstvých známek ale jen „Dnes“ nebo „Včera“.
+function datumZnamky(texty) {
+  const kDatu = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  for (const t of texty) {
+    const m = t.match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);
+    if (m) return `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+    const posun = { Dnes: 0, Včera: 1, Předevčírem: 2 }[t];
+    if (posun !== undefined) {
+      const d = new Date();
+      d.setDate(d.getDate() - posun);
+      return kDatu(d);
+    }
+  }
+  return null;
+}
+
+// Stránka /evaluation/listing – všechny známky letošního roku.
+// Hodnota je buď známka („4“, „2-“), nebo procenta („75 %“) – u nich Edookit
+// v závorce ukazuje, na jakou známku je převedl („(2)“). Váha je v popisku.
+function prectiZnamky() {
+  const znamky = [];
+  for (const radek of document.querySelectorAll("ul.table_row:not(.gridLabel)")) {
+    const id = (radek.getAttribute("onclick") || "").match(/evaluationId=(\d+)/);
+    const kurz = text(radek.querySelector(".c1 .link_info")); // "Aj 1 - 3.D"
+    const nadpis = [...radek.querySelectorAll(".c1 strong p")].map(text); // ["Písemná práce", "Test - buřiči"]
+    const hodnoceni = radek.querySelector(".c2 .evaluation [title]");
+    const datum = datumZnamky([...radek.querySelectorAll(".c3 p")].map(text));
+    if (!id || !datum) continue;
+    znamky.push({
+      id: id[1],
+      zkratka: kurz.split(" - ")[0].replace(/\s+\d+$/, ""), // "Aj 1" → "Aj"
+      druh: nadpis[0] || "",
+      tema: nadpis[1] || "",
+      hodnota: text(hodnoceni), // "4", "2-", "75 %", "N"…
+      prevedeno: text(radek.querySelector(".c2 .convertedEvaluation")).replace(/[()]/g, ""), // "2"
+      vaha: (hodnoceni?.getAttribute("title") || "").replace(/^Váha:\s*/, ""), // "1.5"
+      datum,
+    });
+  }
+  return znamky;
+}

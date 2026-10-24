@@ -31,8 +31,8 @@ ULOHY = [
     {"nazev": "kalendar", "skript": "kalendar.py", "kazdych": timedelta(hours=2), "po_chybe": timedelta(minutes=30)},
     # Ceny se o víkendu nemění (burzy jsou zavřené) – stahujeme jen ve všední dny
     {"nazev": "akcie", "skript": "akcie.py", "kazdych": timedelta(hours=1), "po_chybe": timedelta(minutes=30), "jen_vsedni": True},
-    # Edookit jednou denně, nejdřív v 6:00 (rozvrh na ten den už je známý)
-    {"nazev": "skola", "skript": "stahni.py", "kazdych": timedelta(hours=20), "po_chybe": timedelta(hours=2), "od_hodiny": 6},
+    # Edookit (rozvrh, testy, známky) každých 6 hodin od 6:00 – nové známky tak přibudou do pár hodin
+    {"nazev": "skola", "skript": "stahni.py", "kazdych": timedelta(hours=6), "po_chybe": timedelta(hours=2), "od_hodiny": 6},
     # Záloha dat jednou týdně (do iCloud Drive nebo složky ze zaloha.py --slozka)
     {"nazev": "zaloha", "skript": "zaloha.py", "kazdych": timedelta(days=7), "po_chybe": timedelta(hours=6)},
 ]

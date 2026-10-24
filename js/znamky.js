@@ -1,5 +1,5 @@
 // Část Známky v záložce Škola: celkový průměr, předměty s váženým průměrem,
-// přidání známky a kalkulačka „co potřebuju dostat“.
+// známky z Edookitu i vlastní, přidání vlastní známky a kalkulačka „co potřebuju dostat“.
 // Výpočty a ukládání jsou v js/moduly/znamky.js a js/zapisy.js.
 
 let obdobiZnamek = null; // vybrané pololetí ("2026/27-1") nebo celý rok ("rok:2026/27")
@@ -23,7 +23,19 @@ async function zobrazZnamky() {
   misto.replaceChildren(vytvorStavZapisu(znamkyZapisy()), filtry, souhrn, seznam, vytvorFormularZnamky(predmety));
 
   znamkyZapisy().naZmenu(() => vykresliZnamky(predmety));
-  vykresliZnamky(predmety);
+  // Známky z Edookitu: načíst hned a pak s kolečkem / každých 30 minut
+  zaregistrujObnovu({
+    misto: document.getElementById("obnova-znamky"),
+    kontejner: seznam,
+    kazdychMinut: 30,
+    maxStariHodin: 24,
+    obnov: async () => {
+      zapomenNactene([SKOLA_DATA]);
+      await nactiZnamkyEdookit();
+      vykresliZnamky(predmety);
+      return casZeStavu("skola");
+    },
+  });
 }
 
 function vykresliZnamky(predmety) {
@@ -41,7 +53,7 @@ function vykresliZnamky(predmety) {
   const celkem = celkovyPrumer(vPredmetech);
   souhrn.replaceChildren(vytvor("div", "odpocet", textPrumeru(celkem)));
   if (vPredmetech.length) {
-    const nejhorsi = vPredmetech.reduce((a, b) => (b.vazeny > a.vazeny ? b : a));
+    const nejhorsi = vPredmetech.filter((p) => p.vazeny !== null).reduce((a, b) => (b.vazeny > a.vazeny ? b : a), vPredmetech[0]);
     const pocet = vPredmetech.reduce((s, p) => s + p.znamky.length, 0);
     souhrn.append(
       vytvor("p", "polozka-detail", `celkový průměr z ${vPredmetech.length} předmětů (${pocet} známek) · průměr vážených průměrů předmětů`),
@@ -93,7 +105,8 @@ function vytvorPredmetZnamek(p, predmety) {
   for (const z of p.znamky) {
     const znamka = vytvor("span", "znamka", textZnamky(z.hodnota));
     if (z.vaha !== 1) znamka.append(vytvor("sub", "", "×" + cisloVahy(z.vaha)));
-    znamka.title = `${z.popis || "známka"} · váha ${cisloVahy(z.vaha)} · ${parsujDatum(z.datum).toLocaleDateString("cs-CZ")}`;
+    const puvodni = z.text && z.text !== textZnamky(z.hodnota) ? ` (${z.text})` : ""; // „75 %“
+    znamka.title = `${z.popis || "známka"}${puvodni} · váha ${cisloVahy(z.vaha)} · ${parsujDatum(z.datum).toLocaleDateString("cs-CZ")}`;
     radek.append(znamka);
   }
   vlevo.append(radek);
@@ -105,21 +118,29 @@ function vytvorPredmetZnamek(p, predmety) {
   hlavicka.append(vlevo, vpravo);
   souhrn.append(hlavicka);
 
-  // Rozbalená část: všechny známky (se smazáním) a kalkulačka
+  // Rozbalená část: všechny známky a kalkulačka. Vlastní jdou smazat,
+  // známky z Edookitu ne (při dalším stažení by se stejně vrátily).
   const ul = vytvor("ul", "seznam znamky-detail");
   for (const z of [...p.znamky].reverse()) {
     const li = vytvor("li", "polozka");
     li.append(vytvor("span", "znamka", textZnamky(z.hodnota)));
     const hlavni = vytvor("div", "polozka-hlavni");
     hlavni.append(vytvor("div", "", z.popis || "známka"));
-    hlavni.append(vytvor("div", "polozka-detail", `váha ${cisloVahy(z.vaha)} · ${parsujDatum(z.datum).toLocaleDateString("cs-CZ")}`));
-    const smazat = vytvor("button", "odebrat-tlacitko", "×");
-    smazat.type = "button";
-    smazat.setAttribute("aria-label", `Smazat známku ${textZnamky(z.hodnota)} z ${nazev}`);
-    smazat.addEventListener("click", () => {
-      if (confirm(`Smazat známku ${textZnamky(z.hodnota)} (${z.popis || nazev})?`)) znamkyZapisy().smaz(z.id);
-    });
-    li.append(hlavni, smazat);
+    const detail = [];
+    if (z.text && z.text !== textZnamky(z.hodnota)) detail.push(`${z.text} → ${textZnamky(z.hodnota)}`); // „75 % → 2“
+    detail.push(`váha ${cisloVahy(z.vaha)}`, parsujDatum(z.datum).toLocaleDateString("cs-CZ"));
+    detail.push(z.zEdookitu ? "z Edookitu" : "vlastní");
+    hlavni.append(vytvor("div", "polozka-detail", detail.join(" · ")));
+    li.append(hlavni);
+    if (!z.zEdookitu) {
+      const smazat = vytvor("button", "odebrat-tlacitko", "×");
+      smazat.type = "button";
+      smazat.setAttribute("aria-label", `Smazat známku ${textZnamky(z.hodnota)} z ${nazev}`);
+      smazat.addEventListener("click", () => {
+        if (confirm(`Smazat známku ${textZnamky(z.hodnota)} (${z.popis || nazev})?`)) znamkyZapisy().smaz(z.id);
+      });
+      li.append(smazat);
+    }
     ul.append(li);
   }
   souhrn.append(ul, vytvorKalkulacku(p));
@@ -172,7 +193,8 @@ function vytvorKalkulacku(p) {
 // Formulář nové známky: předmět, známka (tlačítka), váha, popis a datum
 function vytvorFormularZnamky(predmety) {
   const formular = vytvor("form", "karta sekce cil-formular znamky-formular");
-  formular.append(vytvor("h2", "", "Přidat známku"));
+  formular.append(vytvor("h2", "", "Přidat vlastní známku"));
+  formular.append(vytvor("p", "polozka-detail", "Známky z Edookitu se stahují samy každých 6 hodin. Sem přidej jen tu, která v Edookitu ještě není – jakmile tam přibude, vlastní smaž, ať se nepočítá dvakrát."));
 
   const predmet = vytvor("select", "");
   predmet.required = true;

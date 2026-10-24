@@ -1,18 +1,19 @@
 """
-Stáhne aktuální data z Edookitu do ~/Dashboard-data/skola/ (mimo repozitář,
-na GitHub se nedostanou).
+Stáhne aktuální data z Edookitu (rozvrh, testy, učivo, známky) do
+~/Dashboard-data/skola/ (mimo repozitář, na GitHub se nedostanou).
 
 Spouštěj ze složky skolni-ucebna:
 
   .venv/bin/python stahovani/stahni.py --prihlasit    poprvé: otevře prohlížeč a ty se přihlásíš
   .venv/bin/python stahovani/stahni.py                stáhne data
 
-Jednou denně ho spouští stahovani/vse.py (ten pouští macOS přes launchd).
+Každých 6 hodin ho spouští stahovani/vse.py (ten pouští macOS přes launchd).
 Co při tom vypsal, najdeš v ~/Dashboard-data/logy/stahovani.log.
 """
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
@@ -126,16 +127,22 @@ def stahni_z_edookitu():
         # Vrátíme Edookit zpátky na aktuální týden, ať tě to pak na webu nemate
         na_aktualni_tyden(stranka)
 
+        # U dalších stránek nečekáme na úplné načtení (Edookit občas nedokončí
+        # nějaký pomalý doplněk na pozadí) – obsah je v HTML hned, stačí DOMContentLoaded
         print("Čtu písemky…")
-        stranka.goto(EDOOKIT + "/exams/")
+        stranka.goto(EDOOKIT + "/exams/", wait_until="domcontentloaded")
         pisemky = spust_js(stranka, "prectiPisemky")
 
         print("Čtu učivo…")
-        stranka.goto(EDOOKIT + "/courses/")
+        stranka.goto(EDOOKIT + "/courses/", wait_until="domcontentloaded")
         ucivo = spust_js(stranka, "prectiUcivo")
 
+        print("Čtu známky…")
+        stranka.goto(EDOOKIT + "/evaluation/listing", wait_until="domcontentloaded")
+        znamky = spust_js(stranka, "prectiZnamky")
+
         prohlizec.close()
-    return tydny, pisemky, ucivo
+    return tydny, pisemky, ucivo, znamky
 
 
 # ---------- Převod na naše JSON soubory ----------
@@ -218,6 +225,39 @@ def sestav_testy(pisemky, zkratky, casy):
     return testy, nezname
 
 
+def hodnota_znamky(text):
+    """„1“ → 1, „2-“ → 2.5 (mínus = o půl stupně horší). Cokoli jiného (N, A…) → None."""
+    m = re.fullmatch(r"([1-5])\s*(-?)", text.strip())
+    return int(m.group(1)) + (0.5 if m.group(2) else 0) if m else None
+
+
+def sestav_znamky(znamky, zkratky):
+    """Známky z Edookitu ve stejném tvaru, jaký používá dashboard."""
+    vysledek = []
+    nezname = set()
+    for z in znamky:
+        predmet = zkratky.get(z["zkratka"].lower())
+        if not predmet:
+            nezname.add(z["zkratka"])
+        # U procent počítáme se známkou, na kterou je převedl Edookit („75 % (2)“)
+        hodnota = hodnota_znamky(z["prevedeno"] if "%" in z["hodnota"] else z["hodnota"])
+        try:
+            vaha = float(z["vaha"].replace(",", "."))
+        except ValueError:
+            vaha = 1.0
+        vysledek.append({
+            "id": "edookit-" + z["id"],
+            "predmet": predmet["id"] if predmet else z["zkratka"],
+            "hodnota": hodnota,  # None = hodnocení bez známky (do průměru se nepočítá)
+            "text": z["hodnota"],  # jak ho ukazuje Edookit: „4“, „75 %“…
+            "vaha": vaha,
+            "popis": ": ".join(c for c in (z["druh"], z["tema"]) if c),
+            "datum": z["datum"],
+        })
+    vysledek.sort(key=lambda z: z["datum"])
+    return vysledek, nezname
+
+
 def aktualizuj_temata(predmety, ucivo):
     temata = {}
     for u in ucivo:
@@ -259,7 +299,7 @@ def main():
 
     print(f"=== {datetime.now():%-d. %-m. %Y %H:%M} ===")
 
-    tydny, pisemky, ucivo = stahni_z_edookitu()
+    tydny, pisemky, ucivo, znamky_z_edookitu = stahni_z_edookitu()
 
     # Předměty – jsou v nich i tvoje ručně přidané materiály
     predmety = json.loads((DATA / "predmety.json").read_text(encoding="utf-8"))
@@ -267,6 +307,7 @@ def main():
 
     rozvrh, nezname_rozvrh, pocet_tydnu = sestav_rozvrh(tydny, zkratky)
     testy, nezname_testy = sestav_testy(pisemky, zkratky, rozvrh["casy"])
+    znamky, nezname_znamky = sestav_znamky(znamky_z_edookitu, zkratky)
     predmety = aktualizuj_temata(predmety, ucivo)
 
     zmenene = []
@@ -283,9 +324,16 @@ def main():
         zmenene.append("testy.json")
     if uloz("predmety.json", predmety):
         zmenene.append("predmety.json")
+    # Pojistka: když by se výpis známek načetl prázdný, ale dřív v něm známky byly
+    # (např. Edookit změnil vzhled stránky), staré známky nepřepíšeme
+    stare_znamky = json.loads((DATA / "znamky.json").read_text(encoding="utf-8")) if (DATA / "znamky.json").exists() else []
+    if not znamky and stare_znamky:
+        print("! Nenačetla se žádná známka, nechávám ty staré.")
+    elif uloz("znamky.json", znamky):
+        zmenene.append("znamky.json")
 
-    print(f"Rozvrh: {pocet_hodin} hodin týdně · nadcházející testy: {len(testy)}")
-    nezname = (nezname_rozvrh | nezname_testy) - {"O3.D"}  # O3.D = oběd
+    print(f"Rozvrh: {pocet_hodin} hodin týdně · nadcházející testy: {len(testy)} · známky: {len(znamky)}")
+    nezname = (nezname_rozvrh | nezname_testy | nezname_znamky) - {"O3.D"}  # O3.D = oběd
     if nezname:
         print("! Neznámé předměty (přidej je do ~/Dashboard-data/skola/predmety.json):", ", ".join(sorted(nezname)))
 

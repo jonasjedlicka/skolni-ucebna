@@ -14,7 +14,7 @@
   <!-- black-translucent: obsah sahá až pod hodiny a baterii (okraj řeší env(safe-area-inset-top) v CSS) -->
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Škola · Dashboard</title>
-  <link rel="stylesheet" href="css/style.css?v=20">
+  <link rel="stylesheet" href="css/style.css?v=21">
 </head>
 <body data-zalozka="skola">
   <header class="hlavicka">
@@ -56,7 +56,9 @@
     </section>
 
     <section class="cast" id="cast-znamky" role="tabpanel" hidden>
-      <!-- Známky vloží js/znamky.js; zatím se zadávají ručně a ukládají na server v Macu -->
+      <!-- Známky vloží js/znamky.js: z Edookitu (stahují se každých 6 h) + vlastní zápisy.
+           Čas aktualizace a kolečko vloží js/obnova.js -->
+      <div class="obnova cast-obnova" id="obnova-znamky"></div>
       <div id="znamky">
         <p class="nacitani">Načítá se…</p>
       </div>
@@ -87,19 +89,19 @@
 
   <footer class="paticka">Data: Edookit · <button type="button" class="odkaz-tlacitko" id="odhlasit">Odhlásit</button></footer>
 
-  <script src="js/zalozky.js?v=20"></script>
-  <script src="js/spolecne.js?v=20"></script>
-  <script src="js/zapisy.js?v=20"></script>
-  <script src="js/obnova.js?v=20"></script>
-  <script src="js/moduly/skola.js?v=20"></script>
-  <script src="js/rozvrh.js?v=20"></script>
-  <script src="js/testy.js?v=20"></script>
-  <script src="js/moduly/ukoly.js?v=20"></script>
-  <script src="js/moduly/doucovani.js?v=20"></script>
-  <script src="js/moduly/znamky.js?v=20"></script>
-  <script src="js/skola.js?v=20"></script>
-  <script src="js/ukoly.js?v=20"></script>
-  <script src="js/doucovani.js?v=20"></script>
-  <script src="js/znamky.js?v=20"></script>
+  <script src="js/zalozky.js?v=21"></script>
+  <script src="js/spolecne.js?v=21"></script>
+  <script src="js/zapisy.js?v=21"></script>
+  <script src="js/obnova.js?v=21"></script>
+  <script src="js/moduly/skola.js?v=21"></script>
+  <script src="js/rozvrh.js?v=21"></script>
+  <script src="js/testy.js?v=21"></script>
+  <script src="js/moduly/ukoly.js?v=21"></script>
+  <script src="js/moduly/doucovani.js?v=21"></script>
+  <script src="js/moduly/znamky.js?v=21"></script>
+  <script src="js/skola.js?v=21"></script>
+  <script src="js/ukoly.js?v=21"></script>
+  <script src="js/doucovani.js?v=21"></script>
+  <script src="js/znamky.js?v=21"></script>
 </body>
 </html>

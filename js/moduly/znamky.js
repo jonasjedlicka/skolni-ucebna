@@ -1,7 +1,11 @@
 // Modul ZNÁMKY: známky po předmětech, vážené průměry a „co potřebuju dostat“.
-// Zatím se zadávají ručně; ukládají se na server v Macu (js/zapisy.js).
-// Známka: { druh: "znamka", predmet (id z predmety.json), hodnota 1–5 (1,5 = „1-“),
-//           vaha (např. 1 zkoušení, 2 test), popis?, datum "2026-10-23" }
+// Dva zdroje:
+//   - z Edookitu: stahovani/stahni.py je stahuje každých 6 hodin do
+//     data/skola/znamky.json (jen ke čtení),
+//   - vlastní: ty, které v Edookitu ještě nejsou – zapisuješ je ručně
+//     a ukládají se na server v Macu (js/zapisy.js).
+// Známka: { predmet (id z predmety.json), hodnota 1–5 (1,5 = „1-“, null = bez známky),
+//           vaha, popis?, datum "2026-10-23", text? (jak ji píše Edookit, např. „75 %“) }
 //
 // Vážený průměr = součet (známka × váha) / součet vah.
 // Celkový průměr = obyčejný průměr vážených průměrů předmětů (každý předmět má stejnou váhu).
@@ -12,8 +16,21 @@ function znamkyZapisy() {
   return otevriZapisy("znamky", "známky");
 }
 
-// 1.5 → „1-“, 2 → „2“
+// Známky z Edookitu (načtou se jednou a pak při každé aktualizaci)
+let znamkyEdookit = [];
+
+async function nactiZnamkyEdookit() {
+  try {
+    znamkyEdookit = (await nactiSkolniData("znamky")).map((z) => ({ ...z, zEdookitu: true }));
+  } catch {
+    znamkyEdookit = []; // ještě nestažené – ukážou se aspoň vlastní
+  }
+  return znamkyEdookit;
+}
+
+// 1.5 → „1-“, 2 → „2“ (hodnocení bez známky → „–“)
 function textZnamky(hodnota) {
+  if (hodnota === null || hodnota === undefined) return "–";
   return Number.isInteger(hodnota) ? String(hodnota) : `${Math.floor(hodnota)}-`;
 }
 
@@ -43,19 +60,19 @@ function textPololeti(klic) {
 
 // Známky ve vybraném období: klíč pololetí, "rok:2026/27", nebo null = všechny
 function znamkyVObdobi(obdobi) {
-  return znamkyZapisy()
-    .polozky()
-    .filter((z) => z.druh === "znamka")
+  const vlastni = znamkyZapisy().polozky().filter((z) => z.druh === "znamka");
+  return [...znamkyEdookit, ...vlastni]
     .filter((z) => {
       if (!obdobi) return true;
       if (obdobi.startsWith("rok:")) return pololetiZnamky(z.datum).startsWith(obdobi.slice(4));
       return pololetiZnamky(z.datum) === obdobi;
     })
-    .sort((a, b) => a.datum.localeCompare(b.datum) || a.zmeneno - b.zmeneno);
+    .sort((a, b) => a.datum.localeCompare(b.datum) || (a.zmeneno || 0) - (b.zmeneno || 0));
 }
 
 // Průměry jednoho předmětu: { vazeny, aritmeticky, soucet (Σ známka×váha), vahy (Σ váha) }
-function prumeryZnamek(znamky) {
+function prumeryZnamek(vsechny) {
+  const znamky = vsechny.filter((z) => z.hodnota !== null && z.hodnota !== undefined); // bez známky se nepočítá
   if (znamky.length === 0) return { vazeny: null, aritmeticky: null, soucet: 0, vahy: 0 };
   const soucet = znamky.reduce((s, z) => s + z.hodnota * z.vaha, 0);
   const vahy = znamky.reduce((s, z) => s + z.vaha, 0);
@@ -104,18 +121,18 @@ function coPotrebuju(prumery, cil, vaha) {
 
 // Dlaždice „Známky“ na Přehledu: celkový průměr a předmět, kde je to nejhorší
 async function vykresliZnamkyDnes(obsah) {
-  const [predmety] = await Promise.all([predmetyProUkoly(), znamkyZapisy().hotovo]);
+  const [predmety] = await Promise.all([predmetyProUkoly(), nactiZnamkyEdookit(), znamkyZapisy().hotovo]);
   const misto = vytvor("div", "");
   obsah.append(misto);
   function prekresli() {
     const obdobi = aktualniPololeti();
     const seznam = predmetySeZnamkami(obdobi);
     if (seznam.length === 0) {
-      misto.replaceChildren(vytvor("p", "slaby", "Zatím žádné známky v tomhle pololetí – přidej je ve Škole."));
+      misto.replaceChildren(vytvor("p", "slaby", "Zatím žádné známky v tomhle pololetí."));
       return;
     }
     const celkem = celkovyPrumer(seznam);
-    const nejhorsi = seznam.reduce((a, b) => (b.vazeny > a.vazeny ? b : a));
+    const nejhorsi = seznam.filter((p) => p.vazeny !== null).reduce((a, b) => (b.vazeny > a.vazeny ? b : a), seznam[0]);
     misto.replaceChildren(
       vytvor("div", "odpocet", textPrumeru(celkem)),
       vytvor("p", "polozka-detail", `celkový průměr · ${textPololeti(obdobi)}`)
@@ -131,6 +148,7 @@ async function vykresliZnamkyDnes(obsah) {
 MODULY.push({
   id: "znamky",
   zalozka: "skola",
-  obnova: { kazdychMinut: 10, zapisy: ["znamky"] },
+  // Aktualizace = znovu načíst známky z Edookitu i vlastní (stahují se na Macu každých 6 h)
+  obnova: { kazdychMinut: 30, zdroje: [SKOLA_DATA] },
   dnes: [{ nazev: "Známky", odkaz: "skola.html#znamky", poradi: 2.1, vykresli: vykresliZnamkyDnes }],
 });
