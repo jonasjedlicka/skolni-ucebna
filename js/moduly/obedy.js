@@ -1,5 +1,5 @@
-// Modul OBĚDY: jídelníček z e-jidelnicek.cz, co je objednané a upozornění,
-// když se páteční objednání nepovedlo. Data stahuje a obědy objednává
+// Modul OBĚDY: jídelníček z e-jidelnicek.cz, co je objednané (vybírá se nutričně
+// lepší menu) a upozornění, když se páteční objednání nepovedlo. Data stahuje a obědy objednává
 // stahovani/obedy.py na Macu (~/Dashboard-data/obedy/).
 // Oblíbená a neoblíbená jídla se ukládají jako zápisy „obedy“:
 //   { druh: "oblibene" | "neoblibene", slovo }
@@ -23,7 +23,8 @@ async function nactiObjednavku() {
   }
 }
 
-// Stejný výpočet jako v stahovani/obedy.py: oblíbené slovo +1, neoblíbené −100
+// Stejný výpočet jako v stahovani/obedy.py: rozhoduje nutriční skóre (spočítá ho
+// skript a uloží k jídlu jako „nutri“), neoblíbené −100, oblíbené +0,1 (jen při shodě)
 function bezDiakritiky(text) {
   return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
@@ -36,9 +37,18 @@ function preferenceObedu() {
   return vysledek;
 }
 
-function skoreJidla(nazev, preference) {
-  const text = bezDiakritiky(nazev);
-  return preference.oblibene.filter((s) => text.includes(s)).length - 100 * preference.neoblibene.filter((s) => text.includes(s)).length;
+function skoreJidla(jidlo, preference) {
+  const text = bezDiakritiky(jidlo.nazev);
+  const oblibene = 0.1 * preference.oblibene.filter((s) => text.includes(s)).length;
+  const neoblibene = 100 * preference.neoblibene.filter((s) => text.includes(s)).length;
+  return (jidlo.nutri?.skore || 0) + oblibene - neoblibene;
+}
+
+// „nutričně +3 (zelenina +2, šetrná úprava +1)“
+function textNutri(jidlo) {
+  if (!jidlo.nutri) return "";
+  const { skore, duvody } = jidlo.nutri;
+  return `nutričně ${skore > 0 ? "+" : ""}${skore}` + (duvody.length ? ` (${duvody.join(", ")})` : "");
 }
 
 // Menu dne, které by skript vybral (při shodě nechá objednané, jinak první)
@@ -46,8 +56,8 @@ function vybraneMenu(den, preference) {
   const menu = den.jidla.filter((j) => j.druh.toLowerCase().startsWith("menu"));
   if (menu.length === 0) return null;
   return menu.reduce((nejlepsi, m) => {
-    const a = skoreJidla(nejlepsi.nazev, preference);
-    const b = skoreJidla(m.nazev, preference);
+    const a = skoreJidla(nejlepsi, preference);
+    const b = skoreJidla(m, preference);
     return b > a || (b === a && m.objednano && !nejlepsi.objednano) ? m : nejlepsi;
   });
 }

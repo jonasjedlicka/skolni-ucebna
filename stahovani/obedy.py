@@ -1,6 +1,7 @@
 """
 Modul OBĚDY: stáhne jídelníček z e-jidelnicek.cz a v pátek objedná obědy
-na příští týden podle tvých oblíbených a neoblíbených jídel.
+na příští týden – vybere menu, které je nutričně lepší (viz NUTRICNI_PRAVIDLA).
+Neoblíbená jídla nevybere nikdy, oblíbená rozhodnou jen při shodě.
 
 Pravidla jídelny: objednat nebo změnit jde do 11:00 posledního pracovního
 dne před obědem (na pondělí tedy do pátku 11:00), zrušit do 14:00.
@@ -20,6 +21,7 @@ Macu a pak každou hodinu. Sám pozná, jestli je co dělat:
   .venv/bin/python stahovani/obedy.py --jidelnicek   jen stáhne jídelníček, nic neobjednává
 
 Oblíbená a neoblíbená jídla zadáváš v dashboardu (Škola → Obědy).
+Nutriční hodnocení se počítá z názvu jídla – jídelna kalorie ani živiny neuvádí.
 Výsledky: ~/Dashboard-data/obedy/ (jidelnicek.json, objednavka.json).
 """
 
@@ -84,21 +86,56 @@ def nacti_preference():
 
 
 def otisk_preferenci(preference):
-    """Krátký otisk přání – podle něj skript pozná, že se od objednání změnila."""
-    return hashlib.sha1(json.dumps(preference, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:12]
+    """Krátký otisk přání a pravidel hodnocení – podle něj skript pozná, že se od
+    objednání změnilo, podle čeho se vybírá (pak dny, které jdou změnit, přepočítá)."""
+    podklad = {"preference": preference, "pravidla": NUTRICNI_PRAVIDLA}
+    return hashlib.sha1(json.dumps(podklad, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:12]
 
 
-def skore(nazev, preference):
-    """Oblíbené slovo +1, neoblíbené −100 (neoblíbené jídlo nevybereme, i kdyby mělo i něco oblíbeného)."""
+# Nutriční hodnocení podle názvu jídla. Jídelna kalorie ani živiny neuvádí, takže
+# se řídíme obecnými doporučeními: víc bílkovin z libového masa, ryb a luštěnin,
+# víc zeleniny, šetrná úprava; méně smaženého, uzenin, sladkých hlavních jídel
+# a těžkých omáček. Každé pravidlo se u jídla počítá nejvýš jednou.
+# (název, body, kousky slov bez diakritiky)
+NUTRICNI_PRAVIDLA = [
+    ("libové maso / ryba / vejce", 2, ["kureci", "kure", "kruti", "krocan", "ryb", "losos", "tresk", "pstruh", "tunak", "vejc", "vajec", "tofu"]),
+    ("luštěniny", 2, ["cock", "fazol", "cizrn", "hrach", "soj"]),
+    ("zelenina", 2, ["zelenin", "salat", "brokolic", "spenat", "mrkev", "mrkv", "rajc", "paprik", "cuket", "dyne", "kvetak", "zeli", "repa", "lilek"]),
+    ("šetrná úprava", 1, ["dusen", "pecen", "gril", "na pare", "varen", "var."]),
+    ("celozrnná příloha", 1, ["pohank", "jahl", "bulgur", "kuskus", "celozrn", "quinoa", "ovesn"]),
+    ("smažené", -2, ["smazen", "testick", "trojobal", "rizek", "hranolk", "krokety", "obalovan", "nugget"]),
+    ("uzeniny", -2, ["parek", "parky", "klobas", "uzen", "slanin", "debrecin", "vurt", "salam"]),
+    ("sladké hlavní jídlo", -2, ["krupicov", "kakao", "cukr", "buchty", "buchtick", "palacink", "livanc", "nakyp", "dukat", "sisky", "s makem", "ovocne knedliky", "zemlovk", "trhanec", "kolac", "slad"]),
+    ("těžká omáčka / zapečené", -1, ["smetan", "svickov", "syrov", "zapecen", "gratin", "majonez", "tatark"]),
+    ("knedlíky", -1, ["knedlik"]),
+]
+
+
+def nutricni_hodnoceni(nazev):
+    """Vrátí {"skore": číslo, "duvody": ["zelenina +2", …]}."""
     text = bez_diakritiky(nazev)
-    return sum(1 for s in preference["oblibene"] if s in text) - sum(100 for s in preference["neoblibene"] if s in text)
+    duvody = []
+    for popis, body, slova in NUTRICNI_PRAVIDLA:
+        if any(slovo in text for slovo in slova):
+            duvody.append(f"{popis} {body:+d}")
+    skore = sum(int(d.rsplit(" ", 1)[1]) for d in duvody)
+    return {"skore": skore, "duvody": duvody}
+
+
+def skore(jidlo, preference):
+    """Celkové skóre menu: nutriční hodnocení rozhoduje. Neoblíbené jídlo −100
+    (nevybereme ho nikdy), oblíbené +0,1 (rozhodne jen při stejném nutričním skóre)."""
+    text = bez_diakritiky(jidlo["nazev"])
+    oblibene = 0.1 * sum(1 for s in preference["oblibene"] if s in text)
+    neoblibene = 100 * sum(1 for s in preference["neoblibene"] if s in text)
+    return nutricni_hodnoceni(jidlo["nazev"])["skore"] + oblibene - neoblibene
 
 
 def vyber_menu(menu, preference):
     """Ze seznamu menu jednoho dne vybere nejlepší. Při shodě nechá, co je objednané
     (zbytečně neměníme), jinak první (Menu 1)."""
     objednane = next((m for m in menu if m["objednano"]), None)
-    nejlepsi = max(menu, key=lambda m: (skore(m["nazev"], preference), m is objednane, -menu.index(m)))
+    nejlepsi = max(menu, key=lambda m: (skore(m, preference), m is objednane, -menu.index(m)))
     return nejlepsi
 
 
@@ -185,7 +222,18 @@ def objednej_menu(stranka, datum, druh):
 
 
 def uloz_jidelnicek(dny):
-    verejne = [{"datum": d["datum"], "jidla": [{k: v for k, v in j.items() if not k.startswith("_")} for j in d["jidla"]]} for d in dny]
+    # Ke každému menu přidáme nutriční hodnocení – dashboard ho ukazuje i s důvody
+    verejne = [
+        {
+            "datum": d["datum"],
+            "jidla": [
+                {**{k: v for k, v in j.items() if not k.startswith("_")},
+                 **({"nutri": nutricni_hodnoceni(j["nazev"])} if j["druh"].lower().startswith("menu") else {})}
+                for j in d["jidla"]
+            ],
+        }
+        for d in dny
+    ]
     uloz_json(JIDELNICEK, {"dny": verejne})
     zapis_stav("obedy")
 

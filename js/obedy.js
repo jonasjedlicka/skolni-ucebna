@@ -1,5 +1,5 @@
-// Část Obědy v záložce Škola: upozornění, jídelníček s objednanými jídly
-// a s tím, co by skript podle tvých přání vybral, a seznam oblíbených
+// Část Obědy v záložce Škola: upozornění, jídelníček s objednanými jídly,
+// nutričním skóre a tím, co by skript vybral, a seznam oblíbených
 // a neoblíbených jídel. Data a výpočty jsou v js/moduly/obedy.js.
 
 async function zobrazObedy() {
@@ -65,7 +65,8 @@ function vykresliJidelnicek() {
         const detail = [jidlo.druh];
         // Polévka a zákusek jsou zamčené vždy (jdou s obědem) – „po uzávěrce“ jen u menu
         if (jidlo.zamceno && /^menu/i.test(jidlo.druh)) detail.push("po uzávěrce");
-        if (jidlo === vybral && !jidlo.objednano) detail.push("podle tvých přání by se vybralo tohle");
+        if (jidlo.nutri) detail.push(textNutri(jidlo));
+        if (jidlo === vybral && !jidlo.objednano) detail.push("vybralo by se tohle – nutričně lepší");
         hlavni.append(vytvor("div", "polozka-detail", detail.join(" · ")));
         li.append(hlavni);
         if (jidlo.objednano) li.append(vytvor("span", "stitek brzy", "objednáno"));
@@ -81,7 +82,7 @@ function vykresliJidelnicek() {
 function vytvorPreferenceObedu() {
   const karta = vytvor("div", "karta sekce obedy-preference");
   karta.append(vytvor("h2", "", "Co mám rád a co ne"));
-  karta.append(vytvor("p", "polozka-detail", "Skript v pátek vybere menu s oblíbeným jídlem; neoblíbené nevybere nikdy. Stačí kus slova – „kuřec“ najde kuřecí i kuře, háčky nevadí."));
+  karta.append(vytvor("p", "polozka-detail", "Skript v pátek vybere nutričně lepší menu (skóre vidíš u jídel). Neoblíbené nevybere nikdy, oblíbené rozhodne jen při stejném skóre. Stačí kus slova – „kuřec“ najde kuřecí i kuře, háčky nevadí."));
   for (const [druh, popis] of [["oblibene", "Oblíbená"], ["neoblibene", "Neoblíbená"]]) {
     const blok = vytvor("div", "obedy-skupina");
     blok.append(vytvor("div", "polozka-nazev", popis));
